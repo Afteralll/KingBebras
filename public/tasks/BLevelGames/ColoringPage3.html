@@ -1,0 +1,889 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎨 SPRAY CAN SLEUTH · Big Beaver · Score out of 10</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        /* 🌈 RAINBOW + CANDY BACKGROUND (webpage only) */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            /* Rainbow gradient background */
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 20%, #feca57 35%, #ff9f43 50%, #48dbfb 65%, #1dd1a1 80%, #c8d6e5 100%);
+            background-size: 300% 300%;
+            animation: rainbowShift 12s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Fredoka', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes rainbowShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* 🍬 Flying candy decorations (CSS only, behind game box) */
+        .candy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.35;
+            animation: floatCandy 14s infinite ease-in-out;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+            user-select: none;
+        }
+
+        @keyframes floatCandy {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(8deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        /* Individual candy positions */
+        .c1 {
+            top: 12%;
+            left: 5%;
+            animation-duration: 16s;
+            font-size: 3.2rem;
+        }
+
+        .c2 {
+            top: 70%;
+            left: 90%;
+            animation-duration: 19s;
+            font-size: 2.8rem;
+        }
+
+        .c3 {
+            top: 30%;
+            left: 85%;
+            animation-duration: 13s;
+            font-size: 2.4rem;
+        }
+
+        .c4 {
+            top: 80%;
+            left: 15%;
+            animation-duration: 22s;
+            font-size: 3rem;
+        }
+
+        .c5 {
+            top: 50%;
+            left: 40%;
+            animation-duration: 17s;
+            font-size: 2.2rem;
+            opacity: 0.25;
+        }
+
+        .c6 {
+            top: 18%;
+            left: 75%;
+            animation-duration: 15s;
+            font-size: 2.6rem;
+        }
+
+        .c7 {
+            top: 88%;
+            left: 55%;
+            animation-duration: 20s;
+            font-size: 2rem;
+        }
+
+        .c8 {
+            top: 45%;
+            left: 8%;
+            animation-duration: 12s;
+            font-size: 3.5rem;
+        }
+
+        /* Extra candy stripes overlay */
+        .candy-stripe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(255, 215, 215, 0.08) 0px, rgba(255, 215, 215, 0.08) 20px, rgba(230, 250, 230, 0.08) 20px, rgba(230, 250, 230, 0.08) 40px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Game box stays on top */
+        .game-box {
+            max-width: 1000px;
+            width: 100%;
+            background: #efe2cf;
+            border-radius: 56px;
+            padding: 24px 30px 32px;
+            box-shadow: 0 20px 0 #3b5a3b, 0 30px 40px rgba(0,0,0,0.35);
+            border: 3px solid #cbb99a;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-weight: 800;
+            font-size: 2.4rem;
+            text-align: center;
+            color: #1e3d2c;
+            text-shadow: 4px 4px 0 #e9d9b4;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+            h1 span {
+                font-size: 2.8rem;
+            }
+
+        .sub {
+            text-align: center;
+            margin: 0 0 18px 0;
+            font-weight: 600;
+            color: #2b5e2b;
+            background: #f3ebd5;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 40px;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+            border: 2px dashed #6f8f6f;
+        }
+
+        .play-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .canvas-wrapper {
+            background: #9bb09b;
+            padding: 18px;
+            border-radius: 48px;
+            box-shadow: inset 0 0 0 4px #e1d7c0, inset 0 8px 12px #3f5a3f, 0 10px 0 #4d6b4d;
+            flex: 2;
+            min-width: 380px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #fdf8ec;
+            border-radius: 28px;
+            box-shadow: inset 0 0 0 3px #fff3db, 0 6px 0 #5a715a;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .info-panel {
+            flex: 1.2;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .used-box {
+            background: #738a73;
+            border-radius: 36px;
+            padding: 18px 16px;
+            box-shadow: inset 0 -2px 0 #4e6a4e, inset 0 0 0 4px #b9cfb9, 0 8px 0 #3d5a3d;
+        }
+
+            .used-box h3 {
+                margin: 0 0 14px 0;
+                color: #fcf5dd;
+                font-size: 1.4rem;
+                text-shadow: 2px 2px 0 #2a3a2a;
+                text-align: center;
+            }
+
+        .used-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .used-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #cabd9c;
+            padding: 6px 14px;
+            border-radius: 40px;
+            box-shadow: inset 0 1px 4px #6f6a58, 0 4px 0 #6b5f48;
+        }
+
+        .used-swatch {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid #f9efd0;
+            box-shadow: 0 3px 0 #4a3f2f;
+        }
+
+        .bar-bg {
+            flex: 1;
+            height: 24px;
+            background: #2d412d;
+            border-radius: 30px;
+            box-shadow: inset 0 2px 6px #0f1a0f;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #eed484;
+            box-shadow: inset 0 2px 6px #fff3bb;
+            border-radius: 30px;
+        }
+
+        .used-percent {
+            min-width: 50px;
+            font-weight: 700;
+            color: #132213;
+        }
+
+        .fresh-box {
+            background: #bcb093;
+            border-radius: 36px;
+            padding: 18px 14px;
+            box-shadow: inset 0 -2px 0 #8f846a, inset 0 0 0 4px #eadfc5, 0 8px 0 #7a6e56;
+        }
+
+            .fresh-box h3 {
+                margin: 0 0 14px 0;
+                color: #1d381d;
+                font-size: 1.4rem;
+                text-align: center;
+            }
+
+        .fresh-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .spray-can {
+            width: 80px;
+            background: #dbceaf;
+            border-radius: 20px 20px 14px 14px;
+            padding: 10px 6px 8px;
+            box-shadow: inset 0 -4px 0 #a09074, inset 0 0 0 3px #f7ebd2, 0 7px 0 #6b5f48;
+            cursor: pointer;
+            transition: all 0.1s;
+            border: 2px solid #f9eecd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+            .spray-can.selected {
+                transform: translateY(3px);
+                box-shadow: inset 0 -2px 0 #a09074, inset 0 0 0 3px #fff6df, 0 4px 0 #5e533e;
+                background: #e9dcc2;
+            }
+
+        .can-cap {
+            width: 34px;
+            height: 12px;
+            background: #b8a888;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 6px;
+            box-shadow: inset 0 2px 3px #efe0c0;
+        }
+
+        .color-preview {
+            width: 48px;
+            height: 36px;
+            border-radius: 12px;
+            border: 2px solid #f2e8d0;
+            box-shadow: inset 0 1px 5px white, 0 3px 0 #6f6248;
+        }
+
+        .can-label {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: #1e3a1e;
+        }
+
+        .selected-info {
+            margin-top: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #1d3e1d;
+            font-size: 1.1rem;
+        }
+
+        .score-box {
+            background: #a7b89e;
+            border-radius: 30px;
+            padding: 10px 16px;
+            text-align: center;
+            box-shadow: inset 0 -2px 0 #6f8268, 0 5px 0 #5a6b52;
+            border: 2px solid #e0d5b9;
+            margin-bottom: 5px;
+        }
+
+            .score-box span {
+                font-size: 2rem;
+                font-weight: 800;
+                color: #1e3d2c;
+                text-shadow: 2px 2px 0 #ebddbf;
+            }
+
+        .score-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e3a1e;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button {
+            background: #e6c984;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 12px 8px;
+            border-radius: 40px;
+            box-shadow: inset 0 -3px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 6px 0 #7a6430;
+            cursor: pointer;
+            color: #1f3a2a;
+            flex: 1;
+            transition: 0.07s;
+            border: 2px solid #ffe29c;
+        }
+
+            button:active {
+                transform: translateY(4px);
+                box-shadow: inset 0 -1px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 2px 0 #7a6430;
+            }
+
+        .message {
+            text-align: center;
+            font-weight: 600;
+            min-height: 2.4rem;
+            color: #1d4a1d;
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        .footnote {
+            font-size: 0.9rem;
+            color: #2e5e2e;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 🌈🎂 Decorative candy background (only CSS/HTML, no canvas changes) -->
+    <div class="candy-bg">
+        <div class="candy c1">🍭</div>
+        <div class="candy c2">🍬</div>
+        <div class="candy c3">🍡</div>
+        <div class="candy c4">🧁</div>
+        <div class="candy c5">🍫</div>
+        <div class="candy c6">🍩</div>
+        <div class="candy c7">🍪</div>
+        <div class="candy c8">🍯</div>
+    </div>
+    <div class="candy-stripe"></div>
+
+    <!-- GAME BOX – EXACTLY AS ORIGINAL (no canvas modifications) -->
+    <div class="game-box">
+        <h1><span>🌿</span> WAVY MEADOW · SPRAY LOGIC <span>🦫</span></h1>
+        <div class="sub">🧴 used cans show leftover — match the amounts!</div>
+
+        <div class="play-area">
+            <div class="canvas-wrapper">
+                <canvas id="sceneCanvas" width="500" height="400"></canvas>
+            </div>
+
+            <div class="info-panel">
+                <div class="used-box">
+                    <h3>🧪 USED CANS</h3>
+                    <div class="used-list" id="usedCansList"></div>
+                    <div style="font-size:0.9rem; margin-top:10px; color:#e6dfc0; text-align:center;">⇣ paint left after finishing</div>
+                </div>
+
+                <div class="score-box">
+                    <div class="score-label">🏆 YOUR SCORE</div>
+                    <span id="scoreDisplay">0 / 10</span>
+                </div>
+
+                <div class="fresh-box">
+                    <h3>🖌️ YOUR FULL CANS</h3>
+                    <div class="fresh-list" id="freshCansList"></div>
+                    <div class="selected-info">🎯 Selected: <span id="selectedColorDisplay">none</span></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="finishBtn">✨ FINISH</button>
+                    <button id="newGameBtn">⟳ NEW</button>
+                </div>
+                <div class="message" id="messageDisplay">✨ Pick a can, then click a part of the picture</div>
+            </div>
+        </div>
+        <div class="footnote">💡 Green uses MOST paint · Stars (pink) together · Beaver = brown · Sky = blue · Sun = yellow</div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---------- COLOR DEFINITIONS (unchanged) ----------
+            const COLORS = [
+                { name: 'brown', code: '#8B5A2B', light: '#b07c4a' },
+                { name: 'yellow', code: '#F4D03F', light: '#f7dc6f' },
+                { name: 'pink', code: '#F8BBD0', light: '#fcd9e5' },
+                { name: 'green', code: '#7CB342', light: '#9ccc65' },
+                { name: 'lightblue', code: '#64B5F6', light: '#90caf9' }
+            ];
+
+            const LEFTOVER_PERCENT = {
+                'brown': 70, 'yellow': 90, 'pink': 80, 'green': 10, 'lightblue': 50
+            };
+
+            const canvas = document.getElementById('sceneCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreSpan = document.getElementById('scoreDisplay');
+
+            let regions = [];
+            let selectedColorName = null;
+            let gameFinished = false;
+            let finishReported = false;
+
+            // ---------- WAVY HORIZON ----------
+            function createWavyHorizon() {
+                const w = canvas.width, h = canvas.height;
+                const path = new Path2D();
+                path.moveTo(0, 160);
+                for (let x = 0; x <= w; x += 20) {
+                    const y = 160 + 18 * Math.sin(x / 45);
+                    path.lineTo(x, y);
+                }
+                path.lineTo(w, h);
+                path.lineTo(0, h);
+                path.closePath();
+                return path;
+            }
+
+            // ---------- BUILD REGIONS (original) ----------
+            function buildRegions() {
+                const w = canvas.width, h = canvas.height;
+                const newRegions = [];
+
+                // SKY
+                const skyPath = new Path2D();
+                skyPath.moveTo(0, 0);
+                skyPath.lineTo(w, 0);
+                skyPath.lineTo(w, 160);
+                for (let x = w; x >= 0; x -= 20) {
+                    const y = 160 + 18 * Math.sin(x / 45);
+                    skyPath.lineTo(x, y);
+                }
+                skyPath.closePath();
+                newRegions.push({ path: skyPath, name: 'sky', correctColor: 'lightblue', playerColor: null });
+
+                // SUN
+                const sunPath = new Path2D();
+                sunPath.arc(380, 70, 20, 0, 2 * Math.PI);
+                newRegions.push({ path: sunPath, name: 'sun', correctColor: 'yellow', playerColor: null });
+
+                // GRASS
+                const grassPath = createWavyHorizon();
+                newRegions.push({ path: grassPath, name: 'grass', correctColor: 'green', playerColor: null });
+
+                // STARS
+                const starsPath = new Path2D();
+                drawStarToPath(starsPath, 350, 250, 5, 26, 14);
+                drawStarToPath(starsPath, 420, 290, 5, 26, 14);
+                drawStarToPath(starsPath, 300, 310, 5, 26, 14);
+                newRegions.push({ path: starsPath, name: 'stars', correctColor: 'pink', playerColor: null });
+
+                // BEAVER
+                const beaverPath = new Path2D();
+                beaverPath.ellipse(170, 290, 58, 65, 0, 0, Math.PI * 2);
+                newRegions.push({ path: beaverPath, name: 'beaver', correctColor: 'brown', playerColor: null });
+
+                return newRegions;
+            }
+
+            function drawStarToPath(path, cx, cy, spikes, outerR, innerR) {
+                let rot = Math.PI / 2 * 3;
+                const step = Math.PI / spikes;
+                let x = cx + Math.cos(rot) * outerR;
+                let y = cy + Math.sin(rot) * outerR;
+                path.moveTo(x, y);
+                for (let i = 0; i < spikes; i++) {
+                    rot += step;
+                    x = cx + Math.cos(rot) * innerR;
+                    y = cy + Math.sin(rot) * innerR;
+                    path.lineTo(x, y);
+                    rot += step;
+                    x = cx + Math.cos(rot) * outerR;
+                    y = cy + Math.sin(rot) * outerR;
+                    path.lineTo(x, y);
+                }
+                path.closePath();
+            }
+
+            // ---------- 🦫 DETAILED BEAVER (unchanged) ----------
+            function drawDetailedBeaver(ctx, cx, cy, colorName) {
+                let solidColor, darkShade;
+                if (colorName) {
+                    const col = COLORS.find(c => c.name === colorName);
+                    solidColor = col ? col.code : '#8B5A2B';
+                    darkShade = col ? col.light : '#b07c4a';
+                } else {
+                    solidColor = '#E8DDCC';
+                    darkShade = '#E8DDCC';
+                }
+
+                ctx.shadowColor = '#3a2a1a';
+                ctx.shadowBlur = 10;
+
+                ctx.beginPath();
+                ctx.ellipse(cx, cy + 2, 42, 35, 0, 0, Math.PI * 2);
+                ctx.fillStyle = solidColor;
+                ctx.fill();
+                ctx.strokeStyle = darkShade;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.ellipse(cx - 33, cy - 34, 16, 18, -0.2, 0, Math.PI * 2);
+                ctx.fillStyle = solidColor;
+                ctx.fill();
+                ctx.strokeStyle = darkShade;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.ellipse(cx + 33, cy - 34, 16, 18, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = darkShade;
+                ctx.beginPath();
+                ctx.ellipse(cx - 31, cy - 34, 9, 12, -0.2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.ellipse(cx + 31, cy - 34, 9, 12, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy - 48, 28, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillRect(cx - 24, cy - 82, 48, 36);
+                ctx.beginPath();
+                ctx.ellipse(cx, cy - 82, 24, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.ellipse(cx, cy - 6, 33, 30, 0, 0, Math.PI * 2);
+                ctx.fillStyle = solidColor;
+                ctx.fill();
+                ctx.strokeStyle = darkShade;
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(cx - 14, cy - 16, 9, 0, 2 * Math.PI);
+                ctx.fillStyle = '#fbf5e5';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cx + 14, cy - 16, 9, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = '#2b1e14';
+                ctx.beginPath();
+                ctx.arc(cx - 16, cy - 18, 5.5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cx + 12, cy - 18, 5.5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(cx - 18, cy - 21, 2.8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cx + 10, cy - 21, 2.8, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(cx, cy - 4, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = '#6b3e2c';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.strokeStyle = '#5e3a26';
+                ctx.lineWidth = 3;
+                ctx.moveTo(cx - 10, cy + 6);
+                ctx.quadraticCurveTo(cx, cy + 15, cx + 10, cy + 6);
+                ctx.stroke();
+
+                ctx.fillStyle = '#f7a9a0';
+                ctx.globalAlpha = 0.45;
+                ctx.beginPath();
+                ctx.arc(cx - 24, cy + 2, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(cx + 24, cy + 2, 8, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+                ctx.shadowBlur = 0;
+            }
+
+            // ---------- GAME INIT ----------
+            function initGame() {
+                regions = buildRegions();
+                selectedColorName = null;
+                gameFinished = false;
+                finishReported = false;
+                updateSelectedDisplay();
+                renderUsedCans();
+                renderFreshCans();
+                drawCanvas();
+                updateScoreDisplay(0);
+                document.getElementById('messageDisplay').textContent = '🌱 Pick a color can, then click a region to paint.';
+            }
+
+            function updateScoreDisplay(correctRegions) {
+                const score = correctRegions * 2;
+                scoreSpan.textContent = `${score} / 10`;
+            }
+
+            function renderUsedCans() {
+                const container = document.getElementById('usedCansList');
+                container.innerHTML = '';
+                ['green', 'lightblue', 'brown', 'pink', 'yellow'].forEach(colorName => {
+                    const colorObj = COLORS.find(c => c.name === colorName);
+                    const percent = LEFTOVER_PERCENT[colorName];
+                    const row = document.createElement('div');
+                    row.className = 'used-row';
+                    row.innerHTML = `
+                            <div class="used-swatch" style="background: ${colorObj.code};"></div>
+                            <div class="bar-bg"><div class="bar-fill" style="width: ${percent}%; background: ${colorObj.light};"></div></div>
+                            <span class="used-percent">${percent}%</span>
+                            <span style="min-width:65px; font-weight:600;">${colorName}</span>
+                        `;
+                    container.appendChild(row);
+                });
+            }
+
+            function renderFreshCans() {
+                const container = document.getElementById('freshCansList');
+                container.innerHTML = '';
+                COLORS.forEach(color => {
+                    const can = document.createElement('div');
+                    can.className = 'spray-can' + (selectedColorName === color.name ? ' selected' : '');
+                    can.innerHTML = `
+                            <div class="can-cap"></div>
+                            <div class="color-preview" style="background: ${color.code};"></div>
+                            <div class="can-label">${color.name}</div>
+                        `;
+                    can.addEventListener('click', () => {
+                        if (gameFinished) {
+                            document.getElementById('messageDisplay').textContent = '🏁 Game finished! Press NEW to play again.';
+                            return;
+                        }
+                        selectedColorName = color.name;
+                        updateSelectedDisplay();
+                        renderFreshCans();
+                        document.getElementById('messageDisplay').textContent = `🎨 Selected ${color.name}. Click on the picture.`;
+                    });
+                    container.appendChild(can);
+                });
+            }
+
+            function updateSelectedDisplay() {
+                document.getElementById('selectedColorDisplay').textContent = selectedColorName || 'none';
+            }
+
+            // ---------- DRAW CANVAS (unchanged) ----------
+            function drawCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.shadowBlur = 0;
+
+                regions.forEach(region => {
+                    if (region.name === 'beaver') return;
+                    ctx.beginPath();
+                    let fillColor = '#e8ddcc';
+                    if (region.playerColor) {
+                        const col = COLORS.find(c => c.name === region.playerColor);
+                        fillColor = col ? col.light : region.playerColor;
+                    }
+                    ctx.fillStyle = fillColor;
+                    ctx.fill(region.path);
+                    ctx.strokeStyle = '#4d3e2e';
+                    ctx.lineWidth = 2.8;
+                    ctx.stroke(region.path);
+                });
+
+                ctx.beginPath();
+                ctx.strokeStyle = '#b38b40';
+                ctx.lineWidth = 3;
+                for (let i = 0; i < 8; i++) {
+                    let angle = i * Math.PI / 4;
+                    let dx = Math.cos(angle) * 50;
+                    let dy = Math.sin(angle) * 50;
+                    ctx.moveTo(380 + dx * 0.5, 70 + dy * 0.5);
+                    ctx.lineTo(380 + dx, 70 + dy);
+                }
+                ctx.stroke();
+
+                const beaverRegion = regions.find(r => r.name === 'beaver');
+                const beaverColor = beaverRegion ? beaverRegion.playerColor : null;
+                drawDetailedBeaver(ctx, 170, 290, beaverColor);
+            }
+
+            // ---------- CLICK HANDLER ----------
+            function handleCanvasClick(e) {
+                if (gameFinished) {
+                    document.getElementById('messageDisplay').textContent = '🎯 Press NEW to start a fresh puzzle.';
+                    return;
+                }
+                if (!selectedColorName) {
+                    document.getElementById('messageDisplay').textContent = '⚠️ Pick a spray can first!';
+                    return;
+                }
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const canvasX = (e.clientX - rect.left) * scaleX;
+                const canvasY = (e.clientY - rect.top) * scaleY;
+
+                let clickedRegion = null;
+                for (let i = regions.length - 1; i >= 0; i--) {
+                    if (ctx.isPointInPath(regions[i].path, canvasX, canvasY)) {
+                        clickedRegion = regions[i];
+                        break;
+                    }
+                }
+                if (!clickedRegion) {
+                    document.getElementById('messageDisplay').textContent = '👆 Click inside a shape!';
+                    return;
+                }
+                clickedRegion.playerColor = selectedColorName;
+                drawCanvas();
+
+                const allPainted = regions.every(r => r.playerColor !== null);
+                if (allPainted) {
+                    document.getElementById('messageDisplay').textContent = '🎯 All parts painted! Press FINISH to see your score.';
+                } else {
+                    document.getElementById('messageDisplay').textContent = `✔️ Painted ${clickedRegion.name} with ${selectedColorName}.`;
+                }
+            }
+
+            function finishGame() {
+                if (gameFinished) {
+                    document.getElementById('messageDisplay').textContent = '✨ Already finished! Start a new game.';
+                    return;
+                }
+                const allPainted = regions.every(r => r.playerColor !== null);
+                if (!allPainted) {
+                    document.getElementById('messageDisplay').textContent = '❓ Paint every part first!';
+                    return;
+                }
+
+                gameFinished = true;
+                let correctCount = regions.filter(r => r.playerColor === r.correctColor).length;
+                const score = correctCount * 2;
+                updateScoreDisplay(correctCount);
+
+                let feedback = '';
+                if (correctCount === regions.length) {
+                    feedback = '🎉 PERFECT SCORE! 10/10 — You matched all leftover clues! 🌟🌟🌟';
+                } else if (score >= 6) {
+                    feedback = `👍 Good job! Score: ${score}/10. Check the used cans for hints.`;
+                } else {
+                    feedback = `🌱 Keep trying! Score: ${score}/10. Look at the leftover percentages.`;
+                }
+                document.getElementById('messageDisplay').textContent = feedback;
+
+                if (!finishReported) {
+                    finishReported = true;
+                    window.__kb?.finish?.({
+                        finalScore: score,
+                        correctRegions: correctCount,
+                        totalRegions: regions.length
+                    });
+                }
+            }
+
+            canvas.addEventListener('click', handleCanvasClick);
+            canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY });
+            });
+
+            document.getElementById('finishBtn').addEventListener('click', finishGame);
+            document.getElementById('newGameBtn').addEventListener('click', () => {
+                initGame();
+                drawCanvas();
+            });
+
+            initGame();
+        })();
+    </script>
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('coloring-page-3');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

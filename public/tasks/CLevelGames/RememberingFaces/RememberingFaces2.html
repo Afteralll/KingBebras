@@ -1,0 +1,1314 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>🌈 Image Sorting Game - Scored</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --sky-top: #7ec8e3;
+            --sky-bottom: #e0f4fb;
+            --card-bg: #ffffff;
+            --slot-empty: #fdf6e3;
+            --slot-border: #c9b8e8;
+            --accent-pink: #ff6b8a;
+            --accent-orange: #ff9f43;
+            --accent-yellow: #feca57;
+            --accent-green: #54d2a0;
+            --accent-blue: #54a0ff;
+            --accent-purple: #a478e8;
+            --button-grad-1: #ff6b8a;
+            --button-grad-2: #ff8e53;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Nunito', 'Arial', sans-serif;
+            background: linear-gradient(180deg, #7ec8e3 0%, #b4ddf0 25%, #d4edf8 50%, #e8f4fb 75%, #f0f7fc 100%);
+            text-align: center;
+            padding: 20px 10px 40px 10px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ================= SKY & DECORATIONS LAYER ================= */
+        #decorationsLayer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* --- Rainbow --- */
+        .rainbow-wrapper {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 850px;
+            height: 440px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .rainbow-arc {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 780px;
+            height: 390px;
+            border-radius: 390px 390px 0 0;
+            background: transparent;
+            box-shadow: 0 0 0 10px #ff9a9e, 0 0 0 22px #ffb347, 0 0 0 34px #ffe259, 0 0 0 46px #a8e6cf, 0 0 0 58px #7ec8e3, 0 0 0 70px #a29bfe, 0 0 0 82px #d4c5f9;
+            opacity: 0.7;
+        }
+
+        .rainbow-shine {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 200px;
+            border-radius: 300px 300px 0 0;
+            background: radial-gradient(ellipse at center bottom, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 70%);
+            z-index: 2;
+        }
+
+        /* --- Clouds --- */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.03);
+            z-index: 3;
+        }
+
+            .cloud::before,
+            .cloud::after {
+                content: '';
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+            }
+
+        .cloud-1 {
+            width: 120px;
+            height: 55px;
+            top: 110px;
+            left: 8%;
+            border-radius: 55px;
+            animation: cloudDrift 28s ease-in-out infinite;
+        }
+
+            .cloud-1::before {
+                width: 65px;
+                height: 65px;
+                top: -35px;
+                left: 20px;
+                border-radius: 50%;
+            }
+
+            .cloud-1::after {
+                width: 80px;
+                height: 70px;
+                top: -30px;
+                left: 55px;
+                border-radius: 50%;
+            }
+
+        .cloud-2 {
+            width: 90px;
+            height: 40px;
+            top: 170px;
+            right: 10%;
+            border-radius: 40px;
+            animation: cloudDrift 22s ease-in-out 5s infinite;
+        }
+
+            .cloud-2::before {
+                width: 50px;
+                height: 50px;
+                top: -28px;
+                left: 14px;
+                border-radius: 50%;
+            }
+
+            .cloud-2::after {
+                width: 58px;
+                height: 52px;
+                top: -22px;
+                left: 42px;
+                border-radius: 50%;
+            }
+
+        .cloud-3 {
+            width: 70px;
+            height: 32px;
+            top: 60px;
+            left: 55%;
+            border-radius: 32px;
+            animation: cloudDrift 25s ease-in-out 10s infinite;
+        }
+
+            .cloud-3::before {
+                width: 40px;
+                height: 40px;
+                top: -22px;
+                left: 10px;
+                border-radius: 50%;
+            }
+
+            .cloud-3::after {
+                width: 44px;
+                height: 38px;
+                top: -18px;
+                left: 32px;
+                border-radius: 50%;
+            }
+
+        @keyframes cloudDrift {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(35px);
+            }
+
+            50% {
+                transform: translateX(-20px);
+            }
+
+            75% {
+                transform: translateX(25px);
+            }
+        }
+
+        /* --- Sparkles --- */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #fffbe6;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 3px #ffe9a0, 0 0 20px 6px rgba(255, 220, 100, 0.5);
+            animation: twinkle 2.5s ease-in-out infinite;
+            z-index: 4;
+        }
+
+            .sparkle:nth-child(1) {
+                top: 15%;
+                left: 12%;
+                animation-delay: 0s;
+            }
+
+            .sparkle:nth-child(2) {
+                top: 25%;
+                left: 28%;
+                animation-delay: 0.8s;
+                width: 4px;
+                height: 4px;
+            }
+
+            .sparkle:nth-child(3) {
+                top: 10%;
+                left: 65%;
+                animation-delay: 1.6s;
+            }
+
+            .sparkle:nth-child(4) {
+                top: 20%;
+                left: 78%;
+                animation-delay: 0.4s;
+                width: 5px;
+                height: 5px;
+            }
+
+            .sparkle:nth-child(5) {
+                top: 30%;
+                left: 45%;
+                animation-delay: 2s;
+                width: 3px;
+                height: 3px;
+            }
+
+            .sparkle:nth-child(6) {
+                top: 8%;
+                left: 40%;
+                animation-delay: 1.2s;
+                width: 7px;
+                height: 7px;
+            }
+
+            .sparkle:nth-child(7) {
+                top: 18%;
+                left: 85%;
+                animation-delay: 0.3s;
+                width: 4px;
+                height: 4px;
+            }
+
+            .sparkle:nth-child(8) {
+                top: 28%;
+                left: 5%;
+                animation-delay: 1.9s;
+                width: 5px;
+                height: 5px;
+            }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1.6);
+            }
+
+            70% {
+                opacity: 0.5;
+                transform: scale(1);
+            }
+        }
+
+        /* --- Flying Candy --- */
+        .candy {
+            position: absolute;
+            font-size: 28px;
+            z-index: 5;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12));
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .candy-bob {
+            animation-name: candyBob;
+        }
+
+        .candy-drift {
+            animation-name: candyDrift;
+        }
+
+        .candy-wiggle {
+            animation-name: candyWiggle;
+        }
+
+        .candy-float {
+            animation-name: candyFloat;
+        }
+
+        @keyframes candyBob {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            30% {
+                transform: translateY(-35px) rotate(8deg);
+            }
+
+            60% {
+                transform: translateY(-12px) rotate(-4deg);
+            }
+
+            85% {
+                transform: translateY(-28px) rotate(3deg);
+            }
+        }
+
+        @keyframes candyDrift {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            25% {
+                transform: translate(40px, -25px) rotate(10deg);
+            }
+
+            50% {
+                transform: translate(-15px, -45px) rotate(-6deg);
+            }
+
+            75% {
+                transform: translate(30px, -15px) rotate(5deg);
+            }
+        }
+
+        @keyframes candyWiggle {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            20% {
+                transform: translate(-25px, -20px) rotate(-12deg);
+            }
+
+            40% {
+                transform: translate(20px, -38px) rotate(8deg);
+            }
+
+            60% {
+                transform: translate(-10px, -15px) rotate(-5deg);
+            }
+
+            80% {
+                transform: translate(15px, -32px) rotate(10deg);
+            }
+        }
+
+        @keyframes candyFloat {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: translate(18px, -40px) rotate(6deg) scale(1.1);
+            }
+        }
+
+        /* ================= GAME CONTAINER ================= */
+        #gameContainer {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 20px 25px 30px 25px;
+          
+             
+        }
+
+        /* --- Title --- */
+        .game-title {
+            font-family: 'Fredoka One', 'Nunito', cursive;
+            font-size: 2.6em;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #ff6b8a, #ff9f43, #feca57, #54d2a0, #54a0ff, #a478e8);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: rainbowShine 4s ease-in-out infinite;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        @keyframes rainbowShine {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .title-stars {
+            font-size: 1.4em;
+            display: inline-block;
+            animation: starBounce 0.7s ease-in-out infinite;
+            -webkit-text-fill-color: initial;
+            color: #feca57;
+            text-shadow: 0 0 10px rgba(254, 202, 87, 0.6);
+        }
+
+            .title-stars:nth-child(1) {
+                animation-delay: 0s;
+            }
+
+            .title-stars:nth-child(2) {
+                animation-delay: 0.35s;
+            }
+
+        @keyframes starBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-12px);
+            }
+
+            60% {
+                transform: translateY(-3px);
+            }
+        }
+
+        /* --- Stats --- */
+        #stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: white;
+            border-radius: 40px;
+            padding: 9px 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border: 2px solid #e8e0f0;
+            font-size: 1em;
+            transition: transform 0.2s;
+            font-family: 'Nunito', sans-serif;
+        }
+
+            .stat-badge:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            }
+
+        .stat-icon {
+            font-size: 1.5em;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: #5f3dc4;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* --- Main Image --- */
+        #mainImageBox {
+            width: 900px;
+            max-width: 95%;
+            margin: auto;
+            background: white;
+            border: 4px solid #e8dff5;
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+            transition: box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            #mainImageBox::after {
+                content: '';
+                position: absolute;
+                top: -30px;
+                right: -30px;
+                width: 80px;
+                height: 80px;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 2;
+            }
+
+            #mainImageBox:hover {
+                border-color: #c9b8e8;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            }
+
+        #mainImage {
+            width: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            display: block;
+        }
+
+        /* --- Slots --- */
+        #slots {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 8px auto 22px auto;
+        }
+
+        .slot {
+            width: 105px;
+            height: 95px;
+            border: 3px dashed #d5c8ec;
+            background: #fefcf5;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+        }
+
+            .slot::before {
+                content: '📥';
+                position: absolute;
+                font-size: 1.2em;
+                opacity: 0.25;
+                pointer-events: none;
+                transition: opacity 0.3s;
+            }
+
+            .slot[data-filled]::before {
+                opacity: 0;
+                content: '';
+            }
+
+            .slot:hover {
+                border-color: #b49de0;
+                background: #f9f5ff;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(164, 120, 232, 0.18);
+                border-style: solid;
+            }
+
+            .slot.hover {
+                background: #e8fce8 !important;
+                border-color: #54d2a0 !important;
+                border-style: solid !important;
+                transform: scale(1.05);
+                box-shadow: 0 10px 30px rgba(84, 210, 160, 0.3) !important;
+            }
+
+            .slot img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                pointer-events: none;
+                z-index: 1;
+                position: relative;
+            }
+            /* Colorful slot accents */
+            .slot:nth-child(1) {
+                border-left: 4px solid #ff6b8a;
+            }
+
+            .slot:nth-child(2) {
+                border-left: 4px solid #ff9f43;
+            }
+
+            .slot:nth-child(3) {
+                border-left: 4px solid #feca57;
+            }
+
+            .slot:nth-child(4) {
+                border-left: 4px solid #54d2a0;
+            }
+
+            .slot:nth-child(5) {
+                border-left: 4px solid #54a0ff;
+            }
+
+            .slot:nth-child(6) {
+                border-left: 4px solid #5f8aeb;
+            }
+
+            .slot:nth-child(7) {
+                border-left: 4px solid #a478e8;
+            }
+
+            .slot:nth-child(8) {
+                border-left: 4px solid #e878c8;
+            }
+
+        /* --- Pool --- */
+        #pool {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: auto;
+            min-height: 100px;
+            padding: 10px 0;
+        }
+
+        .item {
+            width: 135px;
+            height: 95px;
+            background: white;
+            border: 3px solid #e0d8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: grab;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+            position: relative;
+        }
+
+            .item::after {
+                content: '';
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                width: 30px;
+                height: 30px;
+                background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+            }
+
+            .item:hover {
+                transform: translateY(-6px) scale(1.04);
+                box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
+                border-color: #b49de0;
+            }
+
+            .item:active {
+                cursor: grabbing;
+                transform: scale(0.96);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .item img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                pointer-events: none;
+                position: relative;
+                z-index: 1;
+            }
+
+        /* --- Finish Button --- */
+        #finishBtn {
+            margin-top: 22px;
+            padding: 14px 40px;
+            font-size: 1.2em;
+            font-family: 'Fredoka One', 'Nunito', cursive;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff6b8a 0%, #ff8e53 100%);
+            color: white;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 25px rgba(255, 107, 138, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            #finishBtn::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -60%;
+                width: 80%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.22);
+                border-radius: 50%;
+                transform: rotate(25deg);
+                transition: left 0.6s;
+            }
+
+            #finishBtn:hover {
+                transform: translateY(-4px) scale(1.04);
+                box-shadow: 0 14px 38px rgba(255, 107, 138, 0.5);
+            }
+
+                #finishBtn:hover::after {
+                    left: 120%;
+                }
+
+            #finishBtn:active {
+                transform: scale(0.95);
+                box-shadow: 0 4px 12px rgba(255, 107, 138, 0.35);
+            }
+
+        /* --- Message --- */
+        #message {
+            margin-top: 20px;
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #5f3dc4;
+            font-family: 'Nunito', sans-serif;
+            background: #fefce8;
+            border-radius: 20px;
+            padding: 18px 22px;
+            display: inline-block;
+            border: 2px dashed #feca57;
+            box-shadow: 0 6px 20px rgba(254, 202, 87, 0.2);
+            animation: msgPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 250px;
+        }
+
+            #message:empty {
+                display: none;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                background: transparent;
+            }
+
+        @keyframes msgPop {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.8em;
+            }
+
+            .rainbow-wrapper {
+                width: 500px;
+                height: 260px;
+                top: -40px;
+            }
+
+            .rainbow-arc {
+                width: 460px;
+                height: 230px;
+                border-radius: 230px 230px 0 0;
+                box-shadow: 0 0 0 7px #ff9a9e, 0 0 0 15px #ffb347, 0 0 0 23px #ffe259, 0 0 0 31px #a8e6cf, 0 0 0 39px #7ec8e3, 0 0 0 47px #a29bfe, 0 0 0 55px #d4c5f9;
+            }
+
+            .slot {
+                width: 70px;
+                height: 65px;
+                border-radius: 12px;
+                font-size: 0.7em;
+            }
+
+                .slot::before {
+                    font-size: 0.9em;
+                }
+
+            .item {
+                width: 100px;
+                height: 72px;
+                border-radius: 12px;
+            }
+
+            .stat-badge {
+                padding: 6px 12px;
+                font-size: 0.85em;
+            }
+
+            #finishBtn {
+                padding: 12px 28px;
+                font-size: 1em;
+            }
+
+            .cloud-1 {
+                display: none;
+            }
+
+            .cloud-3 {
+                display: none;
+            }
+
+            .candy {
+                font-size: 20px;
+            }
+
+            #gameContainer {
+                padding: 14px 10px 20px 10px;
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 1.4em;
+            }
+
+            .rainbow-wrapper {
+                width: 340px;
+                height: 180px;
+                top: -30px;
+            }
+
+            .rainbow-arc {
+                width: 310px;
+                height: 155px;
+                border-radius: 155px 155px 0 0;
+                box-shadow: 0 0 0 5px #ff9a9e, 0 0 0 11px #ffb347, 0 0 0 17px #ffe259, 0 0 0 23px #a8e6cf, 0 0 0 29px #7ec8e3, 0 0 0 35px #a29bfe, 0 0 0 41px #d4c5f9;
+            }
+
+            .slot {
+                width: 58px;
+                height: 55px;
+                border-radius: 10px;
+                gap: 5px;
+                border-width: 2px;
+            }
+
+                .slot::before {
+                    font-size: 0.7em;
+                }
+
+                .slot:nth-child(1),
+                .slot:nth-child(2),
+                .slot:nth-child(3),
+                .slot:nth-child(4),
+                .slot:nth-child(5),
+                .slot:nth-child(6),
+                .slot:nth-child(7),
+                .slot:nth-child(8) {
+                    border-left-width: 3px;
+                }
+
+            #slots {
+                gap: 5px;
+            }
+
+            .item {
+                width: 75px;
+                height: 55px;
+                border-radius: 10px;
+                border-width: 2px;
+            }
+
+            #pool {
+                gap: 8px;
+            }
+
+            .stat-badge {
+                padding: 5px 10px;
+                font-size: 0.75em;
+                gap: 4px;
+            }
+
+            .stat-icon {
+                font-size: 1.2em;
+            }
+
+            .candy {
+                font-size: 16px;
+            }
+
+            .cloud-2 {
+                display: none;
+            }
+
+            #gameContainer {
+                padding: 10px 6px 16px 6px;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== DECORATIVE BACKGROUND LAYER ==================== -->
+    <div id="decorationsLayer">
+        <!-- Rainbow -->
+        <div class="rainbow-wrapper">
+            <div class="rainbow-arc"></div>
+            <div class="rainbow-shine"></div>
+        </div>
+
+        <!-- Clouds -->
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+
+        <!-- Sparkles -->
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+
+        <!-- Flying Candy -->
+        <span class="candy candy-bob" style="top:8%;left:6%;font-size:32px;animation-duration:9s;animation-delay:0s;">🍬</span>
+        <span class="candy candy-drift" style="top:14%;left:22%;font-size:26px;animation-duration:13s;animation-delay:1.5s;">🍭</span>
+        <span class="candy candy-wiggle" style="top:6%;left:38%;font-size:30px;animation-duration:11s;animation-delay:3s;">🧁</span>
+        <span class="candy candy-float" style="top:18%;left:52%;font-size:24px;animation-duration:14s;animation-delay:0.7s;">🍩</span>
+        <span class="candy candy-bob" style="top:10%;left:68%;font-size:34px;animation-duration:10s;animation-delay:2.2s;">🍪</span>
+        <span class="candy candy-drift" style="top:22%;left:80%;font-size:27px;animation-duration:12s;animation-delay:4s;">🍫</span>
+        <span class="candy candy-wiggle" style="top:5%;left:90%;font-size:29px;animation-duration:15s;animation-delay:1s;">🍰</span>
+        <span class="candy candy-float" style="top:16%;left:15%;font-size:25px;animation-duration:11s;animation-delay:5s;">🍦</span>
+        <span class="candy candy-bob" style="top:25%;left:44%;font-size:31px;animation-duration:8s;animation-delay:3.5s;">🍨</span>
+        <span class="candy candy-drift" style="top:12%;left:75%;font-size:23px;animation-duration:16s;animation-delay:0.3s;">🍡</span>
+        <span class="candy candy-wiggle" style="top:20%;left:32%;font-size:28px;animation-duration:13s;animation-delay:2.8s;">🎂</span>
+        <span class="candy candy-float" style="top:9%;left:58%;font-size:33px;animation-duration:10s;animation-delay:4.5s;">🍧</span>
+    </div>
+
+    <!-- ==================== GAME CONTENT ==================== -->
+    <div id="gameContainer">
+        <h1 class="game-title">
+            <span class="title-stars">⭐</span> Image Sorting Game
+            <span class="title-stars">⭐</span>
+        </h1>
+
+        <div id="stats">
+            <div class="stat-badge">
+                <span class="stat-icon">❌</span>
+                <span class="stat-label">Errors</span>
+                <span class="stat-value" id="errorScore">10</span>
+            </div>
+            <div class="stat-badge">
+                <span class="stat-icon">⏱️</span>
+                <span class="stat-label">Time</span>
+                <span class="stat-value" id="timeScore">10</span>
+            </div>
+            <div class="stat-badge">
+                <span class="stat-icon">👆</span>
+                <span class="stat-label">Clicks</span>
+                <span class="stat-value" id="clickScore">10</span>
+            </div>
+        </div>
+
+        <div id="mainImageBox">
+            <img id="mainImage" src="Main.PNG" alt="Main Image">
+        </div>
+
+        <div id="slots"></div>
+        <div id="pool"></div>
+
+        <button id="finishBtn" onclick="finishGame()">🎉 Finish!</button>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        /* ===============================
+        PUT THESE FILES IN SAME FOLDER:
+        main.png
+        1.png
+        2.png
+        3.png
+        4.png
+        5.png
+        6.png
+        7.png
+        8.png
+        =============================== */
+
+        /* image 7 starts already sorted, so not in pool */
+        let images = [
+            { name: "1", img: "1.PNG" },
+            { name: "2", img: "2.PNG" },
+            { name: "3", img: "3.PNG" },
+            { name: "4", img: "4.PNG" },
+            { name: "5", img: "5.PNG" },
+            { name: "6", img: "6.PNG" },
+            { name: "8", img: "8.PNG" }
+        ];
+
+        const originalMap = {
+            "1": "1.PNG",
+            "2": "2.PNG",
+            "3": "3.PNG",
+            "4": "4.PNG",
+            "5": "5.PNG",
+            "6": "6.PNG",
+            "7": "7.PNG",
+            "8": "8.PNG"
+        };
+
+        let selected = null;
+        let clicks = 0;
+        let totalErrors = 0;
+        let gameEnded = false;
+        let seconds = 0;
+
+        const pool = document.getElementById("pool");
+        const slots = document.getElementById("slots");
+        const message = document.getElementById("message");
+
+        const errorText = document.getElementById("errorScore");
+        const timeText = document.getElementById("timeScore");
+        const clickText = document.getElementById("clickScore");
+
+        /* ================= TIMER ================= */
+        setInterval(() => {
+            if (gameEnded) return;
+            seconds++;
+            updateScores();
+        }, 1000);
+
+        /* ================= ERROR RULES ================= */
+        function getErrors(imgNum, slotNum) {
+
+            if (imgNum === slotNum) return 0;
+
+            /* paired switches */
+            if (
+                (imgNum === 1 && slotNum === 2) || (imgNum === 2 && slotNum === 1) ||
+                (imgNum === 3 && slotNum === 4) || (imgNum === 4 && slotNum === 3) ||
+                (imgNum === 5 && slotNum === 6) || (imgNum === 6 && slotNum === 5) ||
+                (imgNum === 7 && slotNum === 8) || (imgNum === 8 && slotNum === 7)
+            ) {
+                return 1;
+            }
+
+            /* 1,2 group */
+            if (imgNum <= 2) {
+                if (slotNum <= 2) return 1;
+                if (slotNum <= 4) return 2;
+                return 3;
+            }
+
+            /* 3,4 group */
+            if (imgNum <= 4) {
+                if (slotNum <= 4 && slotNum >= 3) return 1;
+                if (slotNum <= 2) return 2;
+                return 3;
+            }
+
+            /* 5,6 group */
+            if (imgNum <= 6) {
+                if (slotNum >= 5 && slotNum <= 6) return 1;
+                if (slotNum >= 7) return 2;
+                return 3;
+            }
+
+            /* 7,8 group */
+            if (imgNum <= 8) {
+                if (slotNum >= 7) return 1;
+                if (slotNum >= 5) return 2;
+                return 3;
+            }
+
+            return 3;
+        }
+
+        /* ================= SCORE FUNCTIONS ================= */
+        function getErrorScore() {
+            return Math.max(0, 10 - totalErrors);
+        }
+
+        function getTimeScore() {
+            let score = 10;
+
+            if (seconds > 60) {
+                score -= 1;
+                score -= Math.floor((seconds - 60) / 20);
+            }
+
+            return Math.max(0, score);
+        }
+
+        function getClickScore() {
+            let score = 10;
+
+            if (clicks > 20) {
+                score -= 1;
+                score -= Math.floor((clicks - 21) / 5);
+            }
+
+            return Math.max(0, score);
+        }
+
+        function updateScores() {
+            errorText.textContent = getErrorScore();
+            timeText.textContent = getTimeScore();
+            clickText.textContent = getClickScore();
+        }
+
+        /* ================= CREATE SLOTS ================= */
+        for (let i = 1; i <= 8; i++) {
+
+            const slot = document.createElement("div");
+            slot.className = "slot";
+
+            slot.onclick = () => {
+                placeImage(slot, selected, i);
+            };
+
+            slot.ondragover = (e) => {
+                e.preventDefault();
+                slot.classList.add("hover");
+            };
+
+            slot.ondragleave = () => {
+                slot.classList.remove("hover");
+            };
+
+            slot.ondrop = (e) => {
+                e.preventDefault();
+                slot.classList.remove("hover");
+
+                const name = e.dataTransfer.getData("text/plain");
+                const item = images.find(x => x.name === name);
+
+                placeImage(slot, item, i);
+            };
+
+            slot.ondblclick = () => {
+                if (gameEnded) return;
+                if (!slot.dataset.filled) return;
+
+                const name = slot.dataset.filled;
+
+                /* lock image 7 already sorted */
+                if (name === "7") return;
+
+                images.push({
+                    name: name,
+                    img: originalMap[name]
+                });
+
+                slot.innerHTML = "";
+                slot.dataset.filled = "";
+
+                renderPool();
+            };
+
+            slots.appendChild(slot);
+        }
+
+        /* preset image 7 into slot 7 */
+        const slot7 = slots.children[6];
+        slot7.innerHTML = `<img src="7.PNG">`;
+        slot7.dataset.filled = "7";
+
+        /* ================= SHUFFLE ================= */
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        }
+
+        /* ================= RENDER POOL ================= */
+        function renderPool() {
+
+            shuffleArray(images);
+
+            pool.innerHTML = "";
+
+            images.forEach(item => {
+
+                const div = document.createElement("div");
+                div.className = "item";
+                div.draggable = true;
+                div.innerHTML = `<img src="${item.img}">`;
+
+                div.onclick = () => {
+                    if (gameEnded) return;
+                    selected = item;
+                    clicks++;
+                    updateScores();
+                };
+
+                div.ondragstart = (e) => {
+                    if (gameEnded) return;
+                    selected = item;
+                    clicks++;
+                    updateScores();
+
+                    e.dataTransfer.setData("text/plain", item.name);
+                };
+
+                pool.appendChild(div);
+            });
+        }
+
+        /* ================= PLACE IMAGE ================= */
+        function placeImage(slot, item, slotNumber) {
+
+            if (gameEnded) return;
+            if (!item) return;
+            if (slot.dataset.filled) return;
+
+            const imgNum = parseInt(item.name);
+
+            totalErrors += getErrors(imgNum, slotNumber);
+
+            slot.innerHTML = `<img src="${item.img}">`;
+            slot.dataset.filled = item.name;
+
+            images = images.filter(x => x.name !== item.name);
+
+            selected = null;
+
+            clicks++;
+            updateScores();
+            renderPool();
+        }
+
+        /* ================= FINISH ================= */
+        function finishGame() {
+            if (gameEnded) return;
+            const filledSlots = document.querySelectorAll('#slots .slot[data-filled]').length;
+            if (filledSlots !== 8) {
+                message.innerHTML = "🧩 Please place all the pictures before finishing! ✨";
+                setTimeout(() => {
+                    if (!gameEnded) message.innerHTML = '';
+                }, 3000);
+                return;
+            }
+            gameEnded = true;
+
+            const errorScore = getErrorScore();
+            const timeScore = getTimeScore();
+            const clickScore = getClickScore();
+            const finalScore = (errorScore * 0.6 + timeScore * 0.3 + clickScore * 0.1);
+
+            message.innerHTML =
+                "🏁 Game Finished!<br><br>" +
+                `❌ Error Score: <b>${errorScore.toFixed(2)}</b><br>` +
+                `⏱️ Time Score: <b>${timeScore.toFixed(2)}</b><br>` +
+                `👆 Click Score: <b>${clickScore.toFixed(2)}</b><br><br>` +
+                `✅ Saved.`;
+
+            window.__kb?.finish?.({
+                finalScore: Number(finalScore.toFixed(2)),
+                errorScore: Number(errorScore.toFixed(2)),
+                timeScore: Number(timeScore.toFixed(2)),
+                clickScore: Number(clickScore.toFixed(2)),
+                totalErrors,
+                seconds,
+                clicks
+            });
+        }
+
+        /* ================= START ================= */
+        renderPool();
+        updateScores();
+    </script>
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('remembering-faces-2');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+
+</body>
+</html>

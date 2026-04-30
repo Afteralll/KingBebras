@@ -1,0 +1,859 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌈 Team Sorting Game - Candyland Edition 🍬</title>
+
+    <style>
+        :root {
+            --sky-top: #87CEEB;
+            --sky-bottom: #e0f7fa;
+            --pink: #ff6b9d;
+            --purple: #c44dff;
+            --yellow: #ffe066;
+            --green: #69db7c;
+            --blue: #4dabf7;
+            --orange: #ffa94d;
+            --white: #fffefa;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe Print', 'Arial Rounded MT Bold', sans-serif;
+            text-align: center;
+            background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 30%, #fff9e6 70%, #fce4ec 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            cursor: default;
+            padding-bottom: 40px;
+        }
+
+        /* ---------- ANIMATED BACKGROUND (unchanged) ---------- */
+        .cloud {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.8;
+            box-shadow: 60px -15px 0 10px white, 30px -30px 0 18px white, -20px -20px 0 22px white, -60px -8px 0 14px white, -90px 10px 0 8px white, 80px 10px 0 6px white;
+            width: 50px;
+            height: 50px;
+        }
+
+            .cloud::after {
+                content: '';
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+                width: 70px;
+                height: 55px;
+                top: 5px;
+                left: -30px;
+                box-shadow: 40px -8px 0 8px white;
+            }
+
+        .cloud1 {
+            top: 6%;
+            left: 5%;
+            animation: floatCloud 22s linear infinite;
+        }
+
+        .cloud2 {
+            top: 14%;
+            left: 55%;
+            animation: floatCloud 28s linear 5s infinite;
+            transform: scale(0.7);
+        }
+
+        .cloud3 {
+            top: 22%;
+            left: 30%;
+            animation: floatCloud 24s linear 12s infinite;
+            transform: scale(0.9);
+        }
+
+        .cloud4 {
+            top: 8%;
+            left: 75%;
+            animation: floatCloud 30s linear 18s infinite;
+            transform: scale(0.55);
+        }
+
+        .cloud5 {
+            top: 18%;
+            left: 15%;
+            animation: floatCloud 26s linear 3s infinite;
+            transform: scale(0.75);
+        }
+
+        @keyframes floatCloud {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(120vw);
+            }
+        }
+
+        .rainbow-container {
+            position: fixed;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+            width: 700px;
+            height: 350px;
+            overflow: hidden;
+        }
+
+        .rainbow-arc {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 300px;
+            border-radius: 300px 300px 0 0;
+            background: conic-gradient(from 180deg at 50% 100%, #ff0000 0deg, #ff8800 10deg, #ffdd00 20deg, #33cc33 30deg, #3399ff 40deg, #8833ff 50deg, #ff0000 50.1deg, transparent 50.1deg);
+            opacity: 0.35;
+            animation: rainbowPulse 6s ease-in-out infinite;
+        }
+
+            .rainbow-arc:nth-child(2) {
+                width: 560px;
+                height: 280px;
+                border-radius: 280px 280px 0 0;
+                opacity: 0.3;
+                animation-delay: 0.3s;
+            }
+
+            .rainbow-arc:nth-child(3) {
+                width: 520px;
+                height: 260px;
+                border-radius: 260px 260px 0 0;
+                opacity: 0.25;
+                animation-delay: 0.6s;
+            }
+
+        @keyframes rainbowPulse {
+            0%, 100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .candy {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            font-size: 32px;
+            animation: flyCandy linear infinite;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+        }
+
+        .candy1 {
+            top: -60px;
+            left: 8%;
+            animation-duration: 14s;
+            font-size: 38px;
+        }
+
+        .candy2 {
+            top: -80px;
+            left: 25%;
+            animation-duration: 18s;
+            animation-delay: 3s;
+            font-size: 28px;
+        }
+
+        .candy3 {
+            top: -70px;
+            left: 42%;
+            animation-duration: 16s;
+            animation-delay: 6s;
+            font-size: 34px;
+        }
+
+        .candy4 {
+            top: -90px;
+            left: 58%;
+            animation-duration: 20s;
+            animation-delay: 1s;
+            font-size: 26px;
+        }
+
+        .candy5 {
+            top: -65px;
+            left: 72%;
+            animation-duration: 15s;
+            animation-delay: 8s;
+            font-size: 36px;
+        }
+
+        .candy6 {
+            top: -75px;
+            left: 88%;
+            animation-duration: 17s;
+            animation-delay: 4s;
+            font-size: 30px;
+        }
+
+        .candy7 {
+            top: -85px;
+            left: 15%;
+            animation-duration: 19s;
+            animation-delay: 10s;
+            font-size: 32px;
+        }
+
+        .candy8 {
+            top: -55px;
+            left: 50%;
+            animation-duration: 13s;
+            animation-delay: 7s;
+            font-size: 40px;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+
+            25% {
+                transform: translateY(28vh) translateX(60px) rotate(90deg) scale(1.2);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: translateY(55vh) translateX(-40px) rotate(200deg) scale(0.9);
+                opacity: 0.7;
+            }
+
+            75% {
+                transform: translateY(78vh) translateX(30px) rotate(310deg) scale(1.1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(105vh) translateX(-20px) rotate(400deg) scale(0.8);
+                opacity: 0.15;
+            }
+        }
+
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 6px 3px #ffe066, 0 0 12px 6px #ffcc00;
+            animation: sparkleFloat 8s ease-in-out infinite;
+        }
+
+        .sparkle1 {
+            top: 10%;
+            left: 10%;
+        }
+
+        .sparkle2 {
+            top: 25%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .sparkle3 {
+            top: 40%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .sparkle4 {
+            top: 55%;
+            left: 70%;
+            animation-delay: 1s;
+        }
+
+        .sparkle5 {
+            top: 70%;
+            left: 35%;
+            animation-delay: 5s;
+        }
+
+        .sparkle6 {
+            top: 15%;
+            left: 60%;
+            animation-delay: 3s;
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% {
+                opacity: 0.2;
+                transform: scale(0.6) translateY(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.6) translateY(-25px);
+            }
+        }
+
+        /* ---------- MAIN GAME ---------- */
+        #top-image {
+            width: 70%;
+            max-width: 500px;
+            margin: 25px auto 10px;
+            display: block;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 2;
+            border: 5px solid white;
+            transition: transform 0.3s;
+        }
+
+            #top-image:hover {
+                transform: scale(1.03);
+            }
+
+        #image-bank {
+            margin: 18px auto;
+            min-height: 130px;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 30px;
+            display: inline-flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            border: 3px dashed #ffb8d4;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+
+            #image-bank:hover {
+                border-color: #ff6b9d;
+                background: rgba(255, 255, 255, 0.9);
+            }
+
+            #image-bank::before {
+                content: '🍬 Drag from here! 🍬';
+                position: absolute;
+                top: -22px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 15px;
+                font-weight: bold;
+                color: #e64980;
+                white-space: nowrap;
+                z-index: 3;
+                background: #fff9e6;
+                padding: 4px 16px;
+                border-radius: 20px;
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+                letter-spacing: 0.5px;
+            }
+
+        .draggable {
+            width: 95px;
+            margin: 5px;
+            cursor: grab;
+            border-radius: 18px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+            border: 4px solid transparent;
+            position: relative;
+            z-index: 3;
+            background: white;
+            padding: 4px;
+        }
+
+            .draggable:hover {
+                transform: translateY(-6px) scale(1.08);
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+                border-color: #ffb8d4;
+                cursor: grab;
+            }
+
+            .draggable:active {
+                cursor: grabbing;
+                transform: scale(0.95);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                border-color: #ff6b9d;
+            }
+
+        /* ---------- TEAMS & NO-WRAP SLOTS ---------- */
+        #teams {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+            margin: 10px 15px;
+        }
+
+        .team {
+            background: linear-gradient(180deg, #ffffff 0%, #fff9f0 100%);
+            padding: 20px 18px 22px;
+            border-radius: 28px;
+            width: 540px; /* slightly wider to guarantee all 5 slots fit in one row */
+            max-width: 95vw;
+            box-shadow: var(--shadow);
+            border: 4px solid #ffe0b2;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+            .team:hover {
+                box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+                border-color: #ffcc80;
+            }
+
+        #teamA {
+            border-top: 7px solid #ff6b9d;
+        }
+
+        #teamB {
+            border-top: 7px solid #4dabf7;
+        }
+
+        .team h3 {
+            font-size: 26px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.06);
+        }
+
+        #teamA h3 {
+            color: #e64980;
+        }
+
+        #teamB h3 {
+            color: #228be6;
+        }
+
+        .slots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: nowrap; /* force all slots in a single horizontal row */
+        }
+
+        .slot {
+            width: 80px;
+            height: 80px;
+            border: 3px dashed #d0d0d0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            transition: all 0.25s;
+            position: relative;
+            z-index: 2;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0; /* prevent shrinking on small screens */
+        }
+
+            .slot:hover {
+                border-color: #ffb347;
+                background: #fffef5;
+                box-shadow: inset 0 3px 12px rgba(255, 179, 71, 0.15), 0 0 0 6px rgba(255, 179, 71, 0.08);
+                transform: translateY(-3px);
+            }
+
+            .slot img {
+                width: 90%;
+                height: 90%;
+                border-radius: 14px;
+                object-fit: contain;
+                animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.12);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Kid‑friendly empty slot placeholder – a cute candy icon */
+        .slot:empty::after {
+            content: '🍬';
+            font-size: 30px;
+            opacity: 0.45;
+            pointer-events: none;
+            transform: scale(0.9);
+        }
+
+        /* ---------- SCOREBOARD ---------- */
+        #scoreboard {
+            margin-top: 25px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.8);
+            display: inline-block;
+            padding: 18px 30px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            border: 3px solid #ffe0b2;
+            position: relative;
+            z-index: 2;
+        }
+
+            #scoreboard span {
+                font-weight: bold;
+                color: #e64980;
+            }
+
+        #time {
+            color: #228be6 !important;
+            font-size: 22px;
+        }
+
+        #clicks {
+            color: #f59f00 !important;
+            font-size: 22px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 22px rgba(255, 107, 157, 0.35);
+            transition: all 0.3s;
+            font-family: inherit;
+            position: relative;
+            z-index: 3;
+        }
+
+            button:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 14px 30px rgba(255, 107, 157, 0.5);
+                background: linear-gradient(135deg, #ff7db5 0%, #ffa06e 100%);
+            }
+
+            button:active {
+                transform: translateY(-1px) scale(0.97);
+                box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+            }
+
+            button:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                box-shadow: none;
+                opacity: 0.6;
+                transform: none;
+            }
+
+                button:disabled:hover {
+                    transform: none;
+                    box-shadow: none;
+                    background: #ccc;
+                }
+
+        #result {
+            margin-top: 16px;
+            background: #fffef9;
+            padding: 16px 22px;
+            border-radius: 20px;
+            display: inline-block;
+            text-align: left;
+            line-height: 1.7;
+            font-size: 16px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid #ffe0b2;
+            max-width: 500px;
+        }
+
+            #result b {
+                color: #e64980;
+                font-size: 20px;
+            }
+
+        .button-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        #placement-warning {
+            display: none;
+            color: #e03131;
+            font-size: 14px;
+            margin-top: 6px;
+            font-weight: bold;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px);
+            }
+
+            75% {
+                transform: translateX(6px);
+            }
+        }
+
+        /* ---------- RESPONSIVE ADJUSTMENTS ---------- */
+        @media (max-width: 850px) {
+            .team {
+                width: 95vw;
+                padding: 15px 10px;
+            }
+
+            .slot {
+                width: 58px;
+                height: 58px;
+                border-radius: 14px;
+            }
+
+                .slot:empty::after {
+                    font-size: 22px;
+                }
+
+            .draggable {
+                width: 70px;
+            }
+
+            #top-image {
+                width: 90%;
+            }
+
+            .slots {
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Decorations (same as before) -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="cloud cloud4"></div>
+    <div class="cloud cloud5"></div>
+
+    <div class="rainbow-container">
+        <div class="rainbow-arc"></div>
+        <div class="rainbow-arc"></div>
+        <div class="rainbow-arc"></div>
+    </div>
+
+    <span class="candy candy1">🍬</span>
+    <span class="candy candy2">🍭</span>
+    <span class="candy candy3">🍫</span>
+    <span class="candy candy4">🧁</span>
+    <span class="candy candy5">🍩</span>
+    <span class="candy candy6">🍪</span>
+    <span class="candy candy7">🍡</span>
+    <span class="candy candy8">🍯</span>
+
+    <div class="sparkle sparkle1"></div>
+    <div class="sparkle sparkle2"></div>
+    <div class="sparkle sparkle3"></div>
+    <div class="sparkle sparkle4"></div>
+    <div class="sparkle sparkle5"></div>
+    <div class="sparkle sparkle6"></div>
+
+    <!-- Game Elements -->
+    <img id="top-image" src="main.PNG" alt="Main Image">
+
+    <div id="image-bank">
+        <img src="1kg.png" class="draggable" draggable="true" data-weight="1" alt="1kg">
+        <img src="4kg.png" class="draggable" draggable="true" data-weight="4" alt="4kg">
+        <img src="4kg2.png" class="draggable" draggable="true" data-weight="4" alt="4kg-2">
+        <img src="5kg.png" class="draggable" draggable="true" data-weight="5" alt="5kg">
+        <img src="9kg.png" class="draggable" draggable="true" data-weight="9" alt="9kg">
+    </div>
+
+    <div id="teams">
+        <div class="team" id="teamA">
+            <h3>🩷 Team A 🩷</h3>
+            <div class="slots">
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+            </div>
+        </div>
+
+        <div class="team" id="teamB">
+            <h3>💙 Team B 💙</h3>
+            <div class="slots">
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+                <div class="slot"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scoreboard">
+        ⏱ Time: <span id="time">0</span>s &nbsp;|&nbsp;
+        👆 Clicks: <span id="clicks">0</span>
+        <br><br>
+        <div class="button-wrapper">
+            <button id="finishBtn" onclick="calculateScore()">🎯 Finish & Score! 🏆</button>
+        </div>
+        <div id="placement-warning">⚠️ Please place ALL images in the team slots first!</div>
+        <h3 id="result"></h3>
+    </div>
+
+    <script>
+        let draggedItem = null;
+        let imageBank = document.getElementById("image-bank");
+        let clicks = 0;
+        let time = 0;
+
+        // timer
+        setInterval(() => {
+            time++;
+            document.getElementById("time").innerText = time;
+        }, 1000);
+
+        // drag start
+        document.querySelectorAll(".draggable").forEach(img => {
+            img.addEventListener("dragstart", () => {
+                draggedItem = img;
+                clicks++;
+                document.getElementById("clicks").innerText = clicks;
+            });
+
+            // double click returns image to bank
+            img.addEventListener("dblclick", () => {
+                imageBank.appendChild(img);
+            });
+        });
+
+        // drop logic
+        document.querySelectorAll(".slot").forEach(slot => {
+            slot.addEventListener("dragover", e => e.preventDefault());
+
+            slot.addEventListener("drop", () => {
+                if (!draggedItem) return;
+
+                // if slot already has an image, send it back to bank
+                if (slot.firstChild && slot.firstChild.tagName === 'IMG') {
+                    imageBank.appendChild(slot.firstChild);
+                }
+
+                slot.appendChild(draggedItem);
+                draggedItem = null;
+            });
+        });
+
+        function getTeamWeight(teamId) {
+            let total = 0;
+            document.querySelectorAll(`#${teamId} .slot img`).forEach(img => {
+                total += parseInt(img.dataset.weight);
+            });
+            return total;
+        }
+
+        function allImagesPlaced() {
+            const totalDraggable = document.querySelectorAll('.draggable').length;
+            const placedImages = document.querySelectorAll('.slot img').length;
+            return placedImages >= totalDraggable;
+        }
+
+        function calculateScore() {
+            if (!allImagesPlaced()) {
+                const warning = document.getElementById("placement-warning");
+                warning.style.display = "block";
+                setTimeout(() => { warning.style.display = "none"; }, 2500);
+                return;
+            }
+            document.getElementById("placement-warning").style.display = "none";
+
+            let left = getTeamWeight("teamA");
+            let right = getTeamWeight("teamB");
+            let diff = Math.abs(left - right);
+
+            let errorScore = 10 - Math.abs(diff - 3) * 0.5;
+            if (errorScore < 0) errorScore = 0;
+
+            let timeScore = 10;
+            if (time > 60) timeScore -= Math.floor((time - 60) / 20) + 1;
+            if (timeScore < 0) timeScore = 0;
+
+            let clickScore = 10;
+            if (clicks > 20) clickScore -= Math.floor((clicks - 20) / 5) + 1;
+            if (clickScore < 0) clickScore = 0;
+
+            let finalScore = errorScore * 0.6 + timeScore * 0.3 + clickScore * 0.1;
+
+            document.getElementById("result").innerHTML =
+                `📊 <b>Left Team:</b> ${left} kg &nbsp;|&nbsp; <b>Right Team:</b> ${right} kg<br>
+                     🔍 <b>Difference:</b> ${diff} kg<br><br>
+                     🎯 <b>Error Score:</b> ${errorScore.toFixed(2)}<br>
+                     ⏱ <b>Time Score:</b> ${timeScore}<br>
+                     👆 <b>Click Score:</b> ${clickScore}<br><br>
+                     🌟 <b>Final Score: ${finalScore.toFixed(2)} / 10</b> 🌟`;
+
+            window.__kb?.finish?.({
+                finalScore: Number(finalScore.toFixed(2)),
+                errorScore: Number(errorScore.toFixed(2)),
+                timeScore: Number(timeScore),
+                clickScore: Number(clickScore),
+                leftKg: left,
+                rightKg: right,
+                diffKg: diff
+            });
+        }
+    </script>
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('tug-of-war-2');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+
+</body>
+</html>

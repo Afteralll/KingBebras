@@ -1,0 +1,665 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>✨ BEAD SORT · DRAG TO MATCH</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(10, 10, 20, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 16px 24px;
+            border-radius: 40px;
+            border-left: 4px solid #ffbe0b;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(20, 20, 30, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 16px 24px;
+            border-radius: 40px;
+            border-right: 4px solid #3a86ff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            pointer-events: none;
+            z-index: 10;
+            text-align: right;
+        }
+
+        #message-area {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            padding: 10px 30px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+            z-index: 10;
+            transition: background 0.3s, border 0.3s;
+            text-shadow: 0 2px 5px black;
+        }
+
+        #round-indicator {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            color: #ddd;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #instruction {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 24px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+            border: 1px solid rgba(255,215,100,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <span style="font-size: 1.4rem; margin-right: 10px;">🧬 BEAD MATCH</span>
+        <span style="opacity:0.9;">Drag the bracelet to a tray or "NO MATCH"</span>
+    </div>
+    <div id="stats">
+        <div>⚠️ Errors: <span id="error-count">0</span></div>
+        <div>⏱️ Time: <span id="time-display">0.0</span>s</div>
+        <div>🖱️ Click score: <span id="click-score">10.00</span></div>
+    </div>
+    <div id="message-area">✨ Round 1 · Drag to match</div>
+    <div id="round-indicator">🔮 <span id="round-num">1</span>/3</div>
+    <div id="instruction">👇 Click & DRAG the bracelet — release over a tray or red zone</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // ================= SCENE SETUP =================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0b0b1a);
+
+        // Starfield
+        const starsGeo = new THREE.BufferGeometry();
+        const starsCount = 2000;
+        const starPos = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount * 3; i += 3) {
+            const r = 50 + Math.random() * 150;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            starPos[i] = Math.sin(phi) * Math.cos(theta) * r;
+            starPos[i + 1] = Math.sin(phi) * Math.sin(theta) * r;
+            starPos[i + 2] = Math.cos(phi) * r;
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, transparent: true });
+        const stars = new THREE.Points(starsGeo, starsMat);
+        scene.add(stars);
+
+        scene.fog = new THREE.FogExp2(0x0b0b1a, 0.012);
+
+        const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 1000);
+        camera.position.set(5, 9, 14);
+        camera.lookAt(0, 1.5, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(innerWidth, innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const cssRenderer = new CSS2DRenderer();
+        cssRenderer.setSize(innerWidth, innerHeight);
+        cssRenderer.domElement.style.position = 'absolute';
+        cssRenderer.domElement.style.top = '0px';
+        cssRenderer.domElement.style.left = '0px';
+        cssRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(cssRenderer.domElement);
+
+        // ================= LIGHTING =================
+        scene.add(new THREE.AmbientLight(0x404060, 0.45));
+
+        const keyLight = new THREE.DirectionalLight(0xffeebb, 1.2);
+        keyLight.position.set(4, 12, 6);
+        keyLight.castShadow = true;
+        keyLight.receiveShadow = true;
+        keyLight.shadow.mapSize.width = 1024;
+        keyLight.shadow.mapSize.height = 1024;
+        const d = 12;
+        keyLight.shadow.camera.left = -d;
+        keyLight.shadow.camera.right = d;
+        keyLight.shadow.camera.top = d;
+        keyLight.shadow.camera.bottom = -d;
+        keyLight.shadow.camera.near = 1;
+        keyLight.shadow.camera.far = 30;
+        keyLight.shadow.bias = -0.0005;
+        scene.add(keyLight);
+
+        const fillLight = new THREE.PointLight(0x4466ff, 0.8);
+        fillLight.position.set(-5, 5, 5);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.PointLight(0xffaa88, 0.6);
+        rimLight.position.set(-2, 5, -8);
+        scene.add(rimLight);
+
+        const underGlow = new THREE.PointLight(0x3a86ff, 0.5);
+        underGlow.position.set(0, 1, 0);
+        scene.add(underGlow);
+
+        const extraFill = new THREE.PointLight(0xffbe0b, 0.4);
+        extraFill.position.set(3, 3, -4);
+        scene.add(extraFill);
+
+        // ================= GROUND =================
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x151525, roughness: 0.25, metalness: 0.1, emissive: new THREE.Color(0x050510), emissiveIntensity: 0.8 });
+        const floor = new THREE.Mesh(new THREE.CircleGeometry(20, 32), floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = -0.05;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const gridHelper = new THREE.GridHelper(18, 20, 0x88aaff, 0x334466);
+        gridHelper.position.y = 0;
+        scene.add(gridHelper);
+
+        const ringGeo = new THREE.TorusGeometry(3.5, 0.03, 16, 100);
+        const ringMat = new THREE.MeshStandardMaterial({ color: 0x3a86ff, emissive: new THREE.Color(0x1a3a6a), emissiveIntensity: 0.4 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.y = 0.02;
+        scene.add(ring);
+
+        const ring2 = new THREE.Mesh(new THREE.TorusGeometry(5.0, 0.02, 16, 100), new THREE.MeshStandardMaterial({ color: 0xffbe0b, emissive: new THREE.Color(0x553300), emissiveIntensity: 0.3 }));
+        ring2.rotation.x = Math.PI / 2;
+        ring2.position.y = 0.03;
+        scene.add(ring2);
+
+        // ================= COLOR UTILS =================
+        function getColor(c) {
+            const colors = {
+                red: 0xff4d6d, blue: 0x3a86ff, green: 0x2ecc71, yellow: 0xffbe0b,
+                black: 0x222222, white: 0xffffff, purple: 0x9d4edd
+            };
+            return colors[c] || 0x888888;
+        }
+
+        // ================= GAME STATE =================
+        let round = 0;
+        let totalErrors = 0;
+        let clickScore = 10;
+        let startTime = Date.now();
+        let gameActive = true;
+
+        const errorSpan = document.getElementById('error-count');
+        const timeSpan = document.getElementById('time-display');
+        const clickScoreSpan = document.getElementById('click-score');
+        const messageDiv = document.getElementById('message-area');
+        const roundSpan = document.getElementById('round-num');
+
+        function updateUI() {
+            errorSpan.textContent = totalErrors;
+            const elapsed = (Date.now() - startTime) / 1000;
+            timeSpan.textContent = elapsed.toFixed(1);
+            clickScoreSpan.textContent = clickScore.toFixed(2);
+            roundSpan.textContent = `${round + 1}/${rounds.length}`;
+        }
+        setInterval(updateUI, 100);
+
+        // ================= DATA =================
+        const rounds = [
+            { bracelet: ["black", "white", "black"] },
+            { bracelet: ["red", "blue", "red"] },
+            { bracelet: ["purple", "purple", "yellow"] }
+        ];
+
+        const trayPatterns = [
+            ["red", "blue", "red"],
+            ["green", "green", "blue"],
+            ["yellow", "blue", "yellow"],
+            ["red", "red", "green"],
+            ["blue", "green", "blue"],
+            ["purple", "purple", "yellow"],
+            ["black", "white", "black"]
+        ];
+
+        const trays = [];
+        let bracelet;
+
+        // ================= TRAY CREATION =================
+        function createTray(pattern, x, z) {
+            const group = new THREE.Group();
+
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x334455, roughness: 0.4, metalness: 0.3 });
+            const base = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.15, 2.2), baseMat);
+            base.position.y = 0.15;
+            base.receiveShadow = true;
+            base.castShadow = true;
+            group.add(base);
+
+            const topPlate = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.08, 2.0), new THREE.MeshStandardMaterial({ color: 0x556677, roughness: 0.3, metalness: 0.5 }));
+            topPlate.position.y = 0.26;
+            topPlate.receiveShadow = true;
+            topPlate.castShadow = true;
+            group.add(topPlate);
+
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x2a3a4a, roughness: 0.3, metalness: 0.7 });
+            const wallsData = [
+                [0, 0.45, -1.0, 3.2, 0.5, 0.15],
+                [0, 0.45, 1.0, 3.2, 0.5, 0.15],
+                [-1.55, 0.45, 0, 0.15, 0.5, 2.0],
+                [1.55, 0.45, 0, 0.15, 0.5, 2.0]
+            ];
+            wallsData.forEach(w => {
+                const mesh = new THREE.Mesh(new THREE.BoxGeometry(w[3], w[4], w[5]), wallMat);
+                mesh.position.set(w[0], w[1], w[2]);
+                mesh.receiveShadow = true;
+                mesh.castShadow = true;
+                group.add(mesh);
+            });
+
+            const sepMat = new THREE.MeshStandardMaterial({ color: 0x1e2e3e, roughness: 0.5, metalness: 0.2 });
+            for (let i = 1; i < 3; i++) {
+                const sep = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.25, 2.0), sepMat);
+                sep.position.set(-1.0 + i, 0.35, 0);
+                sep.receiveShadow = true;
+                sep.castShadow = true;
+                group.add(sep);
+            }
+
+            pattern.forEach((c, i) => {
+                const colorVal = getColor(c);
+                const blockMat = new THREE.MeshStandardMaterial({
+                    color: colorVal, roughness: 0.25, metalness: 0.1,
+                    emissive: new THREE.Color(colorVal).multiplyScalar(0.25), emissiveIntensity: 0.5
+                });
+                const block = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.1, 1.9), blockMat);
+                block.position.set(-1.0 + i, 0.32, 0);
+                block.receiveShadow = true;
+                block.castShadow = true;
+                group.add(block);
+            });
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+
+            const div = document.createElement('div');
+            div.textContent = pattern.map(p => p[0].toUpperCase()).join('·');
+            div.style.color = '#ccddff';
+            div.style.fontSize = '12px';
+            div.style.fontWeight = 'bold';
+            div.style.textShadow = '1px 1px 3px black';
+            div.style.background = 'rgba(20,30,50,0.7)';
+            div.style.padding = '2px 10px';
+            div.style.borderRadius = '20px';
+            div.style.backdropFilter = 'blur(4px)';
+            div.style.pointerEvents = 'none';
+
+            const label = new CSS2DObject(div);
+            label.position.set(x, 1.2, z);
+            scene.add(label);
+
+            trays.push({ mesh: group, pattern, label });
+        }
+
+        // ================= NO MATCH ZONE =================
+        let noMatchZone;
+        function createNoMatchZone() {
+            const geo = new THREE.BoxGeometry(3.4, 0.3, 2.4);
+            const mat = new THREE.MeshStandardMaterial({
+                color: 0xaa2222, transparent: true, opacity: 0.55,
+                emissive: new THREE.Color(0x550000), emissiveIntensity: 1.2,
+                roughness: 0.3, metalness: 0.0
+            });
+            noMatchZone = new THREE.Mesh(geo, mat);
+            noMatchZone.position.set(0, 0.2, 5.2);
+            noMatchZone.receiveShadow = true;
+            noMatchZone.castShadow = true;
+            scene.add(noMatchZone);
+
+            const edges = new THREE.EdgesGeometry(geo);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xff5555 }));
+            line.position.copy(noMatchZone.position);
+            scene.add(line);
+
+            const div = document.createElement('div');
+            div.textContent = '🚫 NO MATCH';
+            div.style.color = '#ffaaaa';
+            div.style.fontSize = '16px';
+            div.style.fontWeight = 'bold';
+            div.style.background = 'rgba(120,0,0,0.7)';
+            div.style.padding = '4px 16px';
+            div.style.borderRadius = '30px';
+            div.style.border = '1px solid #ff6666';
+            div.style.backdropFilter = 'blur(4px)';
+            div.style.pointerEvents = 'none';
+            const label = new CSS2DObject(div);
+            label.position.set(0, 1.4, 5.2);
+            scene.add(label);
+        }
+
+        // ================= BUILD BOARD =================
+        function buildBoard() {
+            trays.forEach(t => {
+                scene.remove(t.mesh);
+                if (t.label) scene.remove(t.label);
+            });
+            trays.length = 0;
+
+            let index = 0;
+            for (let row = 0; row < 2; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (index >= 7) break;
+                    createTray(trayPatterns[index], (col - 1.5) * 4.2, row * 3.2 - 1.8);
+                    index++;
+                }
+            }
+        }
+
+        // ================= BRACELET =================
+        function createBracelet(pattern) {
+            if (bracelet) scene.remove(bracelet);
+
+            const group = new THREE.Group();
+
+            pattern.forEach((c, i) => {
+                const colorVal = getColor(c);
+                const beadMat = new THREE.MeshStandardMaterial({
+                    color: colorVal, roughness: 0.15, metalness: 0.1,
+                    emissive: new THREE.Color(colorVal).multiplyScalar(0.3), emissiveIntensity: 0.8,
+                    transparent: true, opacity: 0.95
+                });
+                const bead = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 16), beadMat);
+                bead.castShadow = true;
+                bead.receiveShadow = true;
+                bead.position.set(-1.15 + i * 1.15, 0.1, 0);
+                group.add(bead);
+
+                const ringBead = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.02, 8, 24), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: new THREE.Color(colorVal), emissiveIntensity: 0.5 }));
+                ringBead.rotation.x = Math.PI / 2;
+                ringBead.rotation.z = i * 0.5;
+                ringBead.position.copy(bead.position);
+                group.add(ringBead);
+            });
+
+            const lineGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.3, 6);
+            const lineMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4, metalness: 0.8 });
+            const connector = new THREE.Mesh(lineGeo, lineMat);
+            connector.rotation.z = Math.PI / 2;
+            connector.position.set(0, 0.0, 0);
+            connector.receiveShadow = true;
+            group.add(connector);
+
+            group.position.set(0, 3.8, 0);
+            group.castShadow = true;
+            group.receiveShadow = true;
+            scene.add(group);
+
+            bracelet = group;
+        }
+
+        // ================= MATCH HELPERS =================
+        function equal(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+        function colorDifference(a, b) { let diff = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diff++; return diff; }
+
+        // ================= DRAG SYSTEM (FIXED) =================
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let dragging = false;
+        let hasDragged = false;          // To enforce actual drag movement
+        let dragOffset = new THREE.Vector3();
+        const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.5);
+
+        window.addEventListener('mousedown', (e) => {
+            if (!gameActive) return;
+
+            mouse.x = (e.clientX / innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // Only start drag if we hit the bracelet or its children
+            if (bracelet) {
+                const hits = raycaster.intersectObject(bracelet, true);
+                if (hits.length > 0) {
+                    dragging = true;
+                    hasDragged = false;
+
+                    // Compute drag offset at current bracelet height
+                    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -bracelet.position.y);
+                    const target = new THREE.Vector3();
+                    if (raycaster.ray.intersectPlane(plane, target)) {
+                        dragOffset.copy(bracelet.position).sub(target);
+                    }
+
+                    // Visual feedback
+                    bracelet.children.forEach(child => { if (child.isMesh) child.material.emissiveIntensity = 1.4; });
+                    e.preventDefault();
+                }
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!dragging || !bracelet) return;
+
+            mouse.x = (e.clientX / innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const target = new THREE.Vector3();
+            if (raycaster.ray.intersectPlane(dragPlane, target)) {
+                bracelet.position.copy(target.add(dragOffset));
+                hasDragged = true;  // Moved sufficiently
+            }
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (dragging) {
+                dragging = false;
+                if (bracelet) {
+                    bracelet.children.forEach(child => { if (child.isMesh) child.material.emissiveIntensity = 0.8; });
+                }
+
+                // Only process drop if the bracelet was actually dragged
+                if (hasDragged) {
+                    handleDrop();
+                } else {
+                    // If clicked without dragging, remind the player
+                    showMessage('👆 Drag the bracelet to a tray!', '#ffaa00');
+                }
+            }
+        });
+
+        // ================= DROP LOGIC =================
+        function handleDrop() {
+            if (!gameActive) return;
+
+            clickScore = Math.max(0, clickScore - 0.3);
+            updateUI();
+
+            mouse.x = (mouse.x !== undefined) ? mouse.x : 0; // fallback
+            mouse.y = (mouse.y !== undefined) ? mouse.y : 0;
+            raycaster.setFromCamera(mouse, camera);
+
+            const trayHits = raycaster.intersectObjects(trays.map(t => t.mesh), true);
+            const noMatchHit = raycaster.intersectObject(noMatchZone);
+
+            const currentPattern = rounds[round].bracelet;
+            let matchedTray = null;
+
+            if (trayHits.length) {
+                let obj = trayHits[0].object;
+                while (obj.parent && !trays.find(t => t.mesh === obj)) obj = obj.parent;
+                matchedTray = trays.find(t => t.mesh === obj);
+            }
+
+            const hasMatch = trays.some(t => equal(t.pattern, currentPattern));
+
+            if (matchedTray) {
+                const diff = colorDifference(currentPattern, matchedTray.pattern);
+                if (diff === 0) {
+                    showMessage('✅ Correct! Next round...', '#2ecc71');
+                    nextRound();
+                    return;
+                }
+                // More than one mismatch = 2 errors, otherwise 1 error
+                const penalty = (diff >= 2) ? 2 : 1;
+                totalErrors += penalty;
+                updateUI();
+                showMessage(`❌ Wrong tray! ${penalty} error${penalty > 1 ? 's' : ''} (${diff} mismatches)`, '#ff4d6d');
+                return;
+            }
+
+            if (noMatchHit.length) {
+                if (hasMatch) {
+                    totalErrors += 2;
+                    updateUI();
+                    showMessage('❌ There IS a matching tray! +2 errors', '#ff4d6d');
+                } else {
+                    showMessage('✅ Correct! No match. Next round...', '#2ecc71');
+                    nextRound();
+                }
+                return;
+            }
+
+            // Dropped somewhere else
+            showMessage('↩️ Drop on a tray or the red zone', '#ffaa00');
+        }
+
+        function showMessage(text, color) {
+            messageDiv.textContent = text;
+            messageDiv.style.background = `rgba(20,20,40,0.9)`;
+            messageDiv.style.borderLeft = `4px solid ${color}`;
+            setTimeout(() => {
+                if (gameActive) messageDiv.textContent = `✨ Round ${round + 1} · Drag to match`;
+                messageDiv.style.background = `rgba(0,0,0,0.5)`;
+                messageDiv.style.borderLeft = `none`;
+            }, 1800);
+        }
+
+        function nextRound() {
+            round++;
+            if (round >= rounds.length) {
+                endGame();
+                return;
+            }
+            createBracelet(rounds[round].bracelet);
+            messageDiv.textContent = `✨ Round ${round + 1} · Drag to match`;
+            updateUI();
+        }
+
+        function endGame() {
+            gameActive = false;
+            const time = (Date.now() - startTime) / 1000;
+            // Error penalty: -0.5 per error (changed from 1.5)
+            let errorScore = Math.max(0, 10 - totalErrors * 0.5);
+            let timeScore = time < 60 ? 10 : time < 120 ? 8 : time < 180 ? 6 : time < 240 ? 4 : 2;
+            const finalScore = (0.6 * errorScore + 0.3 * timeScore + 0.1 * clickScore).toFixed(2);
+
+            messageDiv.innerHTML = `🏆 FINAL SCORE: ${finalScore}/10 &nbsp; | &nbsp; Errors: ${totalErrors}`;
+            messageDiv.style.background = '#2a2a4a';
+
+            alert(`🎯 FINAL RESULTS\n\nErrors: ${totalErrors}\nError Score: ${errorScore.toFixed(2)} (10 - ${totalErrors}×0.5)\nTime: ${time.toFixed(1)}s (Score: ${timeScore})\nClick Score: ${clickScore.toFixed(2)}\n\n⭐ FINAL SCORE: ${finalScore}/10`);
+
+            window.__kb?.finish?.({ totalErrors, time, finalScore: Number(finalScore) });
+        }
+
+        // ================= INIT =================
+        buildBoard();
+        createNoMatchZone();
+        createBracelet(rounds[0].bracelet);
+        updateUI();
+
+        // Floating particles
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 400;
+        const posArray = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 20;
+            posArray[i + 1] = Math.random() * 8;
+            posArray[i + 2] = (Math.random() - 0.5) * 15;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.03, transparent: true });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
+
+        // ================= ANIMATION LOOP =================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            stars.rotation.y += 0.0005;
+            particles.rotation.y += 0.001;
+
+            if (bracelet && !dragging) {
+                bracelet.rotation.y = Math.sin(Date.now() * 0.003) * 0.1;
+                bracelet.position.y = 3.8 + Math.sin(Date.now() * 0.005) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+            cssRenderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+            cssRenderer.setSize(innerWidth, innerHeight);
+        });
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('organizing-bracelets-3');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

@@ -1,0 +1,756 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🦫 Beaver BBQ · Rainbow Candy Match</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: #2d1f0c;
+        }
+
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 5;
+            background: rgba(255, 245, 210, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 1.8rem 1.8rem 1.5rem;
+            border-radius: 80px 80px 40px 40px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.25), inset 0 4px 12px rgba(255,255,240,0.7);
+            border: 2px solid rgba(255, 215, 140, 0.7);
+            transition: all 0.2s;
+        }
+
+        #bbqCanvas {
+            display: block;
+            margin: 0 auto;
+            background: transparent !important;
+            border-radius: 50px;
+            box-shadow: inset 0 0 0 4px rgba(106, 140, 94, 0.5), inset 0 8px 12px rgba(0,0,0,0.05), 0 12px 22px rgba(0,0,0,0.2);
+            border: 3px solid rgba(255, 235, 160, 0.8);
+            cursor: crosshair;
+            touch-action: none;
+            width: 100%;
+            height: auto;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 18px 8px 8px 8px;
+            color: #2e2416;
+            text-shadow: 2px 2px 0 rgba(255, 235, 150, 0.8);
+            font-weight: bold;
+        }
+
+        .score-area {
+            display: flex;
+            gap: 18px;
+            background: rgba(255, 248, 200, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 8px 20px;
+            border-radius: 48px;
+            border: 1.5px solid #ffb882;
+            font-size: 1.2rem;
+            color: #2c3a1a;
+            font-weight: 700;
+            box-shadow: inset 0 1px 6px #ffeab0, 0 6px 0 #b57a4a;
+        }
+
+            .score-area span {
+                background: rgba(255,235,170,0.3);
+                padding: 4px 12px;
+                border-radius: 30px;
+            }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            background: #ffb347;
+            border: none;
+            border-bottom: 7px solid #b45f2b;
+            color: #2c1d0a;
+            font-weight: bold;
+            font-size: 1.4rem;
+            padding: 12px 24px;
+            min-width: 150px;
+            border-radius: 60px;
+            box-shadow: 0 5px 0 #8b4e1f, 0 10px 16px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.07s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: inherit;
+            backdrop-filter: blur(4px);
+            background: rgba(255, 200, 110, 0.9);
+            border: 1px solid #ffe494;
+        }
+
+            .btn:active {
+                transform: translateY(5px);
+                box-shadow: 0 2px 0 #8b4e1f, 0 8px 12px rgba(0,0,0,0.2);
+                border-bottom-width: 4px;
+            }
+
+            .btn:disabled {
+                opacity: 0.6;
+                transform: none;
+                pointer-events: none;
+                filter: grayscale(0.2);
+            }
+
+        .reset-btn {
+            background: rgba(245, 215, 140, 0.9);
+            border-bottom-color: #a97941;
+            color: #1f3a0e;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin: 12px 0 4px;
+            color: #3d2b12;
+            font-weight: 700;
+            text-shadow: 2px 2px 0 #ffeeaa;
+            font-size: 1.1rem;
+            background: rgba(255,245,190,0.4);
+            padding: 6px 18px;
+            border-radius: 50px;
+            backdrop-filter: blur(4px);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .final-score-box {
+            background: rgba(255, 245, 180, 0.8);
+            backdrop-filter: blur(5px);
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-size: 1.7rem;
+            border: 2px solid #ffb054;
+            color: #2d1e09;
+            box-shadow: inset 0 2px 8px #ffd89c, 0 6px 0 #b37b48;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .hint-text {
+            color: #4d3118;
+            text-shadow: 1px 1px #ffecb3;
+            font-weight: 600;
+            background: rgba(255,250,210,0.5);
+            padding: 6px 18px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="game-container">
+        <canvas id="bbqCanvas" width="950" height="600"></canvas>
+
+        <div class="info-panel">
+            <div class="score-area">
+                <span id="timerDisplay">⏱️ 10.0</span>
+                <span id="clickDisplay">🖱️ 10.0</span>
+                <span id="connDisplay">🔗 10.0</span>
+                <span id="errorDisplay">⚠️ 10.0</span>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">🥩 meat &nbsp; 🥕 carrot &nbsp; 🥔 potato &nbsp; 🧅 onion</div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn" id="finishBtn">🔥 FINISH & SCORE</button>
+            <button class="btn reset-btn" id="resetBtn">🔄 NEW SKEWERS</button>
+        </div>
+        <div style="text-align: center; margin-top: 16px;">
+            <span class="final-score-box" id="finalScoreDisplay">⭐ final score —</span>
+        </div>
+        <div class="hint-text" style="text-align:center; margin-top: 12px; font-size:1rem;">
+            👆 Drag from beaver to skewer · rainbow candies float behind!
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---------- 🌈 BACKGROUND CANVAS ----------
+            const bgCanvas = document.getElementById('bgCanvas');
+            const bgCtx = bgCanvas.getContext('2d');
+
+            const bgCandies = [];
+            const CANDY_EMOJIS = ['🍬', '🍭', '🍫', '🍡', '🧁', '🍩', '🍪', '🌈', '🍒', '🍓', '🫐', '🍊'];
+            const NUM_CANDIES = 22;
+
+            function initBgCandies() {
+                bgCandies.length = 0;
+                for (let i = 0; i < NUM_CANDIES; i++) {
+                    bgCandies.push({
+                        x: Math.random() * bgCanvas.width,
+                        y: Math.random() * bgCanvas.height,
+                        vx: (Math.random() - 0.5) * 1.1,
+                        vy: (Math.random() - 0.5) * 1.1,
+                        emoji: CANDY_EMOJIS[Math.floor(Math.random() * CANDY_EMOJIS.length)],
+                        size: 26 + Math.floor(Math.random() * 16)
+                    });
+                }
+            }
+
+            function resizeBgCanvas() {
+                bgCanvas.width = window.innerWidth;
+                bgCanvas.height = window.innerHeight;
+                bgCandies.forEach(c => {
+                    c.x = Math.min(c.x, bgCanvas.width - 10);
+                    c.y = Math.min(c.y, bgCanvas.height - 10);
+                });
+            }
+
+            function updateBgCandies() {
+                for (let c of bgCandies) {
+                    c.x += c.vx;
+                    c.y += c.vy;
+                    if (c.x < 15 || c.x > bgCanvas.width - 15) c.vx *= -0.96;
+                    if (c.y < 15 || c.y > bgCanvas.height - 15) c.vy *= -0.96;
+                    c.x = Math.min(Math.max(c.x, 8), bgCanvas.width - 8);
+                    c.y = Math.min(Math.max(c.y, 8), bgCanvas.height - 8);
+                    if (Math.random() < 0.008) {
+                        c.vx += (Math.random() - 0.5) * 0.18;
+                        c.vy += (Math.random() - 0.5) * 0.18;
+                    }
+                    const speed = Math.hypot(c.vx, c.vy);
+                    if (speed > 2.3) {
+                        c.vx *= 0.96;
+                        c.vy *= 0.96;
+                    }
+                }
+            }
+
+            function drawBackgroundScene() {
+                bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+                const grad = bgCtx.createLinearGradient(0, 0, 0, bgCanvas.height);
+                grad.addColorStop(0, '#b8e2fc');
+                grad.addColorStop(0.5, '#f9e7b3');
+                grad.addColorStop(1, '#f5d99b');
+                bgCtx.fillStyle = grad;
+                bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+                bgCtx.save();
+                bgCtx.shadowBlur = 0;
+                const rainbowY = bgCanvas.height * 0.15;
+                const rainbowX = bgCanvas.width * 0.12;
+                const rainbowColors = ['#ff5e5e', '#ffb347', '#ffe066', '#8cd98c', '#66b3ff', '#b983ff'];
+                for (let i = 0; i < 6; i++) {
+                    bgCtx.beginPath();
+                    bgCtx.arc(rainbowX, rainbowY, 180 + i * 18, 0.1, Math.PI - 0.1, false);
+                    bgCtx.strokeStyle = rainbowColors[i];
+                    bgCtx.lineWidth = 16;
+                    bgCtx.stroke();
+                }
+
+                bgCtx.fillStyle = '#ffffffd0';
+                bgCtx.shadowColor = '#cce0ff';
+                bgCtx.shadowBlur = 20;
+                bgCtx.beginPath();
+                bgCtx.arc(bgCanvas.width * 0.1, bgCanvas.height * 0.12, 50, 0, 2 * Math.PI);
+                bgCtx.arc(bgCanvas.width * 0.17, bgCanvas.height * 0.09, 45, 0, 2 * Math.PI);
+                bgCtx.arc(bgCanvas.width * 0.23, bgCanvas.height * 0.13, 48, 0, 2 * Math.PI);
+                bgCtx.fill();
+                bgCtx.beginPath();
+                bgCtx.arc(bgCanvas.width * 0.82, bgCanvas.height * 0.18, 55, 0, 2 * Math.PI);
+                bgCtx.arc(bgCanvas.width * 0.90, bgCanvas.height * 0.13, 45, 0, 2 * Math.PI);
+                bgCtx.arc(bgCanvas.width * 0.95, bgCanvas.height * 0.19, 50, 0, 2 * Math.PI);
+                bgCtx.fill();
+                bgCtx.shadowBlur = 0;
+                bgCtx.restore();
+
+                bgCtx.font = 'bold 32px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+                bgCtx.textAlign = 'center';
+                bgCtx.textBaseline = 'middle';
+                bgCtx.shadowColor = '#ffb86b';
+                bgCtx.shadowBlur = 16;
+                for (let c of bgCandies) {
+                    bgCtx.fillStyle = '#fff9e6';
+                    bgCtx.fillText(c.emoji, c.x, c.y);
+                }
+                bgCtx.shadowBlur = 0;
+                bgCtx.fillStyle = '#fffbe3';
+                bgCtx.shadowBlur = 12;
+                bgCtx.shadowColor = '#f3c26b';
+                for (let i = 0; i < 8; i++) {
+                    bgCtx.beginPath();
+                    bgCtx.arc(40 + i * 110, bgCanvas.height - 40, 5, 0, 2 * Math.PI);
+                    bgCtx.fill();
+                }
+                bgCtx.shadowBlur = 0;
+            }
+
+            function bgAnimationLoop() {
+                updateBgCandies();
+                drawBackgroundScene();
+                requestAnimationFrame(bgAnimationLoop);
+            }
+
+            window.addEventListener('resize', () => resizeBgCanvas());
+            resizeBgCanvas();
+            initBgCandies();
+            bgAnimationLoop();
+
+            // ---------- 🦫 GAME DATA ----------
+            const SKEWERS = [
+                { id: 1, ingredients: ['🥩', '🥩', '🥕', '🥩', '🥔'] },
+                { id: 2, ingredients: ['🥕', '🥩', '🥩', '🥔', '🥕'] },
+                { id: 3, ingredients: ['🥩', '🥔', '🧅', '🥩', '🥕'] },
+                { id: 4, ingredients: ['🧅', '🥩', '🥔', '🥩', '🥔'] }
+            ];
+
+            const BEAVERS = [
+                { id: 'A', label: '🦫 A' },
+                { id: 'B', label: '🦫 B' },
+                { id: 'C', label: '🦫 C' },
+                { id: 'D', label: '🦫 D' }
+            ];
+
+            let assignments = [null, null, null, null];
+            let errorScore = 10.0, connectionScore = 10.0, timeScore = 10.0, clickScore = 10.0;
+            let connectionsMade = 0, clickCount = 0;
+            let gameStartTime = Date.now();
+            let timerInterval = null;
+            let gameFinished = false;
+            let finalScoreValue = 0;
+            let isDragging = false;
+            let dragStartBeaver = -1;
+            let dragCurrentPos = { x: 0, y: 0 };
+
+            const canvas = document.getElementById('bbqCanvas');
+            const ctx = canvas.getContext('2d', { alpha: true });
+            const timerDisplay = document.getElementById('timerDisplay');
+            const clickDisplay = document.getElementById('clickDisplay');
+            const connDisplay = document.getElementById('connDisplay');
+            const errorDisplay = document.getElementById('errorDisplay');
+            const finalScoreSpan = document.getElementById('finalScoreDisplay');
+            const finishBtn = document.getElementById('finishBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            const BEAVER_POS = [
+                { x: 130, y: 70 },
+                { x: 130, y: 210 },
+                { x: 130, y: 350 },
+                { x: 130, y: 480 }
+            ];
+            const SKEWER_POS = [
+                { x: 650, y: 100 },
+                { x: 650, y: 240 },
+                { x: 650, y: 380 },
+                { x: 650, y: 510 }
+            ];
+
+            function computeTimeScore() {
+                const elapsed = (Date.now() - gameStartTime) / 1000;
+                let penalty = elapsed > 60 ? 1 + Math.floor((elapsed - 60) / 20) : 0;
+                return Math.max(0, 10 - penalty);
+            }
+            function computeClickScore() {
+                let penalty = clickCount > 30 ? 1 + Math.floor((clickCount - 30) / 5) : 0;
+                return Math.max(0, 10 - penalty);
+            }
+            function computeConnectionScore() {
+                let penalty = connectionsMade > 4 ? Math.ceil((connectionsMade - 4) / 2) : 0;
+                return Math.max(0, 10 - penalty);
+            }
+            function updateDynamicScores() {
+                if (gameFinished) return;
+                timeScore = computeTimeScore();
+                clickScore = computeClickScore();
+                connectionScore = computeConnectionScore();
+                updateScoreUI();
+            }
+            function timerTick() { if (!gameFinished) { timeScore = computeTimeScore(); updateScoreUI(); } }
+            function registerClick() { if (gameFinished) return; clickCount++; clickScore = computeClickScore(); updateScoreUI(); }
+            function registerConnection() { if (gameFinished) return; connectionsMade++; connectionScore = computeConnectionScore(); updateScoreUI(); }
+            function getAssignmentPenalty(arr) {
+                let penalty = 0.0;
+                const [a, b, c, d] = arr;
+                if (a === 3) penalty += 1.0;
+                if (b === 2 || b === 3) penalty += 1.0;
+                if (c !== null && (c === 0 || c === 1 || c === 2)) penalty += 0.5;
+                if (d !== null && (d === 1 || d === 2 || d === 3)) penalty += 0.5;
+                return penalty;
+            }
+            function applyAssignmentPenaltyToErrorScore() {
+                errorScore = Math.max(0, errorScore - getAssignmentPenalty(assignments));
+            }
+            function updateScoreUI() {
+                timerDisplay.textContent = `⏱️ ${timeScore.toFixed(1)}`;
+                clickDisplay.textContent = `🖱️ ${clickScore.toFixed(1)}`;
+                connDisplay.textContent = `🔗 ${connectionScore.toFixed(1)}`;
+                errorDisplay.textContent = `⚠️ ${errorScore.toFixed(1)}`;
+            }
+            function allAssigned() { return assignments.every(s => s !== null); }
+            function computeFinalScore() {
+                return errorScore * 0.6 + connectionScore * 0.1 + timeScore * 0.2 + clickScore * 0.1;
+            }
+            function finishGame() {
+                if (gameFinished) return;
+                if (!allAssigned()) { alert('🦫 Every beaver needs a skewer!'); return; }
+                gameFinished = true;
+                if (timerInterval) clearInterval(timerInterval);
+                applyAssignmentPenaltyToErrorScore();
+                timeScore = computeTimeScore(); clickScore = computeClickScore(); connectionScore = computeConnectionScore();
+                updateScoreUI();
+                finalScoreValue = computeFinalScore();
+                finalScoreSpan.textContent = `🏆 FINAL: ${finalScoreValue.toFixed(2)} / 10.00`;
+                finishBtn.disabled = true;
+
+                window.__kb?.finish?.({ finalScoreValue, errorScore, timeScore, clickScore, connectionScore });
+            }
+            function initializeNewGame() {
+                gameFinished = false; finishBtn.disabled = false;
+                assignments = [null, null, null, null];
+                connectionsMade = 0; clickCount = 0;
+                errorScore = 10.0; connectionScore = 10.0; clickScore = 10.0; timeScore = 10.0;
+                gameStartTime = Date.now();
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(timerTick, 200);
+                updateScoreUI();
+                finalScoreSpan.textContent = `⭐ final score —`;
+            }
+            function performReset() {
+                errorScore = Math.max(0, errorScore - 1);
+                gameFinished = false; finishBtn.disabled = false;
+                assignments = [null, null, null, null];
+                connectionsMade = 0; clickCount = 0;
+                connectionScore = 10.0; clickScore = 10.0; timeScore = 10.0;
+                gameStartTime = Date.now();
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(timerTick, 200);
+                updateScoreUI();
+                finalScoreSpan.textContent = `⭐ final score —`;
+            }
+
+            // ---------- ✨ ENHANCED DRAWING (better beavers & skewers) ----------
+            function drawGameCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // ------- SKEWERS (wooden sticks with ingredients) -------
+                SKEWER_POS.forEach((pos, idx) => {
+                    const skewer = SKEWERS[idx];
+                    const stickX = pos.x;
+                    const stickY = pos.y;
+
+                    // Wood stick (3D effect)
+                    ctx.shadowColor = '#3b2a1a';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.moveTo(stickX - 180, stickY - 3);
+                    ctx.lineTo(stickX + 180, stickY - 3);
+                    ctx.lineWidth = 18;
+                    ctx.strokeStyle = '#8b5e3c';
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(stickX - 180, stickY + 2);
+                    ctx.lineTo(stickX + 180, stickY + 2);
+                    ctx.lineWidth = 12;
+                    ctx.strokeStyle = '#c49a6c';
+                    ctx.stroke();
+                    // wood grain lines
+                    ctx.beginPath();
+                    ctx.moveTo(stickX - 170, stickY - 2);
+                    ctx.lineTo(stickX + 170, stickY - 2);
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#a57248';
+                    ctx.stroke();
+
+                    // Sharpened tip
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.moveTo(stickX + 175, stickY - 6);
+                    ctx.lineTo(stickX + 215, stickY);
+                    ctx.lineTo(stickX + 175, stickY + 6);
+                    ctx.fillStyle = '#d4a373';
+                    ctx.fill();
+
+                    // Ingredients (emoji style with glow)
+                    ctx.shadowColor = '#3d2b1a';
+                    ctx.shadowBlur = 12;
+                    ctx.font = 'bold 32px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const step = 48;
+                    const startX = stickX - 140;
+                    skewer.ingredients.forEach((emoji, i) => {
+                        ctx.fillStyle = '#fff8e7';
+                        ctx.fillText(emoji, startX + i * step, stickY - 8);
+                    });
+
+                    // Skewer label
+                    ctx.shadowBlur = 6;
+                    ctx.font = 'bold 20px "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#fcf3d7';
+                    ctx.fillText(`#${idx + 1}`, stickX, stickY + 32);
+                    ctx.shadowBlur = 0;
+                });
+
+                // ------- BEAVERS (cute chef beavers) -------
+                BEAVER_POS.forEach((pos, idx) => {
+                    const x = pos.x, y = pos.y;
+                    ctx.shadowColor = '#4d2e1a';
+                    ctx.shadowBlur = 16;
+
+                    // Body (furry gradient)
+                    const bodyGrad = ctx.createRadialGradient(x - 8, y - 8, 10, x, y, 42);
+                    bodyGrad.addColorStop(0, '#b8845c');
+                    bodyGrad.addColorStop(0.7, '#8b5e3c');
+                    ctx.beginPath();
+                    ctx.ellipse(x, y + 2, 40, 38, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = bodyGrad;
+                    ctx.fill();
+                    ctx.strokeStyle = '#e6b17e';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+
+                    // Ears
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.ellipse(x - 28, y - 28, 15, 18, -0.2, 0, Math.PI * 2);
+                    ctx.fillStyle = '#a56e4a';
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(x + 28, y - 28, 15, 18, 0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    // inner ears
+                    ctx.fillStyle = '#d9a57e';
+                    ctx.beginPath();
+                    ctx.ellipse(x - 26, y - 28, 9, 12, -0.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.ellipse(x + 26, y - 28, 9, 12, 0.2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Chef hat (tall)
+                    
+                    ctx.fillStyle = '#f0e3ce';
+                    ctx.beginPath();
+                    ctx.ellipse(x, y - 36, 26, 10, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Face (light belly)
+                    ctx.beginPath();
+                    ctx.ellipse(x, y - 4, 30, 28, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = '#e7c4a4';
+                    ctx.fill();
+
+                    // Eyes (sparkly)
+                    ctx.shadowBlur = 0;
+                    ctx.beginPath();
+                    ctx.arc(x - 12, y - 12, 9, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#fbf5e5';
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 12, y - 12, 9, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.fillStyle = '#2b1e14';
+                    ctx.beginPath();
+                    ctx.arc(x - 15, y - 15, 5.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 9, y - 15, 5.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(x - 17, y - 19, 2.8, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 7, y - 19, 2.8, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // Nose & smile
+                    ctx.beginPath();
+                    ctx.arc(x, y - 2, 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#6b3e2c';
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#5e3a26';
+                    ctx.lineWidth = 3;
+                    ctx.moveTo(x - 8, y + 6);
+                    ctx.quadraticCurveTo(x, y + 14, x + 8, y + 6);
+                    ctx.stroke();
+
+                    // Blush
+                    ctx.fillStyle = '#f7a9a0';
+                    ctx.globalAlpha = 0.5;
+                    ctx.beginPath();
+                    ctx.arc(x - 22, y + 2, 8, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 22, y + 2, 8, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+
+                    // Label
+                    ctx.shadowBlur = 8;
+                    ctx.font = 'bold 22px "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#634B39';
+                    ctx.fillText(BEAVERS[idx].label, x, y + 56);
+
+                    // Preference text
+                    ctx.font = 'bold 14px "Segoe UI", sans-serif';
+                    ctx.fillStyle = '#634B39';
+                    const prefs = ['I NEED CARROT🥕 ', 'I HATE ONIONS', 'AS MUCH POTATO AS POSSIBLE🥔', 'AS MUCH MEAT AS POSSIBLE🥩 '];
+                    ctx.fillText(prefs[idx], x, y + 76);
+                    ctx.shadowBlur = 0;
+                });
+
+                // ------- CONNECTION LINES (golden) -------
+                ctx.lineWidth = 10;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#ffe594';
+                ctx.shadowColor = '#b3742e';
+                ctx.shadowBlur = 14;
+                assignments.forEach((skewerIdx, bIdx) => {
+                    if (skewerIdx === null) return;
+                    const from = BEAVER_POS[bIdx];
+                    const to = SKEWER_POS[skewerIdx];
+                    ctx.beginPath();
+                    ctx.moveTo(from.x + 30, from.y - 8);
+                    ctx.lineTo(to.x - 140, to.y - 10);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(to.x - 140, to.y - 10, 9, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#fcd34d';
+                    ctx.fill();
+                });
+                ctx.shadowBlur = 0;
+
+                // Drag preview line
+                if (isDragging && dragStartBeaver !== -1) {
+                    const from = BEAVER_POS[dragStartBeaver];
+                    ctx.beginPath();
+                    ctx.moveTo(from.x + 30, from.y - 8);
+                    ctx.lineTo(dragCurrentPos.x, dragCurrentPos.y);
+                    ctx.strokeStyle = '#fffac2';
+                    ctx.lineWidth = 6;
+                    ctx.setLineDash([10, 8]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            function gameAnimationLoop() {
+                drawGameCanvas();
+                requestAnimationFrame(gameAnimationLoop);
+            }
+
+            // ---------- EVENT HANDLERS ----------
+            function handleMouseDown(e) {
+                if (gameFinished) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                for (let i = 0; i < BEAVER_POS.length; i++) {
+                    if (Math.hypot(mx - BEAVER_POS[i].x, my - BEAVER_POS[i].y) < 45) {
+                        isDragging = true; dragStartBeaver = i;
+                        dragCurrentPos = { x: mx, y: my };
+                        registerClick();
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            }
+            function handleMouseMove(e) {
+                if (!isDragging || gameFinished) return;
+                const rect = canvas.getBoundingClientRect();
+                dragCurrentPos.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                dragCurrentPos.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+                e.preventDefault();
+            }
+            function handleMouseUp(e) {
+                if (!isDragging || gameFinished) { isDragging = false; return; }
+                const rect = canvas.getBoundingClientRect();
+                const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+                let target = -1;
+                for (let i = 0; i < SKEWER_POS.length; i++) {
+                    const p = SKEWER_POS[i];
+                    if (mx > p.x - 220 && mx < p.x + 220 && my > p.y - 40 && my < p.y + 40) { target = i; break; }
+                }
+                if (target !== -1 && dragStartBeaver !== -1) {
+                    for (let b = 0; b < assignments.length; b++) if (assignments[b] === target && b !== dragStartBeaver) assignments[b] = null;
+                    assignments[dragStartBeaver] = target;
+                    registerConnection();
+                }
+                isDragging = false; dragStartBeaver = -1;
+                e.preventDefault();
+            }
+            function handleTouchStart(e) { e.preventDefault(); handleMouseDown({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }); }
+            function handleTouchMove(e) { e.preventDefault(); handleMouseMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }); }
+            function handleTouchEnd(e) { e.preventDefault(); handleMouseUp(e); }
+
+            function initGame() {
+                initializeNewGame();
+                canvas.addEventListener('mousedown', handleMouseDown);
+                canvas.addEventListener('mousemove', handleMouseMove);
+                canvas.addEventListener('mouseup', handleMouseUp);
+                canvas.addEventListener('mouseleave', () => { if (isDragging) isDragging = false; });
+                canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+                canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+                canvas.addEventListener('touchend', handleTouchEnd);
+                canvas.addEventListener('touchcancel', handleTouchEnd);
+                finishBtn.addEventListener('click', finishGame);
+                resetBtn.addEventListener('click', performReset);
+                gameAnimationLoop();
+            }
+            initGame();
+        })();
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('bbq-party-2');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

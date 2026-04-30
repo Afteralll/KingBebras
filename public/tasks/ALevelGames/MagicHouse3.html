@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌈 Candy Door Adventure | Kid's Magic Game</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Comic Neue', 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #candyCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .candies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flyCandy {
+            0% { transform: translateX(-10%) translateY(0) rotate(0deg); }
+            100% { transform: translateX(120vw) translateY(-40px) rotate(360deg); }
+        }
+
+        .game-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.95);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
+        }
+
+        .game-container,
+        .game-header,
+        .stats-panel,
+        .legend-panel,
+        .info-panel,
+        .door-preview-card,
+        .choices-panel,
+        button,
+        .score-board,
+        .result-area {
+            border-radius: 32px !important;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 1rem;
+            border-bottom: 3px solid #ffaa66;
+            padding-bottom: 0.8rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: 'Comic Neue', cursive;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ff66aa, #ffaa44);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-left: 8px solid #ffaa66;
+            padding-left: 20px;
+            text-shadow: 2px 2px 0 #fff6c0;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            background: #ffdd99;
+            border: 2px solid #ffaa44;
+            border-radius: 60px;
+            padding: 0.3rem 1rem;
+            font-family: monospace;
+            color: #c45a0c;
+            font-weight: bold;
+        }
+
+        .desc-panel {
+            background: #fff0d6;
+            border: 2px solid #ffbb77;
+            border-radius: 40px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1rem;
+            font-family: 'Comic Neue', cursive;
+            color: #8a4d0c;
+            box-shadow: inset 0 0 8px #ffe0aa;
+            font-weight: bold;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffefcf;
+            border: 2px solid #ffbb77;
+            border-radius: 60px;
+            padding: 0.6rem 1.8rem;
+            margin-bottom: 1.5rem;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .stat-item {
+            color: #b85c00;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            color: #f1c40f;
+            background: #5a2e0e;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .door-preview-card {
+            background: #fffaec;
+            border: 3px solid #ffaa66;
+            border-radius: 48px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .door-preview-card h3 {
+            color: #e67e22;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        #prevDoor {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .choices-panel {
+            margin: 1.5rem 0;
+        }
+
+        .choices-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 24px;
+            margin: 1rem 0;
+        }
+
+        .door {
+            width: 130px;
+            height: 190px;
+            position: relative;
+            cursor: pointer;
+            border: 5px solid #ffaa66;
+            border-radius: 24px;
+            transition: transform 0.2s, filter 0.1s;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+            background-clip: padding-box;
+        }
+
+        .door:hover {
+            transform: scale(1.05) rotate(2deg);
+            filter: brightness(1.05);
+            border-color: #ffcc88;
+        }
+
+        .square { border-radius: 12px; }
+        .round { border-radius: 60px; }
+        .arch { border-radius: 60px 60px 20px 20px; }
+
+        .window {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,200,0.9);
+            border: 3px solid black;
+            box-shadow: 0 0 0 2px #ffdd99;
+        }
+
+        .window.circle { border-radius: 50%; }
+        .window.square { border-radius: 8px; }
+        .window.triangle {
+            width: 0;
+            height: 0;
+            background: transparent;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 40px solid rgba(255,255,200,0.9);
+            border-top: none;
+            filter: drop-shadow(0 0 0 2px black);
+        }
+        .window.diamond {
+            transform: translateX(-50%) rotate(45deg);
+            border-radius: 8px;
+        }
+        .window.circle, .window.square, .window.diamond {
+            width: 40px;
+            height: 40px;
+        }
+
+        .handle {
+            position: absolute;
+            right: 10px;
+            top: 90px;
+            width: 14px;
+            height: 14px;
+            background: gold;
+            border: 2px solid black;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .handle.bar {
+            width: 22px;
+            height: 8px;
+            border-radius: 12px;
+        }
+
+        .stripes {
+            background-image: repeating-linear-gradient(45deg, rgba(255,220,100,0.4), rgba(255,220,100,0.4) 12px, transparent 12px, transparent 24px);
+        }
+        .dots {
+            background-image: radial-gradient(circle at 10px 10px, #ffdd99 8%, transparent 8%);
+            background-size: 24px 24px;
+        }
+
+        .door[style*="background-color: purple"] { background-color: #cc66ff !important; }
+        .door[style*="background-color: green"] { background-color: #66ff66 !important; }
+
+        .info-panel {
+            background: #fff0d6;
+            border: 3px solid #ffbb77;
+            border-radius: 48px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .result-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e67e22;
+            font-family: 'Comic Neue', cursive;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-text {
+            color: #d45a0a;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .game-btn {
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 0.7rem 1.8rem;
+            border: none;
+            background: #ffaa44;
+            color: #5a2e0e;
+            cursor: pointer;
+            border-radius: 60px !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.1s linear;
+            margin-top: 0.5rem;
+            box-shadow: 0 6px 0 #b85c00;
+        }
+
+        .game-btn:hover {
+            background: #ffcc66;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #b85c00;
+        }
+
+        .game-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #b85c00;
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 1.2rem;
+            color: #c26a1a;
+            font-family: 'Comic Neue', cursive;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
+
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🍬 CANDY DOOR GAME</h1>
+            <div class="badge">🌈 MAGIC RAINBOW</div>
+        </div>
+
+        <div class="desc-panel">
+            🍭 Each door has 5 yummy attributes: SHAPE · PATTERN · WINDOW · HANDLE · COLOR.<br>
+            Find the door where ALL attributes are DIFFERENT from the previous door. Click the correct one!
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-item">🎯 ROUND: <span id="roundDisplay" class="stat-value">1</span></div>
+            <div class="stat-item" id="errorStatItem">📊 CANDY SCORE: <span id="errorScoreDisplay" class="stat-value">10.0</span></div>
+            <div class="stat-item">⏱️ TIME: <span id="timeDisplay" class="stat-value">0s</span></div>
+        </div>
+
+        <div class="door-preview-card">
+            <h3>🔮 PORTAL REFERENCE</h3>
+            <div id="prevDoor"></div>
+        </div>
+
+        <div class="choices-panel">
+            <h3 style="color:#e67e22; font-family:'Comic Neue',cursive; text-align:center; margin-bottom:8px;">✨ PICK THE MAGIC DOOR ✨</h3>
+            <div id="choices" class="choices-grid"></div>
+        </div>
+
+        <div class="info-panel">
+            <div id="result" class="result-text">⚡ Round 1 / 3 - Choose the right door</div>
+            <div id="scoreInfo" class="score-text"></div>
+            <button class="game-btn" id="nextRoundBtn">➡️ NEXT ROUND</button>
+        </div>
+        <footer>🌈 floating candies | rainbow magic | trust your intuition 🍬</footer>
+    </div>
+
+    <script>
+        // ---------- GAME LOGIC ----------
+        const shapes = ["square", "round", "arch"];
+        const patterns = ["plain", "stripes", "dots"];
+        const windows = ["circle", "square", "triangle", "diamond"];
+        const handles = ["round", "bar"];
+        const colors = ["red", "blue", "green", "purple"];
+
+        let previousDoor;
+        let choices = [];
+        let currentRound = 1;
+        const maxRounds = 3;
+        let errorScore = 10;
+        let startTime = Date.now();
+        let gameActive = true;
+        let timerInterval = null;
+
+        const prevDoorDiv = document.getElementById("prevDoor");
+        const choicesContainer = document.getElementById("choices");
+        const resultDiv = document.getElementById("result");
+        const scoreInfoSpan = document.getElementById("scoreInfo");
+        const roundDisplaySpan = document.getElementById("roundDisplay");
+        const errorScoreSpan = document.getElementById("errorScoreDisplay");
+        const timeDisplaySpan = document.getElementById("timeDisplay");
+        const nextRoundBtn = document.getElementById("nextRoundBtn");
+        const errorStatItem = document.getElementById("errorStatItem"); // for hiding error score display
+
+        function rand(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateDoor() {
+            return {
+                shape: rand(shapes),
+                pattern: rand(patterns),
+                window: rand(windows),
+                handle: rand(handles),
+                color: rand(colors)
+            };
+        }
+
+        function isValidDoor(prev, next) {
+            return (
+                prev.shape !== next.shape &&
+                prev.pattern !== next.pattern &&
+                prev.window !== next.window &&
+                prev.handle !== next.handle &&
+                prev.color !== next.color
+            );
+        }
+
+        function generateValidDoor(prev) {
+            let d;
+            do { d = generateDoor(); } while (!isValidDoor(prev, d));
+            return d;
+        }
+
+        function generateWrongDoor(prev) {
+            let d = generateDoor();
+            const attrs = ["shape", "pattern", "window", "handle", "color"];
+            let a = rand(attrs);
+            d[a] = prev[a];
+            return d;
+        }
+
+        function generateChoices(prev) {
+            let correct = generateValidDoor(prev);
+            let arr = [correct];
+            while (arr.length < 4) {
+                let candidate = generateWrongDoor(prev);
+                let duplicate = false;
+                for (let existing of arr) {
+                    if (existing.shape === candidate.shape &&
+                        existing.pattern === candidate.pattern &&
+                        existing.window === candidate.window &&
+                        existing.handle === candidate.handle &&
+                        existing.color === candidate.color) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (!duplicate) arr.push(candidate);
+            }
+            return arr.sort(() => Math.random() - 0.5);
+        }
+
+        function countErrors(prev, chosen) {
+            let errors = 0;
+            if (prev.shape === chosen.shape) errors++;
+            if (prev.pattern === chosen.pattern) errors++;
+            if (prev.window === chosen.window) errors++;
+            if (prev.handle === chosen.handle) errors++;
+            if (prev.color === chosen.color) errors++;
+            return errors;
+        }
+
+        // Updated time score: starts at 10, decreases by 1 for every 20 seconds after 60s
+        function getTimeScore(seconds) {
+            if (seconds <= 60) return 10;
+            const penalty = Math.floor((seconds - 61) / 20) + 1;
+            return Math.max(0, 10 - penalty);
+        }
+
+        function brightenColor(color) {
+            if (color === 'purple') return '#cc66ff';
+            if (color === 'green') return '#66ff66';
+            return color;
+        }
+
+        function createDoorElement(door, index = null, clickable = true) {
+            let d = document.createElement("div");
+            d.className = "door " + door.shape;
+            d.style.backgroundColor = brightenColor(door.color);
+
+            if (door.pattern !== "plain") d.classList.add(door.pattern);
+
+            if (clickable && index !== null) {
+                d.onclick = () => selectDoor(index);
+                d.style.cursor = "pointer";
+            } else {
+                d.style.cursor = "default";
+            }
+
+            let w = document.createElement("div");
+            w.className = "window " + door.window;
+            if (door.window === 'triangle') {
+                w.style.border = 'none';
+                w.style.filter = 'drop-shadow(0 0 0 2px black)';
+            }
+            d.appendChild(w);
+
+            let h = document.createElement("div");
+            h.className = "handle " + door.handle;
+            d.appendChild(h);
+
+            return d;
+        }
+
+        function updateTimer() {
+            if (!gameActive) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timeDisplaySpan.innerText = elapsed + "s";
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function renderGame() {
+            prevDoorDiv.innerHTML = "";
+            if (previousDoor) {
+                prevDoorDiv.appendChild(createDoorElement(previousDoor, null, false));
+            }
+            choicesContainer.innerHTML = "";
+            choices.forEach((door, i) => {
+                choicesContainer.appendChild(createDoorElement(door, i, true));
+            });
+            roundDisplaySpan.innerText = currentRound + " / " + maxRounds;
+            // Error score is hidden completely from student
+        }
+
+        let isWaiting = false;
+
+        function selectDoor(selectedIdx) {
+            if (!gameActive || isWaiting) return;
+            isWaiting = true;
+            const chosen = choices[selectedIdx];
+            const errors = countErrors(previousDoor, chosen);
+
+            // Still track error score internally, but don't show any feedback
+            if (errors > 0) {
+                errorScore -= errors * 0.5;
+                if (errorScore < 0) errorScore = 0;
+            }
+
+            // Neutral message – no right/wrong indication
+            resultDiv.innerHTML = "🔹 Door selected. Loading next round...";
+
+            gameActive = false;
+            setTimeout(() => {
+                isWaiting = false;
+                if (currentRound === maxRounds) {
+                    endGame();
+                } else {
+                    currentRound++;
+                    previousDoor = generateDoor();
+                    choices = generateChoices(previousDoor);
+                    renderGame();
+                    gameActive = true;
+                    resultDiv.innerHTML = `🔮 Round ${currentRound} / ${maxRounds} - Find the magic door!`;
+                    if (currentRound === maxRounds) {
+                        nextRoundBtn.innerText = "🏁 FINISH GAME";
+                    } else {
+                        nextRoundBtn.innerText = "➡️ NEXT ROUND";
+                    }
+                }
+            }, 800);
+        }
+
+        function endGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            gameActive = false;
+
+            const totalTime = (Date.now() - startTime) / 1000;
+            const timeScore = getTimeScore(totalTime);
+            const finalErrorScore = Math.max(0, errorScore);
+            // Final score = 70% error + 30% time, out of 10
+            const totalScore = 0.7 * finalErrorScore + 0.3 * timeScore;
+
+            choicesContainer.innerHTML = "";
+            prevDoorDiv.innerHTML = "";
+
+            // Student sees only a completion message, no score
+            resultDiv.innerHTML = "✨ GAME COMPLETE ✨";
+            scoreInfoSpan.innerHTML = "";  // no score revealed
+
+            nextRoundBtn.disabled = true;
+            nextRoundBtn.style.opacity = "0.5";
+            nextRoundBtn.innerText = "✨ GAME OVER ✨";
+
+            // Keep hidden
+            errorStatItem.style.display = 'none';
+            timeDisplaySpan.innerText = totalTime.toFixed(1) + "s";
+
+            // Still report score to task SDK (invisible to student)
+            window.__kb?.finish?.({ totalScore, finalErrorScore, timeScore, totalTime });
+        }
+
+        nextRoundBtn.onclick = () => {
+            if (!gameActive && !isWaiting && currentRound < maxRounds) {
+                currentRound++;
+                previousDoor = generateDoor();
+                choices = generateChoices(previousDoor);
+                renderGame();
+                gameActive = true;
+                resultDiv.innerHTML = `🔮 Round ${currentRound} / ${maxRounds} - Find the magic door!`;
+                if (currentRound === maxRounds) {
+                    nextRoundBtn.innerText = "🏁 FINISH GAME";
+                } else {
+                    nextRoundBtn.innerText = "➡️ NEXT ROUND";
+                }
+            } else if (currentRound === maxRounds && !gameActive && !isWaiting) {
+                endGame();
+            }
+        };
+
+        function initGame() {
+            errorScore = 10;
+            currentRound = 1;
+            startTime = Date.now();
+            gameActive = true;
+            isWaiting = false;
+            previousDoor = generateDoor();
+            choices = generateChoices(previousDoor);
+            renderGame();
+            startTimer();
+
+            // Hide error score completely from student
+            errorStatItem.style.display = 'none';
+            scoreInfoSpan.innerHTML = ""; // no score text
+            resultDiv.innerHTML = "🔮 Round 1 / 3 - Choose the correct door";
+
+            nextRoundBtn.innerText = "➡️ NEXT ROUND";
+            nextRoundBtn.disabled = false;
+            nextRoundBtn.style.opacity = "1";
+            gameActive = true;
+        }
+
+        initGame();
+
+        // ---------- RAINBOW CANVAS + FLYING CANDIES ----------
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+        let rainbows = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initRainbow();
+        }
+
+        function initRainbow() {
+            rainbows = [];
+            for (let i = 0; i < 6; i++) {
+                rainbows.push({ offset: 0, speed: 0.002 + i*0.0005 });
+            }
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * rainbows[i].speed + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height/2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s*2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI*2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            candy.style.filter = "drop-shadow(0 0 4px gold)";
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => { if (candy && candy.remove) candy.remove(); }, duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(() => spawnCandy(), i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+        initRainbow();
+        drawRainbow();
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('magic-house-3');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🍬 Benjamin's Shape Box | Bebras Puzzle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        /* Rainbow + candy background */
+        body {
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        /* candy canvas */
+        #candyCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .candies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
+        }
+
+        /* main game card - fully transparent background */
+        .game-card {
+            position: relative;
+            z-index: 10;
+            max-width: 650px;
+            width: 100%;
+           
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sub {
+            text-align: center;
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            border-bottom: 2px dotted #ffcc88;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 4px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 242, 223, 0.85);
+            padding: 0.6rem 1.2rem;
+            border-radius: 60px;
+            margin: 1rem 0;
+            font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #ffcc88;
+            backdrop-filter: blur(4px);
+        }
+
+        .stat {
+            background: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            color: #b85c00;
+            box-shadow: inset 0 0 2px #ffaa66;
+        }
+
+            .stat span {
+                color: #e67e22;
+                font-size: 1.2rem;
+                font-weight: 800;
+                margin-left: 6px;
+            }
+
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .sudoku-grid {
+            display: inline-grid;
+            gap: 6px;
+            background: rgba(255, 217, 165, 1);
+            padding: 12px;
+            border-radius: 36px;
+            box-shadow: inset 0 0 0 2px #fff3e0, 0 8px 18px rgba(0,0,0,0.1);
+        }
+
+        .cell {
+            background: #fffaf0;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.05);
+            width: 70px;
+            height: 70px;
+        }
+
+            .cell.missing {
+                background: #ffe3b5;
+                border: 3px dashed #ffaa55;
+                color: #cc8844;
+                font-size: 1.8rem;
+                font-style: italic;
+            }
+
+        .palette {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin: 1rem 0 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .shape-btn {
+            background: #ffecb3;
+            border: 3px solid #ffaa66;
+            font-size: 1.8rem;
+            padding: 0.5rem 1.2rem;
+            border-radius: 80px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.1s;
+            box-shadow: 0 4px 0 #bb8844;
+            font-family: monospace;
+        }
+
+            .shape-btn:active {
+                transform: translateY(2px);
+                box-shadow: 0 1px 0 #bb8844;
+            }
+
+            .shape-btn.disabled {
+                opacity: 0.5;
+                pointer-events: none;
+                transform: none;
+            }
+            /* red border for wrong choice */
+            .shape-btn.wrong-flash {
+                border: 3px solid #ff0000;
+                box-shadow: 0 0 0 2px #ff8888;
+                background-color: #ffe0e0;
+            }
+
+        .message {
+            background: rgba(247, 229, 194, 0.9);
+            border-radius: 40px;
+            padding: 8px 12px;
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: bold;
+            color: #aa6f20;
+            backdrop-filter: blur(4px);
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 1.2rem;
+            color: #fff0c0;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 500px) {
+            .cell {
+                width: 55px;
+                height: 55px;
+                font-size: 1.6rem;
+            }
+
+            .shape-btn {
+                font-size: 1.4rem;
+                padding: 0.3rem 0.9rem;
+            }
+
+            .game-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
+
+    <div class="game-card">
+        <h1>📦 BENJAMIN'S SHAPE BOX</h1>
+        <div style="text-align: center"><span class="sub">✨ Choose the shape which is not repeated in the row or coloumn ✨</span></div>
+
+        <div class="stats">
+            <div class="stat">🎯 ROUND <span id="roundNum">1</span> / 3</div>
+            <div class="stat">🍬 ERROR SCORE <span id="errorScoreVal">10.0</span></div>
+            <div class="stat">⏱️ TIME <span id="timerVal">0</span> s</div>
+        </div>
+
+        <div class="grid-container" id="gridContainer"></div>
+        <div id="paletteArea" class="palette"></div>
+
+        <div id="messageBox" class="message">⭐ Choose the missing shape! Each wrong move costs candy points.</div>
+        <footer>🍬 penalty: -0.5 per row/column violation | rainbow magic ✨</footer>
+    </div>
+
+    <script>
+        // ------------------- SHAPES & PUZZLE DEFINITIONS -------------------
+        const SHAPE_SET = {
+            2: ['★', '●'],
+            3: ['★', '●', '▲'],
+            4: ['★', '●', '▲', '■']
+        };
+
+        const PUZZLES = [
+            {
+                size: 2,
+                grid: [['★', null], ['●', '★']],
+                answer: '●',
+                missingRow: 0,
+                missingCol: 1
+            },
+            {
+                size: 3,
+                grid: [['★', '●', '▲'], ['●', null, '★'], ['▲', '★', '●']],
+                answer: '▲',
+                missingRow: 1,
+                missingCol: 1
+            },
+            {
+                size: 4,
+                grid: [['★', '●', '▲', '■'], ['●', '▲', '■', '★'], ['▲', '■', null, '●'], ['■', '★', '●', '▲']],
+                answer: '★',
+                missingRow: 2,
+                missingCol: 2
+            }
+        ];
+
+        let currentRoundIdx = 0;
+        let errorScore = 10.0;
+        let startTime = Date.now();
+        let timerInterval = null;
+        let waitingForNext = false;
+        let roundActive = true;
+
+        const gridContainer = document.getElementById('gridContainer');
+        const paletteArea = document.getElementById('paletteArea');
+        const roundNumSpan = document.getElementById('roundNum');
+        const errorScoreSpan = document.getElementById('errorScoreVal');
+        const timerSpan = document.getElementById('timerVal');
+        const messageBox = document.getElementById('messageBox');
+
+        function updateTimerDisplay() {
+            if (!timerInterval) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timerSpan.innerText = elapsed;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        function updateStatsUI() {
+            errorScoreSpan.innerText = errorScore.toFixed(1);
+        }
+
+        function countViolations(puzzle, row, col, shape) {
+            const size = puzzle.size;
+            const grid = puzzle.grid;
+            let rowViolation = false;
+            let colViolation = false;
+            for (let c = 0; c < size; c++) {
+                if (c !== col && grid[row][c] === shape) { rowViolation = true; break; }
+            }
+            for (let r = 0; r < size; r++) {
+                if (r !== row && grid[r][col] === shape) { colViolation = true; break; }
+            }
+            let violations = 0;
+            if (rowViolation) violations++;
+            if (colViolation) violations++;
+            return violations;
+        }
+
+        function applyPenalty(violations) {
+            if (violations === 1) {
+                errorScore = Math.max(0, errorScore - 0.5);
+                messageBox.innerHTML = "❌ Oops! That shape appears in the same row OR column. -0.5 candy points";
+            } else if (violations === 2) {
+                errorScore = Math.max(0, errorScore - 1.0);
+                messageBox.innerHTML = "💔 Oh no! Same shape in BOTH row and column. -1 candy point";
+            } else {
+                messageBox.innerHTML = "✅ Perfect! The shape fits the box. +0 penalty";
+            }
+            updateStatsUI();
+        }
+
+        function renderGrid(puzzle) {
+            const size = puzzle.size;
+            const grid = puzzle.grid;
+            const missingRow = puzzle.missingRow;
+            const missingCol = puzzle.missingCol;
+            gridContainer.innerHTML = '';
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'sudoku-grid';
+            gridDiv.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (r === missingRow && c === missingCol) {
+                        cell.classList.add('missing');
+                        cell.innerText = '?';
+                    } else {
+                        cell.innerText = grid[r][c];
+                    }
+                    gridDiv.appendChild(cell);
+                }
+            }
+            gridContainer.appendChild(gridDiv);
+        }
+
+        // remove red border from all shape buttons
+        function clearWrongHighlights() {
+            document.querySelectorAll('.shape-btn').forEach(btn => {
+                btn.classList.remove('wrong-flash');
+            });
+        }
+
+        function renderPalette(puzzle) {
+            const size = puzzle.size;
+            const shapes = SHAPE_SET[size];
+            paletteArea.innerHTML = '';
+            shapes.forEach(shape => {
+                const btn = document.createElement('div');
+                btn.className = 'shape-btn';
+                btn.innerText = shape;
+                btn.addEventListener('click', () => {
+                    if (!roundActive || waitingForNext) {
+                        messageBox.innerHTML = "⏳ Please wait, loading next round...";
+                        return;
+                    }
+
+                    const missingRow = puzzle.missingRow;
+                    const missingCol = puzzle.missingCol;
+                    const violations = countViolations(puzzle, missingRow, missingCol, shape);
+                    const isCorrect = (shape === puzzle.answer);
+
+                    if (isCorrect && violations === 0) {
+                        clearWrongHighlights();
+                        applyPenalty(0);
+                        messageBox.innerHTML = "🎉 CORRECT! The box accepts the shape. Moving to next round...";
+                        roundActive = false;
+                        waitingForNext = true;
+                        const updatedPuzzle = { ...puzzle };
+                        updatedPuzzle.grid = puzzle.grid.map(row => [...row]);
+                        updatedPuzzle.grid[missingRow][missingCol] = shape;
+                        renderGrid(updatedPuzzle);
+                        setTimeout(() => { goToNextRound(); }, 1200);
+                    } else {
+                        // Wrong choice: add red border to this button
+                        clearWrongHighlights();
+                        btn.classList.add('wrong-flash');
+                        if (violations > 0) {
+                            applyPenalty(violations);
+                        } else {
+                            errorScore = Math.max(0, errorScore - 0.5);
+                            updateStatsUI();
+                            messageBox.innerHTML = `❌ Wrong shape. The correct shape would be ${puzzle.answer}. -0.5 candy points`;
+                        }
+                        // shake grid
+                        const gridDiv = document.querySelector('.sudoku-grid');
+                        if (gridDiv) {
+                            gridDiv.style.transform = 'translateX(4px)';
+                            setTimeout(() => { if (gridDiv) gridDiv.style.transform = ''; }, 100);
+                        }
+                        // remove red border after 0.8 seconds
+                        setTimeout(() => { btn.classList.remove('wrong-flash'); }, 800);
+                    }
+                });
+                paletteArea.appendChild(btn);
+            });
+        }
+
+        function loadRound(roundIdx) {
+            if (roundIdx >= PUZZLES.length) {
+                endGame();
+                return;
+            }
+            const puzzle = PUZZLES[roundIdx];
+            roundActive = true;
+            waitingForNext = false;
+            renderGrid(puzzle);
+            renderPalette(puzzle);
+            roundNumSpan.innerText = (roundIdx + 1);
+            messageBox.innerHTML = `🔮 Round ${roundIdx + 1} / 3 — Pick the missing shape!`;
+        }
+
+        function goToNextRound() {
+            currentRoundIdx++;
+            if (currentRoundIdx < PUZZLES.length) {
+                loadRound(currentRoundIdx);
+            } else {
+                endGame();
+            }
+        }
+
+        function computeTimeScore(totalSeconds) {
+            if (totalSeconds < 30) return 10;
+            if (totalSeconds < 45) return 9;
+            if (totalSeconds < 60) return 8;
+            if (totalSeconds < 90) return 7;
+            if (totalSeconds < 120) return 6;
+            if (totalSeconds < 150) return 5;
+            if (totalSeconds < 180) return 4;
+            if (totalSeconds < 210) return 3;
+            if (totalSeconds < 240) return 2;
+            if (totalSeconds < 300) return 1;
+            return 0;
+        }
+
+        function endGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            roundActive = false;
+            waitingForNext = true;
+
+            const totalTime = (Date.now() - startTime) / 1000;
+            const timeRaw = computeTimeScore(totalTime);
+            const finalErrorRaw = Math.max(0, errorScore);
+
+            let finalScore = (0.7 * finalErrorRaw) + (0.3 * timeRaw);
+            finalScore = Math.min(10, Math.max(0, finalScore)).toFixed(2);
+
+            document.querySelectorAll('.shape-btn').forEach(btn => {
+                btn.classList.add('disabled');
+                btn.style.pointerEvents = 'none';
+            });
+
+            messageBox.innerHTML = `✨ GAME OVER ✨<br>🏆 FINAL SCORE: ${finalScore} / 10<br>
+                🍬 Error score: ${finalErrorRaw.toFixed(1)}/10 &nbsp;| ⏱️ Time score: ${timeRaw}/10 (${totalTime.toFixed(0)}s)<br>
+                🎉 Great puzzle solving!`;
+
+            window.__kb?.finish?.({ finalScore: Number(finalScore), finalErrorRaw, timeRaw, totalTime });
+        }
+
+        function initGame() {
+            errorScore = 10.0;
+            currentRoundIdx = 0;
+            startTime = Date.now();
+            roundActive = true;
+            waitingForNext = false;
+            updateStatsUI();
+            loadRound(0);
+            startTimer();
+        }
+
+        initGame();
+
+        // =============== RAINBOW CANVAS + FLYING CANDIES ===============
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('sudoku-2');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>
