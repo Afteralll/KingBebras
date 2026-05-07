@@ -1,6 +1,7 @@
 # Render Blueprint: https://render.com/docs/blueprint-spec
-# Use Dashboard → Settings → Custom Domain to attach your domain (CNAME to onrender.com).
-# For always-on traffic, switch the service plan from Free to a paid instance in the dashboard.
+# Custom domain: Dashboard → Settings → Custom Domain (CNAME to onrender.com).
+# Free web services may lose SQLite on redeploy; for durable data use a paid instance +
+# Persistent Disk and set env KB_DB_PATH=/mnt/your-disk/data.sqlite (see Render Disks docs).
 services:
   - type: web
     name: kingbebras

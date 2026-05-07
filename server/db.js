@@ -2,7 +2,9 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DB_PATH = path.join(process.cwd(), 'server', 'data.sqlite');
+const DB_PATH = process.env.KB_DB_PATH
+  ? path.resolve(process.env.KB_DB_PATH)
+  : path.join(process.cwd(), 'server', 'data.sqlite');
 const SCHEMA_PATH = path.join(process.cwd(), 'server', 'schema.sql');
 
 export function openDb() {
