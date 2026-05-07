@@ -10,11 +10,9 @@
             user-select: none;
         }
 
-        /* 🌈 RAINBOW + CANDY BACKGROUND (webpage only) */
         body {
             margin: 0;
             min-height: 100vh;
-            /* Rainbow gradient background */
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 20%, #feca57 35%, #ff9f43 50%, #48dbfb 65%, #1dd1a1 80%, #c8d6e5 100%);
             background-size: 300% 300%;
             animation: rainbowShift 12s ease infinite;
@@ -28,26 +26,15 @@
         }
 
         @keyframes rainbowShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* 🍬 Flying candy decorations (CSS only, behind game box) */
         .candy-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 0;
         }
@@ -62,90 +49,28 @@
         }
 
         @keyframes floatCandy {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-30px) rotate(8deg);
-            }
-
-            100% {
-                transform: translateY(0px) rotate(0deg);
-            }
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(8deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
         }
+        .c1 { top: 12%; left: 5%; animation-duration: 16s; font-size: 3.2rem; }
+        .c2 { top: 70%; left: 90%; animation-duration: 19s; font-size: 2.8rem; }
+        .c3 { top: 30%; left: 85%; animation-duration: 13s; font-size: 2.4rem; }
+        .c4 { top: 80%; left: 15%; animation-duration: 22s; font-size: 3rem; }
+        .c5 { top: 50%; left: 40%; animation-duration: 17s; font-size: 2.2rem; opacity: 0.25; }
+        .c6 { top: 18%; left: 75%; animation-duration: 15s; font-size: 2.6rem; }
+        .c7 { top: 88%; left: 55%; animation-duration: 20s; font-size: 2rem; }
+        .c8 { top: 45%; left: 8%; animation-duration: 12s; font-size: 3.5rem; }
 
-        /* Individual candy positions */
-        .c1 {
-            top: 12%;
-            left: 5%;
-            animation-duration: 16s;
-            font-size: 3.2rem;
-        }
-
-        .c2 {
-            top: 70%;
-            left: 90%;
-            animation-duration: 19s;
-            font-size: 2.8rem;
-        }
-
-        .c3 {
-            top: 30%;
-            left: 85%;
-            animation-duration: 13s;
-            font-size: 2.4rem;
-        }
-
-        .c4 {
-            top: 80%;
-            left: 15%;
-            animation-duration: 22s;
-            font-size: 3rem;
-        }
-
-        .c5 {
-            top: 50%;
-            left: 40%;
-            animation-duration: 17s;
-            font-size: 2.2rem;
-            opacity: 0.25;
-        }
-
-        .c6 {
-            top: 18%;
-            left: 75%;
-            animation-duration: 15s;
-            font-size: 2.6rem;
-        }
-
-        .c7 {
-            top: 88%;
-            left: 55%;
-            animation-duration: 20s;
-            font-size: 2rem;
-        }
-
-        .c8 {
-            top: 45%;
-            left: 8%;
-            animation-duration: 12s;
-            font-size: 3.5rem;
-        }
-
-        /* Extra candy stripes overlay */
         .candy-stripe {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(45deg, rgba(255, 215, 215, 0.08) 0px, rgba(255, 215, 215, 0.08) 20px, rgba(230, 250, 230, 0.08) 20px, rgba(230, 250, 230, 0.08) 40px);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(45deg, rgba(255,215,215,0.08) 0px, rgba(255,215,215,0.08) 20px, rgba(230,250,230,0.08) 20px, rgba(230,250,230,0.08) 40px);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Game box stays on top */
         .game-box {
             max-width: 1000px;
             width: 100%;
@@ -171,13 +96,10 @@
             justify-content: center;
             gap: 15px;
         }
-
-            h1 span {
-                font-size: 2.8rem;
-            }
+        h1 span { font-size: 2.8rem; }
 
         .sub {
-            text-align: center;
+            text-align: left;
             margin: 0 0 18px 0;
             font-weight: 600;
             color: #2b5e2b;
@@ -189,6 +111,18 @@
             margin-right: auto;
             width: fit-content;
             border: 2px dashed #6f8f6f;
+        }
+
+        .bottle-img {
+            display: block;
+            margin: 10px auto;
+            width: 600px;
+            max-width: 100%;
+            border-radius: 24px;
+            background: #f7eedb;
+            padding: 12px;
+            box-shadow: 0 10px 0 #8b7a5e, 0 15px 25px rgba(0,0,0,0.3);
+            border: 3px solid #cbb99a;
         }
 
         .play-area {
@@ -226,66 +160,33 @@
             gap: 18px;
         }
 
-        .used-box {
-            background: #738a73;
-            border-radius: 36px;
-            padding: 18px 16px;
-            box-shadow: inset 0 -2px 0 #4e6a4e, inset 0 0 0 4px #b9cfb9, 0 8px 0 #3d5a3d;
-        }
-
-            .used-box h3 {
-                margin: 0 0 14px 0;
-                color: #fcf5dd;
-                font-size: 1.4rem;
-                text-shadow: 2px 2px 0 #2a3a2a;
-                text-align: center;
-            }
-
-        .used-list {
+        /* Timer‑only panel styling */
+        .metrics-panel {
+            background: #a7b89e;
+            border-radius: 30px;
+            padding: 14px 16px;
+            box-shadow: inset 0 -2px 0 #6f8268, 0 5px 0 #5a6b52;
+            border: 2px solid #e0d5b9;
+            color: #1e3d2c;
+            font-weight: 600;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
         }
 
-        .used-row {
+        .metric-row {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #cabd9c;
-            padding: 6px 14px;
-            border-radius: 40px;
-            box-shadow: inset 0 1px 4px #6f6a58, 0 4px 0 #6b5f48;
+            justify-content: space-between;
+            font-size: 1rem;
+            background: rgba(255,248,235,0.45);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
-        .used-swatch {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 3px solid #f9efd0;
-            box-shadow: 0 3px 0 #4a3f2f;
-        }
-
-        .bar-bg {
-            flex: 1;
-            height: 24px;
-            background: #2d412d;
-            border-radius: 30px;
-            box-shadow: inset 0 2px 6px #0f1a0f;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: #eed484;
-            box-shadow: inset 0 2px 6px #fff3bb;
-            border-radius: 30px;
-        }
-
-        .used-percent {
+        .metric-value {
+            font-weight: 800;
             min-width: 50px;
-            font-weight: 700;
-            color: #132213;
+            text-align: right;
         }
 
         .fresh-box {
@@ -295,12 +196,12 @@
             box-shadow: inset 0 -2px 0 #8f846a, inset 0 0 0 4px #eadfc5, 0 8px 0 #7a6e56;
         }
 
-            .fresh-box h3 {
-                margin: 0 0 14px 0;
-                color: #1d381d;
-                font-size: 1.4rem;
-                text-align: center;
-            }
+        .fresh-box h3 {
+            margin: 0 0 14px 0;
+            color: #1d381d;
+            font-size: 1.4rem;
+            text-align: center;
+        }
 
         .fresh-list {
             display: flex;
@@ -322,12 +223,11 @@
             flex-direction: column;
             align-items: center;
         }
-
-            .spray-can.selected {
-                transform: translateY(3px);
-                box-shadow: inset 0 -2px 0 #a09074, inset 0 0 0 3px #fff6df, 0 4px 0 #5e533e;
-                background: #e9dcc2;
-            }
+        .spray-can.selected {
+            transform: translateY(3px);
+            box-shadow: inset 0 -2px 0 #a09074, inset 0 0 0 3px #fff6df, 0 4px 0 #5e533e;
+            background: #e9dcc2;
+        }
 
         .can-cap {
             width: 34px;
@@ -361,54 +261,32 @@
             font-size: 1.1rem;
         }
 
-        .score-box {
-            background: #a7b89e;
-            border-radius: 30px;
-            padding: 10px 16px;
-            text-align: center;
-            box-shadow: inset 0 -2px 0 #6f8268, 0 5px 0 #5a6b52;
-            border: 2px solid #e0d5b9;
-            margin-bottom: 5px;
-        }
-
-            .score-box span {
-                font-size: 2rem;
-                font-weight: 800;
-                color: #1e3d2c;
-                text-shadow: 2px 2px 0 #ebddbf;
-            }
-
-        .score-label {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e3a1e;
-        }
-
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         button {
             background: #e6c984;
             border: none;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 12px 8px;
+            font-size: 1rem;
+            padding: 10px 6px;
             border-radius: 40px;
             box-shadow: inset 0 -3px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 6px 0 #7a6430;
             cursor: pointer;
             color: #1f3a2a;
             flex: 1;
+            min-width: 70px;
             transition: 0.07s;
             border: 2px solid #ffe29c;
         }
-
-            button:active {
-                transform: translateY(4px);
-                box-shadow: inset 0 -1px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 2px 0 #7a6430;
-            }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 -1px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 2px 0 #7a6430;
+        }
 
         .message {
             text-align: center;
@@ -425,10 +303,14 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        /* hide all metric rows except the time */
+        .metric-row:not(.time-row) {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- 🌈🎂 Decorative candy background (only CSS/HTML, no canvas changes) -->
     <div class="candy-bg">
         <div class="candy c1">🍭</div>
         <div class="candy c2">🍬</div>
@@ -441,10 +323,14 @@
     </div>
     <div class="candy-stripe"></div>
 
-    <!-- GAME BOX – EXACTLY AS ORIGINAL (no canvas modifications) -->
     <div class="game-box">
-        <h1><span>🌿</span> WAVY MEADOW · SPRAY LOGIC <span>🦫</span></h1>
-        <div class="sub">🧴 used cans show leftover — match the amounts!</div>
+        <h1> COLORING PAGE  </h1>
+        
+        <div class="sub">
+            <h3>🧴 Beaver Bea has painted a picture using five different paint colours. She started with five full bottles of paint. When Bea finished, the bottles contained this much paint.</h3>
+            <img src="D:\Study\Bachelor Thesis\Coloring Page\cans.png" alt="Paint bottles" class="bottle-img">
+        </div>
+        <h3><strong>Task:</strong><br>Bea used more paint for the large areas of colour in the picture than for small areas. Using the colors below, color the image like Bea did.</h3>
 
         <div class="play-area">
             <div class="canvas-wrapper">
@@ -452,38 +338,35 @@
             </div>
 
             <div class="info-panel">
-                <div class="used-box">
-                    <h3>🧪 USED CANS</h3>
-                    <div class="used-list" id="usedCansList"></div>
-                    <div style="font-size:0.9rem; margin-top:10px; color:#e6dfc0; text-align:center;">⇣ paint left after finishing</div>
-                </div>
-
-                <div class="score-box">
-                    <div class="score-label">🏆 YOUR SCORE</div>
-                    <span id="scoreDisplay">0 / 10</span>
-                </div>
-
                 <div class="fresh-box">
-                    <h3>🖌️ YOUR FULL CANS</h3>
+                    <h3>🖌️ Color using these</h3>
                     <div class="fresh-list" id="freshCansList"></div>
                     <div class="selected-info">🎯 Selected: <span id="selectedColorDisplay">none</span></div>
                 </div>
 
-                <div class="action-buttons">
-                    <button id="finishBtn">✨ FINISH</button>
-                    <button id="newGameBtn">⟳ NEW</button>
+                <!-- Only the time item remains visible -->
+                <div class="metrics-panel" id="metricsPanel">
+                    <div class="metric-row time-row"><span>⏱️ Time:</span> <span class="metric-value" id="timeDisplay">0.0s</span></div>
+                    <div class="metric-row"><span>👆 Clicks:</span> <span class="metric-value" id="clickDisplay">0</span></div>
+                    <div class="metric-row"><span>🎨 Picks:</span> <span class="metric-value" id="pickDisplay">0</span></div>
+                    <div class="metric-row"><span>🔄 Resets:</span> <span class="metric-value" id="resetDisplay">0</span></div>
+                    <div class="metric-row"><span>❌ Errors:</span> <span class="metric-value" id="errorDisplay">-</span></div>
+                    <div class="metric-row"><span>✅ Correct:</span> <span class="metric-value" id="correctDisplay">-</span></div>
+                    <div class="metric-row"><span>🏳️ Give Up:</span> <span class="metric-value" id="giveUpDisplay">-</span></div>
                 </div>
-                <div class="message" id="messageDisplay">✨ Pick a can, then click a part of the picture</div>
-            </div>
-        </div>
-        <div class="footnote">💡 Green uses MOST paint · Stars (pink) together · Beaver = brown · Sky = blue · Sun = yellow</div>
+
+                <div class="action-buttons">
+                    <button id="resetBtn">🔄 RESET COLORS</button>
+                    <button id="giveUpBtn">🏳️ GIVE UP</button>
+                    <button id="finishBtn">✨ FINISH</button>
+                </div>
+                
     </div>
 
     <script>
         (function () {
             "use strict";
 
-            // ---------- COLOR DEFINITIONS (unchanged) ----------
             const COLORS = [
                 { name: 'brown', code: '#8B5A2B', light: '#b07c4a' },
                 { name: 'yellow', code: '#F4D03F', light: '#f7dc6f' },
@@ -493,17 +376,30 @@
             ];
 
             const LEFTOVER_PERCENT = {
-                'brown': 70, 'yellow': 90, 'pink': 80, 'green': 10, 'lightblue': 50
+                'brown': 70,
+                'yellow': 90,
+                'pink': 80,
+                'green': 10,
+                'lightblue': 50
             };
 
             const canvas = document.getElementById('sceneCanvas');
             const ctx = canvas.getContext('2d');
-            const scoreSpan = document.getElementById('scoreDisplay');
+
+            // ----- METRICS STATE -----
+            let startTime = null;
+            let timerInterval = null;
+            let gameActive = true;
+            let clickCount = 0;
+            let colorPickCount = 0;
+            let resetCount = 0;
+            let errorScore = 0;
+            let correctnessFlag = 0;
+            let giveUpFlag = 0;
 
             let regions = [];
             let selectedColorName = null;
             let gameFinished = false;
-            let finishReported = false;
 
             // ---------- WAVY HORIZON ----------
             function createWavyHorizon() {
@@ -520,12 +416,10 @@
                 return path;
             }
 
-            // ---------- BUILD REGIONS (original) ----------
             function buildRegions() {
                 const w = canvas.width, h = canvas.height;
                 const newRegions = [];
 
-                // SKY
                 const skyPath = new Path2D();
                 skyPath.moveTo(0, 0);
                 skyPath.lineTo(w, 0);
@@ -537,23 +431,19 @@
                 skyPath.closePath();
                 newRegions.push({ path: skyPath, name: 'sky', correctColor: 'lightblue', playerColor: null });
 
-                // SUN
                 const sunPath = new Path2D();
                 sunPath.arc(380, 70, 20, 0, 2 * Math.PI);
                 newRegions.push({ path: sunPath, name: 'sun', correctColor: 'yellow', playerColor: null });
 
-                // GRASS
                 const grassPath = createWavyHorizon();
                 newRegions.push({ path: grassPath, name: 'grass', correctColor: 'green', playerColor: null });
 
-                // STARS
                 const starsPath = new Path2D();
                 drawStarToPath(starsPath, 350, 250, 5, 26, 14);
                 drawStarToPath(starsPath, 420, 290, 5, 26, 14);
                 drawStarToPath(starsPath, 300, 310, 5, 26, 14);
                 newRegions.push({ path: starsPath, name: 'stars', correctColor: 'pink', playerColor: null });
 
-                // BEAVER
                 const beaverPath = new Path2D();
                 beaverPath.ellipse(170, 290, 58, 65, 0, 0, Math.PI * 2);
                 newRegions.push({ path: beaverPath, name: 'beaver', correctColor: 'brown', playerColor: null });
@@ -580,7 +470,7 @@
                 path.closePath();
             }
 
-            // ---------- 🦫 DETAILED BEAVER (unchanged) ----------
+            // (beaver drawing function unchanged)
             function drawDetailedBeaver(ctx, cx, cy, colorName) {
                 let solidColor, darkShade;
                 if (colorName) {
@@ -594,7 +484,6 @@
 
                 ctx.shadowColor = '#3a2a1a';
                 ctx.shadowBlur = 10;
-
                 ctx.beginPath();
                 ctx.ellipse(cx, cy + 2, 42, 35, 0, 0, Math.PI * 2);
                 ctx.fillStyle = solidColor;
@@ -622,7 +511,6 @@
                 ctx.ellipse(cx + 31, cy - 34, 9, 12, 0.2, 0, Math.PI * 2);
                 ctx.fill();
 
-                
                 ctx.shadowBlur = 10;
                 ctx.beginPath();
                 ctx.ellipse(cx, cy - 48, 28, 10, 0, 0, Math.PI * 2);
@@ -685,41 +573,60 @@
                 ctx.shadowBlur = 0;
             }
 
-            // ---------- GAME INIT ----------
+            // ---------- TIMER & DISPLAY ----------
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }
+
+            function startTimer() {
+                stopTimer();
+                startTime = Date.now();
+                updateTimeDisplay();
+                timerInterval = setInterval(updateTimeDisplay, 150);
+            }
+
+            function updateTimeDisplay() {
+                const elapsed = gameActive ? (Date.now() - startTime) / 1000 : (gameFinished ? (Date.now() - startTime) / 1000 : 0);
+                document.getElementById('timeDisplay').textContent = elapsed.toFixed(1) + 's';
+                if (!gameActive && timerInterval) {
+                    stopTimer();
+                }
+            }
+
+            function updateAllMetrics() {
+                // only update the hidden ones if needed – stays functional
+                document.getElementById('clickDisplay').textContent = clickCount;
+                document.getElementById('pickDisplay').textContent = colorPickCount;
+                document.getElementById('resetDisplay').textContent = resetCount;
+                document.getElementById('errorDisplay').textContent = gameFinished ? errorScore : '-';
+                document.getElementById('correctDisplay').textContent = gameFinished ? correctnessFlag : '-';
+                document.getElementById('giveUpDisplay').textContent = gameFinished ? giveUpFlag : '-';
+                updateTimeDisplay();
+            }
+
             function initGame() {
+                stopTimer();
                 regions = buildRegions();
                 selectedColorName = null;
                 gameFinished = false;
-                finishReported = false;
+                gameActive = true;
+
+                clickCount = 0;
+                colorPickCount = 0;
+                resetCount = 0;
+                errorScore = 0;
+                correctnessFlag = 0;
+                giveUpFlag = 0;
+
                 updateSelectedDisplay();
-                renderUsedCans();
                 renderFreshCans();
                 drawCanvas();
-                updateScoreDisplay(0);
+                updateAllMetrics();
+                startTimer();
                 document.getElementById('messageDisplay').textContent = '🌱 Pick a color can, then click a region to paint.';
-            }
-
-            function updateScoreDisplay(correctRegions) {
-                const score = correctRegions * 2;
-                scoreSpan.textContent = `${score} / 10`;
-            }
-
-            function renderUsedCans() {
-                const container = document.getElementById('usedCansList');
-                container.innerHTML = '';
-                ['green', 'lightblue', 'brown', 'pink', 'yellow'].forEach(colorName => {
-                    const colorObj = COLORS.find(c => c.name === colorName);
-                    const percent = LEFTOVER_PERCENT[colorName];
-                    const row = document.createElement('div');
-                    row.className = 'used-row';
-                    row.innerHTML = `
-                            <div class="used-swatch" style="background: ${colorObj.code};"></div>
-                            <div class="bar-bg"><div class="bar-fill" style="width: ${percent}%; background: ${colorObj.light};"></div></div>
-                            <span class="used-percent">${percent}%</span>
-                            <span style="min-width:65px; font-weight:600;">${colorName}</span>
-                        `;
-                    container.appendChild(row);
-                });
             }
 
             function renderFreshCans() {
@@ -729,18 +636,20 @@
                     const can = document.createElement('div');
                     can.className = 'spray-can' + (selectedColorName === color.name ? ' selected' : '');
                     can.innerHTML = `
-                            <div class="can-cap"></div>
-                            <div class="color-preview" style="background: ${color.code};"></div>
-                            <div class="can-label">${color.name}</div>
-                        `;
+                        <div class="can-cap"></div>
+                        <div class="color-preview" style="background: ${color.code};"></div>
+                        <div class="can-label">${color.name}</div>
+                    `;
                     can.addEventListener('click', () => {
-                        if (gameFinished) {
-                            document.getElementById('messageDisplay').textContent = '🏁 Game finished! Press NEW to play again.';
+                        if (!gameActive || gameFinished) {
+                            document.getElementById('messageDisplay').textContent = '🏁 Game finished! Press RESET COLORS or refresh.';
                             return;
                         }
+                        colorPickCount++;
                         selectedColorName = color.name;
                         updateSelectedDisplay();
                         renderFreshCans();
+                        updateAllMetrics();
                         document.getElementById('messageDisplay').textContent = `🎨 Selected ${color.name}. Click on the picture.`;
                     });
                     container.appendChild(can);
@@ -751,7 +660,6 @@
                 document.getElementById('selectedColorDisplay').textContent = selectedColorName || 'none';
             }
 
-            // ---------- DRAW CANVAS (unchanged) ----------
             function drawCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.shadowBlur = 0;
@@ -788,16 +696,20 @@
                 drawDetailedBeaver(ctx, 170, 290, beaverColor);
             }
 
-            // ---------- CLICK HANDLER ----------
             function handleCanvasClick(e) {
-                if (gameFinished) {
-                    document.getElementById('messageDisplay').textContent = '🎯 Press NEW to start a fresh puzzle.';
+                if (!gameActive || gameFinished) {
+                    document.getElementById('messageDisplay').textContent = '🎯 Press RESET COLORS to continue or refresh.';
                     return;
                 }
+
+                clickCount++;
+                updateAllMetrics();
+
                 if (!selectedColorName) {
                     document.getElementById('messageDisplay').textContent = '⚠️ Pick a spray can first!';
                     return;
                 }
+
                 const rect = canvas.getBoundingClientRect();
                 const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
@@ -811,10 +723,12 @@
                         break;
                     }
                 }
+
                 if (!clickedRegion) {
                     document.getElementById('messageDisplay').textContent = '👆 Click inside a shape!';
                     return;
                 }
+
                 clickedRegion.playerColor = selectedColorName;
                 drawCanvas();
 
@@ -827,8 +741,8 @@
             }
 
             function finishGame() {
-                if (gameFinished) {
-                    document.getElementById('messageDisplay').textContent = '✨ Already finished! Start a new game.';
+                if (!gameActive || gameFinished) {
+                    document.getElementById('messageDisplay').textContent = '✨ Already finished. Use RESET COLORS to start again.';
                     return;
                 }
                 const allPainted = regions.every(r => r.playerColor !== null);
@@ -837,29 +751,58 @@
                     return;
                 }
 
+                let wrongCount = 0;
+                regions.forEach(r => {
+                    if (r.playerColor !== r.correctColor) wrongCount++;
+                });
+                errorScore = wrongCount;
+                correctnessFlag = (wrongCount === 0) ? 1 : 0;
+                giveUpFlag = 0;
+
+                gameActive = false;
                 gameFinished = true;
-                let correctCount = regions.filter(r => r.playerColor === r.correctColor).length;
-                const score = correctCount * 2;
-                updateScoreDisplay(correctCount);
+                stopTimer();
+                updateAllMetrics();
 
                 let feedback = '';
-                if (correctCount === regions.length) {
-                    feedback = '🎉 PERFECT SCORE! 10/10 — You matched all leftover clues! 🌟🌟🌟';
-                } else if (score >= 6) {
-                    feedback = `👍 Good job! Score: ${score}/10. Check the used cans for hints.`;
+                if (wrongCount === 0) {
+                    feedback = '🎉 PERFECT! All correct! ✅';
                 } else {
-                    feedback = `🌱 Keep trying! Score: ${score}/10. Look at the leftover percentages.`;
+                    feedback = `📊 Finished with ${wrongCount} error(s). Check the used cans for hints.`;
                 }
                 document.getElementById('messageDisplay').textContent = feedback;
+            }
 
-                if (!finishReported) {
-                    finishReported = true;
-                    window.__kb?.finish?.({
-                        finalScore: score,
-                        correctRegions: correctCount,
-                        totalRegions: regions.length
-                    });
+            function giveUp() {
+                if (!gameActive || gameFinished) {
+                    document.getElementById('messageDisplay').textContent = '🏁 Already ended.';
+                    return;
                 }
+                giveUpFlag = 1;
+                errorScore = 0;
+                correctnessFlag = 0;
+
+                gameActive = false;
+                gameFinished = true;
+                stopTimer();
+                updateAllMetrics();
+                document.getElementById('messageDisplay').textContent = '🏳️ You gave up. Press RESET COLORS to try again.';
+            }
+
+            function resetColors() {
+                resetCount++;
+                regions.forEach(r => r.playerColor = null);
+                drawCanvas();
+                updateAllMetrics();
+
+                if (gameFinished) {
+                    gameActive = true;
+                    gameFinished = false;
+                    stopTimer();
+                    startTime = Date.now();
+                    startTimer();
+                }
+                document.getElementById('messageDisplay').textContent = '🔄 Colors reset. Keep painting!';
             }
 
             canvas.addEventListener('click', handleCanvasClick);
@@ -871,18 +814,18 @@
             });
 
             document.getElementById('finishBtn').addEventListener('click', finishGame);
-            document.getElementById('newGameBtn').addEventListener('click', () => {
-                initGame();
-                drawCanvas();
-            });
+            document.getElementById('giveUpBtn').addEventListener('click', giveUp);
+            document.getElementById('resetBtn').addEventListener('click', resetColors);
 
             initGame();
         })();
     </script>
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('coloring-page-3');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

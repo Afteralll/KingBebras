@@ -38,7 +38,7 @@
             -webkit-backdrop-filter: blur(12px);
             padding: 1.8rem 1.8rem 1.5rem;
             border-radius: 80px 80px 40px 40px;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.25), inset 0 4px 12px rgba(255,255,240,0.7);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.25), inset 0 4px 12px rgba(255, 255, 240, 0.7);
             border: 2px solid rgba(255, 215, 140, 0.7);
             transition: all 0.2s;
         }
@@ -48,7 +48,7 @@
             margin: 0 auto;
             background: transparent !important;
             border-radius: 50px;
-            box-shadow: inset 0 0 0 4px rgba(106, 140, 94, 0.5), inset 0 8px 12px rgba(0,0,0,0.05), 0 12px 22px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 0 4px rgba(106, 140, 94, 0.5), inset 0 8px 12px rgba(0, 0, 0, 0.05), 0 12px 22px rgba(0, 0, 0, 0.2);
             border: 3px solid rgba(255, 235, 160, 0.8);
             cursor: crosshair;
             touch-action: none;
@@ -58,17 +58,19 @@
 
         .info-panel {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
             margin: 18px 8px 8px 8px;
             color: #2e2416;
             text-shadow: 2px 2px 0 rgba(255, 235, 150, 0.8);
             font-weight: bold;
+            gap: 8px;
         }
 
         .score-area {
             display: flex;
-            gap: 18px;
+            gap: 12px;
             background: rgba(255, 248, 200, 0.7);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
@@ -81,17 +83,18 @@
             box-shadow: inset 0 1px 6px #ffeab0, 0 6px 0 #b57a4a;
         }
 
-            .score-area span {
-                background: rgba(255,235,170,0.3);
-                padding: 4px 12px;
-                border-radius: 30px;
-            }
+        .score-area span {
+            background: rgba(255, 235, 170, 0.3);
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
 
         .buttons {
             display: flex;
             justify-content: center;
-            gap: 22px;
+            gap: 18px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -100,11 +103,11 @@
             border-bottom: 7px solid #b45f2b;
             color: #2c1d0a;
             font-weight: bold;
-            font-size: 1.4rem;
-            padding: 12px 24px;
-            min-width: 150px;
+            font-size: 1.2rem;
+            padding: 10px 18px;
+            min-width: 130px;
             border-radius: 60px;
-            box-shadow: 0 5px 0 #8b4e1f, 0 10px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 0 #8b4e1f, 0 10px 16px rgba(0, 0, 0, 0.2);
             cursor: pointer;
             transition: all 0.07s;
             text-transform: uppercase;
@@ -113,25 +116,32 @@
             backdrop-filter: blur(4px);
             background: rgba(255, 200, 110, 0.9);
             border: 1px solid #ffe494;
+            white-space: nowrap;
         }
 
-            .btn:active {
-                transform: translateY(5px);
-                box-shadow: 0 2px 0 #8b4e1f, 0 8px 12px rgba(0,0,0,0.2);
-                border-bottom-width: 4px;
-            }
+        .btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #8b4e1f, 0 8px 12px rgba(0, 0, 0, 0.2);
+            border-bottom-width: 4px;
+        }
 
-            .btn:disabled {
-                opacity: 0.6;
-                transform: none;
-                pointer-events: none;
-                filter: grayscale(0.2);
-            }
+        .btn:disabled {
+            opacity: 0.6;
+            transform: none;
+            pointer-events: none;
+            filter: grayscale(0.2);
+        }
 
         .reset-btn {
             background: rgba(245, 215, 140, 0.9);
             border-bottom-color: #a97941;
             color: #1f3a0e;
+        }
+
+        .give-up-btn {
+            background: rgba(255, 160, 140, 0.9);
+            border-bottom-color: #a94a41;
+            color: #3d1a0e;
         }
 
         .legend {
@@ -143,7 +153,7 @@
             font-weight: 700;
             text-shadow: 2px 2px 0 #ffeeaa;
             font-size: 1.1rem;
-            background: rgba(255,245,190,0.4);
+            background: rgba(255, 245, 190, 0.4);
             padding: 6px 18px;
             border-radius: 50px;
             backdrop-filter: blur(4px);
@@ -158,27 +168,39 @@
             gap: 6px;
         }
 
-        .final-score-box {
-            background: rgba(255, 245, 180, 0.8);
-            backdrop-filter: blur(5px);
-            padding: 10px 28px;
-            border-radius: 40px;
-            font-size: 1.7rem;
-            border: 2px solid #ffb054;
-            color: #2d1e09;
-            box-shadow: inset 0 2px 8px #ffd89c, 0 6px 0 #b37b48;
-            font-weight: bold;
-            display: inline-block;
-        }
-
         .hint-text {
             color: #4d3118;
             text-shadow: 1px 1px #ffecb3;
             font-weight: 600;
-            background: rgba(255,250,210,0.5);
+            background: rgba(255, 250, 210, 0.5);
             padding: 6px 18px;
             border-radius: 30px;
             backdrop-filter: blur(4px);
+        }
+
+        .header-box {
+            text-align: center;
+            margin-bottom: 12px;
+            color: #2e2416;
+            text-shadow: 2px 2px 0 #ffe49c;
+        }
+
+        .header-box h2 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .header-box p {
+            margin: 8px 0 0;
+            font-size: 1rem;
+            background: rgba(255, 245, 200, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 12px 18px;
+            border-radius: 30px;
+            display: inline-block;
+            line-height: 1.5;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -186,14 +208,23 @@
     <canvas id="bgCanvas"></canvas>
 
     <div class="game-container">
+        <div class="header-box">
+            <h2>🔥 BBQ party 🔥</h2>
+            <p>Four beavers are at a BBQ. They are looking at the food and picking which type of skewer they want.<br>
+            There are four skewers. Give one to each beaver so that they are all happy with the skewer they get.<br>
+            Drag a line between the beavers and the skewers to connect them. Press finish when done.</p>
+        </div>
+
         <canvas id="bbqCanvas" width="950" height="600"></canvas>
 
         <div class="info-panel">
             <div class="score-area">
-                <span id="timerDisplay">⏱️ 10.0</span>
-                <span id="clickDisplay">🖱️ 10.0</span>
-                <span id="connDisplay">🔗 10.0</span>
-                <span id="errorDisplay">⚠️ 10.0</span>
+                <span id="timerDisplay">⏱️ 0.0s</span>
+                <!-- These spans are hidden visually but remain for internal updates -->
+                <span id="clickDisplay" style="display:none;">🖱️ 0</span>
+                <span id="connDisplay" style="display:none;">🔗 0</span>
+                <span id="correctDisplay" style="display:none;">✅ 0</span>
+                <span id="resetDisplay" style="display:none;">🔄 0</span>
             </div>
         </div>
 
@@ -202,11 +233,9 @@
         </div>
 
         <div class="buttons">
-            <button class="btn" id="finishBtn">🔥 FINISH & SCORE</button>
+            <button class="btn" id="finishBtn">🔥 FINISH</button>
             <button class="btn reset-btn" id="resetBtn">🔄 NEW SKEWERS</button>
-        </div>
-        <div style="text-align: center; margin-top: 16px;">
-            <span class="final-score-box" id="finalScoreDisplay">⭐ final score —</span>
+            <button class="btn give-up-btn" id="giveUpBtn">😔 GIVE UP</button>
         </div>
         <div class="hint-text" style="text-align:center; margin-top: 12px; font-size:1rem;">
             👆 Drag from beaver to skewer · rainbow candies float behind!
@@ -354,12 +383,17 @@
             ];
 
             let assignments = [null, null, null, null];
-            let errorScore = 10.0, connectionScore = 10.0, timeScore = 10.0, clickScore = 10.0;
-            let connectionsMade = 0, clickCount = 0;
+            let correctnessCounter = 0;
+            let connectionScore = 0;
+            let timeScore = 0;
+            let clickScore = 0;
+            let connectionsMade = 0;
+            let clickCount = 0;
+            let resetCount = 0;
+            let giveUp = false;
             let gameStartTime = Date.now();
             let timerInterval = null;
             let gameFinished = false;
-            let finalScoreValue = 0;
             let isDragging = false;
             let dragStartBeaver = -1;
             let dragCurrentPos = { x: 0, y: 0 };
@@ -369,10 +403,11 @@
             const timerDisplay = document.getElementById('timerDisplay');
             const clickDisplay = document.getElementById('clickDisplay');
             const connDisplay = document.getElementById('connDisplay');
-            const errorDisplay = document.getElementById('errorDisplay');
-            const finalScoreSpan = document.getElementById('finalScoreDisplay');
+            const correctDisplay = document.getElementById('correctDisplay');
+            const resetDisplay = document.getElementById('resetDisplay');
             const finishBtn = document.getElementById('finishBtn');
             const resetBtn = document.getElementById('resetBtn');
+            const giveUpBtn = document.getElementById('giveUpBtn');
 
             const BEAVER_POS = [
                 { x: 130, y: 70 },
@@ -388,17 +423,13 @@
             ];
 
             function computeTimeScore() {
-                const elapsed = (Date.now() - gameStartTime) / 1000;
-                let penalty = elapsed > 60 ? 1 + Math.floor((elapsed - 60) / 20) : 0;
-                return Math.max(0, 10 - penalty);
+                return (Date.now() - gameStartTime) / 1000;
             }
             function computeClickScore() {
-                let penalty = clickCount > 30 ? 1 + Math.floor((clickCount - 30) / 5) : 0;
-                return Math.max(0, 10 - penalty);
+                return clickCount;
             }
             function computeConnectionScore() {
-                let penalty = connectionsMade > 4 ? Math.ceil((connectionsMade - 4) / 2) : 0;
-                return Math.max(0, 10 - penalty);
+                return connectionsMade;
             }
             function updateDynamicScores() {
                 if (gameFinished) return;
@@ -407,80 +438,134 @@
                 connectionScore = computeConnectionScore();
                 updateScoreUI();
             }
-            function timerTick() { if (!gameFinished) { timeScore = computeTimeScore(); updateScoreUI(); } }
-            function registerClick() { if (gameFinished) return; clickCount++; clickScore = computeClickScore(); updateScoreUI(); }
-            function registerConnection() { if (gameFinished) return; connectionsMade++; connectionScore = computeConnectionScore(); updateScoreUI(); }
-            function getAssignmentPenalty(arr) {
-                let penalty = 0.0;
-                const [a, b, c, d] = arr;
-                if (a === 3) penalty += 1.0;
-                if (b === 2 || b === 3) penalty += 1.0;
-                if (c !== null && (c === 0 || c === 1 || c === 2)) penalty += 0.5;
-                if (d !== null && (d === 1 || d === 2 || d === 3)) penalty += 0.5;
-                return penalty;
+            function timerTick() {
+                if (!gameFinished) {
+                    timeScore = computeTimeScore();
+                    updateScoreUI();
+                }
             }
-            function applyAssignmentPenaltyToErrorScore() {
-                errorScore = Math.max(0, errorScore - getAssignmentPenalty(assignments));
+            function registerClick() {
+                if (gameFinished) return;
+                clickCount++;
+                clickScore = clickCount;
+                updateScoreUI();
             }
+            function registerConnection() {
+                if (gameFinished) return;
+                connectionsMade++;
+                connectionScore = connectionsMade;
+                updateScoreUI();
+            }
+
             function updateScoreUI() {
-                timerDisplay.textContent = `⏱️ ${timeScore.toFixed(1)}`;
-                clickDisplay.textContent = `🖱️ ${clickScore.toFixed(1)}`;
-                connDisplay.textContent = `🔗 ${connectionScore.toFixed(1)}`;
-                errorDisplay.textContent = `⚠️ ${errorScore.toFixed(1)}`;
+                timerDisplay.textContent = `⏱️ ${timeScore.toFixed(1)}s`;
+                clickDisplay.textContent = `🖱️ ${clickScore}`;
+                connDisplay.textContent = `🔗 ${connectionScore}`;
+                correctDisplay.textContent = `✅ ${correctnessCounter}`;
+                resetDisplay.textContent = `🔄 ${resetCount}`;
             }
-            function allAssigned() { return assignments.every(s => s !== null); }
-            function computeFinalScore() {
-                return errorScore * 0.6 + connectionScore * 0.1 + timeScore * 0.2 + clickScore * 0.1;
+
+            function allAssigned() {
+                return assignments.every(s => s !== null);
             }
+
+            // Optimal solution: A(0) -> skewer 3 (index2), B(1)->2 (index1), C(2)->4 (index3), D(3)->1 (index0)
+            function computeCorrectness() {
+                return (assignments[0] === 2 ? 1 : 0) +
+                       (assignments[1] === 1 ? 1 : 0) +
+                       (assignments[2] === 3 ? 1 : 0) +
+                       (assignments[3] === 0 ? 1 : 0);
+            }
+
             function finishGame() {
                 if (gameFinished) return;
-                if (!allAssigned()) { alert('🦫 Every beaver needs a skewer!'); return; }
+                if (!allAssigned()) {
+                    alert('🦫 Every beaver needs a skewer!');
+                    return;
+                }
                 gameFinished = true;
                 if (timerInterval) clearInterval(timerInterval);
-                applyAssignmentPenaltyToErrorScore();
-                timeScore = computeTimeScore(); clickScore = computeClickScore(); connectionScore = computeConnectionScore();
+                timeScore = computeTimeScore();
+                clickScore = computeClickScore();
+                connectionScore = computeConnectionScore();
+                correctnessCounter = computeCorrectness();
                 updateScoreUI();
-                finalScoreValue = computeFinalScore();
-                finalScoreSpan.textContent = `🏆 FINAL: ${finalScoreValue.toFixed(2)} / 10.00`;
                 finishBtn.disabled = true;
+                giveUpBtn.disabled = true;
+                resetBtn.disabled = true;
 
-                window.__kb?.finish?.({ finalScoreValue, errorScore, timeScore, clickScore, connectionScore });
+                window.__kb?.finish?.({
+                    timeScore,
+                    clickScore,
+                    connectionScore,
+                    correctnessCounter,
+                    resetCount,
+                    giveUp: giveUp ? 1 : 0
+                });
             }
+
+            function giveUpAction() {
+                if (gameFinished) return;
+                gameFinished = true;
+                giveUp = true;
+                if (timerInterval) clearInterval(timerInterval);
+                timeScore = computeTimeScore();
+                clickScore = computeClickScore();
+                connectionScore = computeConnectionScore();
+                correctnessCounter = computeCorrectness();
+                updateScoreUI();
+                finishBtn.disabled = true;
+                giveUpBtn.disabled = true;
+                resetBtn.disabled = true;
+
+                window.__kb?.finish?.({
+                    timeScore,
+                    clickScore,
+                    connectionScore,
+                    correctnessCounter,
+                    resetCount,
+                    giveUp: 1
+                });
+            }
+
             function initializeNewGame() {
-                gameFinished = false; finishBtn.disabled = false;
+                gameFinished = false;
+                finishBtn.disabled = false;
+                giveUpBtn.disabled = false;
+                resetBtn.disabled = false;
                 assignments = [null, null, null, null];
-                connectionsMade = 0; clickCount = 0;
-                errorScore = 10.0; connectionScore = 10.0; clickScore = 10.0; timeScore = 10.0;
+                connectionsMade = 0;
+                clickCount = 0;
+                correctnessCounter = 0;
+                connectionScore = 0;
+                clickScore = 0;
+                timeScore = 0;
+                resetCount = 0;
+                giveUp = false;
                 gameStartTime = Date.now();
                 if (timerInterval) clearInterval(timerInterval);
                 timerInterval = setInterval(timerTick, 200);
                 updateScoreUI();
-                finalScoreSpan.textContent = `⭐ final score —`;
-            }
-            function performReset() {
-                errorScore = Math.max(0, errorScore - 1);
-                gameFinished = false; finishBtn.disabled = false;
-                assignments = [null, null, null, null];
-                connectionsMade = 0; clickCount = 0;
-                connectionScore = 10.0; clickScore = 10.0; timeScore = 10.0;
-                gameStartTime = Date.now();
-                if (timerInterval) clearInterval(timerInterval);
-                timerInterval = setInterval(timerTick, 200);
-                updateScoreUI();
-                finalScoreSpan.textContent = `⭐ final score —`;
             }
 
-            // ---------- ✨ ENHANCED DRAWING (better beavers & skewers) ----------
+            function performReset() {
+                if (gameFinished) return;
+                assignments = [null, null, null, null];
+                resetCount++;
+                updateDynamicScores();
+                updateScoreUI();
+            }
+
+            // ---------- ✨ ENHANCED DRAWING ----------
             function drawGameCanvas() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // ------- SKEWERS (wooden sticks with ingredients) -------
+                // ------- SKEWERS -------
                 SKEWER_POS.forEach((pos, idx) => {
                     const skewer = SKEWERS[idx];
                     const stickX = pos.x;
                     const stickY = pos.y;
 
-                    // Wood stick (3D effect)
                     ctx.shadowColor = '#3b2a1a';
                     ctx.shadowBlur = 10;
                     ctx.beginPath();
@@ -495,7 +580,6 @@
                     ctx.lineWidth = 12;
                     ctx.strokeStyle = '#c49a6c';
                     ctx.stroke();
-                    // wood grain lines
                     ctx.beginPath();
                     ctx.moveTo(stickX - 170, stickY - 2);
                     ctx.lineTo(stickX + 170, stickY - 2);
@@ -503,7 +587,6 @@
                     ctx.strokeStyle = '#a57248';
                     ctx.stroke();
 
-                    // Sharpened tip
                     ctx.shadowBlur = 8;
                     ctx.beginPath();
                     ctx.moveTo(stickX + 175, stickY - 6);
@@ -512,7 +595,6 @@
                     ctx.fillStyle = '#d4a373';
                     ctx.fill();
 
-                    // Ingredients (emoji style with glow)
                     ctx.shadowColor = '#3d2b1a';
                     ctx.shadowBlur = 12;
                     ctx.font = 'bold 32px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
@@ -525,7 +607,6 @@
                         ctx.fillText(emoji, startX + i * step, stickY - 8);
                     });
 
-                    // Skewer label
                     ctx.shadowBlur = 6;
                     ctx.font = 'bold 20px "Segoe UI", sans-serif';
                     ctx.fillStyle = '#fcf3d7';
@@ -533,13 +614,13 @@
                     ctx.shadowBlur = 0;
                 });
 
-                // ------- BEAVERS (cute chef beavers) -------
+                // ------- BEAVERS -------
                 BEAVER_POS.forEach((pos, idx) => {
-                    const x = pos.x, y = pos.y;
+                    const x = pos.x,
+                        y = pos.y;
                     ctx.shadowColor = '#4d2e1a';
                     ctx.shadowBlur = 16;
 
-                    // Body (furry gradient)
                     const bodyGrad = ctx.createRadialGradient(x - 8, y - 8, 10, x, y, 42);
                     bodyGrad.addColorStop(0, '#b8845c');
                     bodyGrad.addColorStop(0.7, '#8b5e3c');
@@ -551,7 +632,6 @@
                     ctx.lineWidth = 3;
                     ctx.stroke();
 
-                    // Ears
                     ctx.shadowBlur = 10;
                     ctx.beginPath();
                     ctx.ellipse(x - 28, y - 28, 15, 18, -0.2, 0, Math.PI * 2);
@@ -560,7 +640,6 @@
                     ctx.beginPath();
                     ctx.ellipse(x + 28, y - 28, 15, 18, 0.2, 0, Math.PI * 2);
                     ctx.fill();
-                    // inner ears
                     ctx.fillStyle = '#d9a57e';
                     ctx.beginPath();
                     ctx.ellipse(x - 26, y - 28, 9, 12, -0.2, 0, Math.PI * 2);
@@ -569,20 +648,16 @@
                     ctx.ellipse(x + 26, y - 28, 9, 12, 0.2, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Chef hat (tall)
-                    
                     ctx.fillStyle = '#f0e3ce';
                     ctx.beginPath();
                     ctx.ellipse(x, y - 36, 26, 10, 0, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Face (light belly)
                     ctx.beginPath();
                     ctx.ellipse(x, y - 4, 30, 28, 0, 0, Math.PI * 2);
                     ctx.fillStyle = '#e7c4a4';
                     ctx.fill();
 
-                    // Eyes (sparkly)
                     ctx.shadowBlur = 0;
                     ctx.beginPath();
                     ctx.arc(x - 12, y - 12, 9, 0, 2 * Math.PI);
@@ -606,7 +681,6 @@
                     ctx.arc(x + 7, y - 19, 2.8, 0, 2 * Math.PI);
                     ctx.fill();
 
-                    // Nose & smile
                     ctx.beginPath();
                     ctx.arc(x, y - 2, 5, 0, 2 * Math.PI);
                     ctx.fillStyle = '#6b3e2c';
@@ -618,7 +692,6 @@
                     ctx.quadraticCurveTo(x, y + 14, x + 8, y + 6);
                     ctx.stroke();
 
-                    // Blush
                     ctx.fillStyle = '#f7a9a0';
                     ctx.globalAlpha = 0.5;
                     ctx.beginPath();
@@ -629,21 +702,21 @@
                     ctx.fill();
                     ctx.globalAlpha = 1.0;
 
-                    // Label
                     ctx.shadowBlur = 8;
                     ctx.font = 'bold 22px "Segoe UI", sans-serif';
                     ctx.fillStyle = '#634B39';
                     ctx.fillText(BEAVERS[idx].label, x, y + 56);
 
-                    // Preference text
                     ctx.font = 'bold 14px "Segoe UI", sans-serif';
                     ctx.fillStyle = '#634B39';
-                    const prefs = ['I NEED CARROT🥕 ', 'I HATE ONIONS', 'AS MUCH POTATO AS POSSIBLE🥔', 'AS MUCH MEAT AS POSSIBLE🥩 '];
+                    const prefs = ['I NEED CARROT🥕 ', 'I HATE ONIONS', 'AS MUCH POTATO AS POSSIBLE🥔',
+                        'AS MUCH MEAT AS POSSIBLE🥩'
+                    ];
                     ctx.fillText(prefs[idx], x, y + 76);
                     ctx.shadowBlur = 0;
                 });
 
-                // ------- CONNECTION LINES (golden) -------
+                // ------- CONNECTION LINES -------
                 ctx.lineWidth = 10;
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = '#ffe594';
@@ -664,7 +737,6 @@
                 });
                 ctx.shadowBlur = 0;
 
-                // Drag preview line
                 if (isDragging && dragStartBeaver !== -1) {
                     const from = BEAVER_POS[dragStartBeaver];
                     ctx.beginPath();
@@ -687,11 +759,14 @@
             function handleMouseDown(e) {
                 if (gameFinished) return;
                 const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-                const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+                const scaleX = canvas.width / rect.width,
+                    scaleY = canvas.height / rect.height;
+                const mx = (e.clientX - rect.left) * scaleX,
+                    my = (e.clientY - rect.top) * scaleY;
                 for (let i = 0; i < BEAVER_POS.length; i++) {
                     if (Math.hypot(mx - BEAVER_POS[i].x, my - BEAVER_POS[i].y) < 45) {
-                        isDragging = true; dragStartBeaver = i;
+                        isDragging = true;
+                        dragStartBeaver = i;
                         dragCurrentPos = { x: mx, y: my };
                         registerClick();
                         e.preventDefault();
@@ -699,6 +774,7 @@
                     }
                 }
             }
+
             function handleMouseMove(e) {
                 if (!isDragging || gameFinished) return;
                 const rect = canvas.getBoundingClientRect();
@@ -706,27 +782,48 @@
                 dragCurrentPos.y = (e.clientY - rect.top) * (canvas.height / rect.height);
                 e.preventDefault();
             }
+
             function handleMouseUp(e) {
-                if (!isDragging || gameFinished) { isDragging = false; return; }
+                if (!isDragging || gameFinished) {
+                    isDragging = false;
+                    return;
+                }
                 const rect = canvas.getBoundingClientRect();
                 const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
                 const my = (e.clientY - rect.top) * (canvas.height / rect.height);
                 let target = -1;
                 for (let i = 0; i < SKEWER_POS.length; i++) {
                     const p = SKEWER_POS[i];
-                    if (mx > p.x - 220 && mx < p.x + 220 && my > p.y - 40 && my < p.y + 40) { target = i; break; }
+                    if (mx > p.x - 220 && mx < p.x + 220 && my > p.y - 40 && my < p.y + 40) {
+                        target = i;
+                        break;
+                    }
                 }
                 if (target !== -1 && dragStartBeaver !== -1) {
-                    for (let b = 0; b < assignments.length; b++) if (assignments[b] === target && b !== dragStartBeaver) assignments[b] = null;
+                    for (let b = 0; b < assignments.length; b++)
+                        if (assignments[b] === target && b !== dragStartBeaver) assignments[b] = null;
                     assignments[dragStartBeaver] = target;
                     registerConnection();
                 }
-                isDragging = false; dragStartBeaver = -1;
+                isDragging = false;
+                dragStartBeaver = -1;
                 e.preventDefault();
             }
-            function handleTouchStart(e) { e.preventDefault(); handleMouseDown({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }); }
-            function handleTouchMove(e) { e.preventDefault(); handleMouseMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }); }
-            function handleTouchEnd(e) { e.preventDefault(); handleMouseUp(e); }
+
+            function handleTouchStart(e) {
+                e.preventDefault();
+                handleMouseDown({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+            }
+
+            function handleTouchMove(e) {
+                e.preventDefault();
+                handleMouseMove({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY });
+            }
+
+            function handleTouchEnd(e) {
+                e.preventDefault();
+                handleMouseUp(e);
+            }
 
             function initGame() {
                 initializeNewGame();
@@ -740,6 +837,7 @@
                 canvas.addEventListener('touchcancel', handleTouchEnd);
                 finishBtn.addEventListener('click', finishGame);
                 resetBtn.addEventListener('click', performReset);
+                giveUpBtn.addEventListener('click', giveUpAction);
                 gameAnimationLoop();
             }
             initGame();
@@ -748,9 +846,11 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('bbq-party-2');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>
-</html>
+</html> 

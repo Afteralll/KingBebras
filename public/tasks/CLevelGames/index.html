@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>✨ Picture Flow · Sort in Order ✨</title>
+    <title>✨ Online Class ✨</title>
 
-    <!-- modern, friendly font (optional but keeps it clean) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* ----- RESET & BASE (enhanced visual only, zero logic change) ----- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -38,36 +36,61 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 4px 4px 12px rgba(0,20,50,0.08);
+            text-shadow: 4px 4px 12px rgba(0, 20, 50, 0.08);
         }
 
         h2 {
             font-weight: 500;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             margin: 0.5rem 0 1.2rem;
             color: #2c3e66;
             opacity: 0.9;
+            text-align: left;
         }
 
-        /* ----- REFERENCE IMAGE (elegant frame) ----- */
+        /* ----- LIVE TIMER BOX ----- */
+        #timer-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 10px 32px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 16px rgba(0, 20, 40, 0.08), 0 2px 0 0 #ffffff80 inset;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255,255,255,0.8);
+            color: #1e3c72;
+        }
+
+        #timer-display {
+            min-width: 70px;
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+        }
+
         #reference {
             width: 650px;
             max-width: 95%;
             border: none;
             border-radius: 28px;
-            box-shadow: 0 20px 30px -8px rgba(0, 20, 40, 0.25), 0 6px 0 0 #ffffff80 inset, 0 -2px 8px rgba(0,0,0,0.02) inset;
+            box-shadow: 0 20px 30px -8px rgba(0, 20, 40, 0.25), 0 6px 0 0 #ffffff80 inset,
+                0 -2px 8px rgba(0, 0, 0, 0.02) inset;
             margin-bottom: 30px;
             background: white;
             padding: 6px;
-            transition: transform 0.2s ease;
-            border: 1px solid rgba(255,255,255,0.7);
+            transition: transform 0.2s ease, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
 
-            #reference:hover {
-                transform: scale(1.002);
-            }
+        #reference:hover {
+            transform: scale(1.002);
+            box-shadow: 0 24px 36px -12px #142b44, 0 6px 0 0 #ffffffb0 inset;
+        }
 
-        /* ----- DRAGGABLE PIECES (modern cards, friendly) ----- */
         #pieces {
             display: flex;
             flex-wrap: wrap;
@@ -75,7 +98,7 @@
             gap: 18px;
             margin-bottom: 40px;
             padding: 8px 12px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(2px);
             border-radius: 60px;
             max-width: 1100px;
@@ -96,34 +119,41 @@
             transition: all 0.15s ease;
             border: 2px solid white;
             transform: rotate(0deg);
+            user-select: none;
         }
 
-            .piece:hover {
-                transform: translateY(-5px) scale(1.02);
-                box-shadow: 0 10px 0 #8fa9c9, 0 18px 22px -8px rgba(0, 20, 50, 0.25);
-                cursor: grab;
-            }
+        .piece:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 0 #8fa9c9, 0 18px 22px -8px rgba(0, 20, 50, 0.25);
+            cursor: grab;
+        }
 
-            .piece:active {
-                cursor: grabbing;
-                opacity: 0.9;
-                transform: scale(0.98);
-                box-shadow: 0 4px 0 #7a94b3, 0 8px 12px -4px rgba(0,0,0,0.1);
-            }
+        .piece:active {
+            cursor: grabbing;
+            opacity: 0.9;
+            transform: scale(0.98);
+            box-shadow: 0 4px 0 #7a94b3, 0 8px 12px -4px rgba(0, 0, 0, 0.1);
+        }
 
-        /* ----- HORIZONTAL BOARD (9 slots — clean & premium) ----- */
+        .piece.game-over {
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
         #board {
             display: flex;
             justify-content: center;
             gap: 12px;
-            flex-wrap: wrap; /* keeps responsiveness — same as original */
+            flex-wrap: wrap;
             margin: 0 auto 10px;
             padding: 16px 18px;
             background: rgba(255, 255, 255, 0.55);
             backdrop-filter: blur(8px);
             border-radius: 50px;
-            box-shadow: 0 20px 30px -10px rgba(19, 40, 70, 0.15), 0 4px 0 0 #cddae9 inset, 0 1px 0 0 #ffffff inset;
-            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 20px 30px -10px rgba(19, 40, 70, 0.15), 0 4px 0 0 #cddae9 inset,
+                0 1px 0 0 #ffffff inset;
+            border: 1px solid rgba(255, 255, 255, 0.6);
             max-width: fit-content;
         }
 
@@ -139,159 +169,154 @@
             box-shadow: 0 6px 0 #cdd9e9, 0 8px 14px rgba(44, 62, 100, 0.08);
             transition: border 0.1s, box-shadow 0.2s, background 0.2s;
             backdrop-filter: blur(2px);
+            user-select: none;
         }
 
-            .dropzone:hover {
-                background: #ffffffd6;
-                border-color: #6d8eb0;
-                box-shadow: 0 8px 0 #b0c4de, 0 12px 18px -6px #1e3a5f33;
-            }
+        .dropzone:hover {
+            background: #ffffffd6;
+            border-color: #6d8eb0;
+            box-shadow: 0 8px 0 #b0c4de, 0 12px 18px -6px #1e3a5f33;
+        }
 
-            .dropzone img {
-                width: 92px;
-                height: 92px;
-                pointer-events: none;
-                border-radius: 16px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-                object-fit: cover;
-                border: 2px solid white;
-            }
+        .dropzone.game-over {
+            pointer-events: none;
+        }
 
-        /* ----- FEEDBACK (correct / wrong) — more elegant glows ----- */
+        .dropzone img {
+            width: 92px;
+            height: 92px;
+            pointer-events: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
         .correct {
             border: 4px solid #2ecc71 !important;
-            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2), 0 6px 0 #1e8c4c, 0 8px 14px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2), 0 6px 0 #1e8c4c,
+                0 8px 14px rgba(0, 0, 0, 0.1) !important;
             background: #f0fff4;
         }
 
         .wrong {
             border: 4px solid #e74c3c !important;
-            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15), 0 6px 0 #b03a2d, 0 8px 14px rgba(0,0,0,0.1) !important;
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15), 0 6px 0 #b03a2d,
+                0 8px 14px rgba(0, 0, 0, 0.1) !important;
             background: #fff5f5;
         }
 
-        /* ----- BUTTON (friendly & prominent) ----- */
-        button {
+        .dropzone.correct img {
+            filter: drop-shadow(0 0 6px #2ecc71aa);
+        }
+
+        .dropzone.wrong img {
+            filter: drop-shadow(0 0 6px #e74c3caa);
+        }
+
+        #button-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
             margin-top: 40px;
-            padding: 16px 48px;
-            font-size: 26px;
+        }
+
+        button {
+            padding: 16px 40px;
+            font-size: 22px;
             font-weight: 700;
             font-family: 'Quicksand', sans-serif;
             border: none;
-            background: linear-gradient(145deg, #2e5aaf, #1f3f7a);
             color: white;
             border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 12px 0 #0f2340, 0 8px 20px rgba(25, 60, 110, 0.3);
             letter-spacing: 1px;
             transition: all 0.1s ease;
-            border: 1px solid #aac8ff;
             text-shadow: 0 1px 2px #00000020;
-        }
-
-            button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 14px 0 #0f2340, 0 12px 24px rgba(20, 50, 100, 0.35);
-                background: linear-gradient(145deg, #3a6bc5, #254f94);
-            }
-
-            button:active {
-                transform: translateY(5px);
-                box-shadow: 0 6px 0 #0f2340, 0 8px 14px rgba(0,0,0,0.2);
-            }
-
-        /* ----- RESULT PANEL (score card) ----- */
-        #result {
-            margin-top: 30px;
-            font-size: 24px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            padding: 20px 35px;
-            border-radius: 48px;
-            display: inline-block;
-            box-shadow: 0 20px 30px -8px #1e3a5f1a, 0 2px 0 0 white inset;
-            border: 1px solid rgba(255,255,255,0.8);
-            color: #1e3a5f;
-            line-height: 1.5;
-            max-width: 90%;
-        }
-
-            #result br {
-                display: block;
-                content: "";
-                margin: 6px 0;
-            }
-
-        /* small extra polish for the board container */
-        .board-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        /* keep pieces flexible, no logic touched */
-        .piece, .dropzone {
             user-select: none;
         }
 
-            /* subtle animation for correct/wrong after check */
-            .dropzone.correct img {
-                filter: drop-shadow(0 0 6px #2ecc71aa);
-            }
-
-            .dropzone.wrong img {
-                filter: drop-shadow(0 0 6px #e74c3caa);
-            }
-
-        /* responsive: keep board items nice on small screens */
-        @media (max-width: 700px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .piece {
-                width: 85px;
-                height: 85px;
-            }
-
-            .dropzone {
-                width: 90px;
-                height: 90px;
-            }
-
-                .dropzone img {
-                    width: 78px;
-                    height: 78px;
-                }
-
-            #board {
-                gap: 8px;
-            }
-
-            button {
-                font-size: 22px;
-                padding: 14px 32px;
-            }
+        button:active {
+            transform: translateY(5px);
         }
 
-        /* tiny extra detail: floating effect for reference */
-        #reference {
-            transition: box-shadow 0.3s;
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: none !important;
+            box-shadow: none !important;
         }
 
-            #reference:hover {
-                box-shadow: 0 24px 36px -12px #142b44, 0 6px 0 0 #ffffffb0 inset;
-            }
-
-        /* the whole page feels cohesive */
-        body {
-            backdrop-filter: blur(2px);
+        #btn-finish {
+            background: linear-gradient(145deg, #2e5aaf, #1f3f7a);
+            box-shadow: 0 12px 0 #0f2340, 0 8px 20px rgba(25, 60, 110, 0.3);
+            border: 1px solid #aac8ff;
         }
 
-        /* final touch: the pieces container gets a soft label vibe */
+        #btn-finish:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 0 #0f2340, 0 12px 24px rgba(20, 50, 100, 0.35);
+            background: linear-gradient(145deg, #3a6bc5, #254f94);
+        }
+
+        #btn-finish:active {
+            box-shadow: 0 6px 0 #0f2340, 0 8px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn-giveup {
+            background: linear-gradient(145deg, #e07060, #b8403a);
+            box-shadow: 0 12px 0 #6b1e1a, 0 8px 20px rgba(140, 40, 30, 0.3);
+            border: 1px solid #ffb8ae;
+        }
+
+        #btn-giveup:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 0 #6b1e1a, 0 12px 24px rgba(140, 40, 30, 0.35);
+            background: linear-gradient(145deg, #f08070, #c85045);
+        }
+
+        #btn-giveup:active {
+            box-shadow: 0 6px 0 #6b1e1a, 0 8px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn-reset {
+            background: linear-gradient(145deg, #7a8ea0, #4f6275);
+            box-shadow: 0 12px 0 #2d3845, 0 8px 20px rgba(40, 55, 70, 0.3);
+            border: 1px solid #bcccd8;
+        }
+
+        #btn-reset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 0 #2d3845, 0 12px 24px rgba(40, 55, 70, 0.35);
+            background: linear-gradient(145deg, #8ea0b0, #5f7285);
+        }
+
+        #btn-reset:active {
+            box-shadow: 0 6px 0 #2d3845, 0 8px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----- RESULT PANEL (simplified) ----- */
+        #result {
+            margin-top: 30px;
+            font-size: 26px;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 28px 42px;
+            border-radius: 48px;
+            display: inline-block;
+            box-shadow: 0 20px 30px -8px #1e3a5f1a, 0 2px 0 0 white inset;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            color: #1e3a5f;
+            max-width: 90%;
+            letter-spacing: -0.3px;
+            line-height: 1.5;
+        }
+
         #pieces::before {
-            content: "👇 drag these";
+            content: "";
             display: block;
             width: 100%;
             font-size: 1rem;
@@ -301,17 +326,59 @@
             opacity: 0.8;
             letter-spacing: 2px;
         }
+
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .piece {
+                width: 85px;
+                height: 85px;
+            }
+            .dropzone {
+                width: 90px;
+                height: 90px;
+            }
+            .dropzone img {
+                width: 78px;
+                height: 78px;
+            }
+            #board {
+                gap: 8px;
+            }
+            button {
+                font-size: 18px;
+                padding: 14px 28px;
+            }
+            #result {
+                font-size: 22px;
+                padding: 20px 28px;
+            }
+            #timer-box {
+                font-size: 1.3rem;
+                padding: 8px 24px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <h1>📸 Picture Flow</h1>
-    <h2>✨ drag into the correct order ✨</h2>
+    <h1>ONLINE CLASS</h1>
+    <h2>•Ava starts at a new school but keeps in touch with friends from her old school in an online call.<br> <br> 
 
-    <!-- Big guide image — exactly same src & id -->
+        •The friends at the old school are sitting next to each other in a row, but at different computers.<br> <br> 
+        
+        •This is how Ava sees her friends on her screen:</h2>
+
+    <!-- Live timer always visible -->
+    <div id="timer-box">
+        ⏱️ <span id="timer-display">00:00</span>
+    </div>
+
     <img id="reference" src="./OnlineClass/mainimage.PNG" alt="reference sequence">
-
-    <!-- Pieces — all logic identical, only styling improved -->
+    <h2><strong>Task:</strong><br><br>Order Ava's friends to show how they are seated in the row by dragging each into the correct position.<br><br>
+        Press <strong>finish</strong> when you have finished
+    </h2>
     <div id="pieces">
         <img src="./OnlineClass/girl1.PNG" class="piece" draggable="true" id="piece1" data-correct="1" alt="piece 1">
         <img src="./OnlineClass/girl2.PNG" class="piece" draggable="true" id="piece2" data-correct="2" alt="piece 2">
@@ -324,7 +391,6 @@
         <img src="./OnlineClass/girl9.PNG" class="piece" draggable="true" id="piece9" data-correct="9" alt="piece 9">
     </div>
 
-    <!-- Board: 9 spots — one horizontal row, same data attributes -->
     <div id="board">
         <div class="dropzone" data-spot="1"></div>
         <div class="dropzone" data-spot="2"></div>
@@ -337,33 +403,61 @@
         <div class="dropzone" data-spot="9"></div>
     </div>
 
-    <button onclick="checkAnswer()">✓ Finish</button>
+    <div id="button-row">
+        <button id="btn-finish" onclick="checkAnswer()">✓ Finish</button>
+        <button id="btn-giveup" onclick="giveUp()">🏳 Give Up</button>
+        <button id="btn-reset" onclick="resetBoard()">↺ Reset</button>
+    </div>
 
     <div id="result"></div>
 
     <script>
         // ============================================================
-        //  EXACT SAME GAME LOGIC — not a single line changed.
-        //  Only visual presentation is modernized.
+        //  STATE VARIABLES
         // ============================================================
-
         let draggedPiece = null;
-
-        /* -------- SCORES (same as original) -------- */
-        let errorScore = 10;
-        let timeScore = 10;
-        let clickScore = 10;
-        let logicScore = 0;
-
         let clicks = 0;
-        let wrongPlacements = 0;
-
         let firstMoveDone = false;
+        let gameOver = false;
         let finishReported = false;
 
-        let startTime = Date.now();
+        // New metrics
+        let logicFlag = 0;
+        let resetCount = 0;
+        let giveUpFlag = 0;
 
-        /* Shuffle — exactly as before */
+        let startTime = Date.now();
+        let timerInterval = null;
+
+        // ============================================================
+        //  LIVE TIMER DISPLAY
+        // ============================================================
+        function startTimer() {
+            const display = document.getElementById("timer-display");
+            timerInterval = setInterval(() => {
+                if (gameOver) return;
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const secs = (elapsed % 60).toString().padStart(2, '0');
+                display.textContent = `${mins}:${secs}`;
+            }, 200);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            // final update
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const secs = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+        }
+
+        // ============================================================
+        //  SHUFFLE ON LOAD
+        // ============================================================
         window.onload = function () {
             let container = document.getElementById("pieces");
             for (let i = container.children.length; i >= 0; i--) {
@@ -371,93 +465,100 @@
                     container.children[Math.random() * i | 0]
                 );
             }
+            startTimer();
         };
 
-        /* -------- DRAG (identical) -------- */
+        // ============================================================
+        //  DRAG EVENTS
+        // ============================================================
         document.querySelectorAll(".piece").forEach(piece => {
-            piece.addEventListener("dragstart", function () {
+            piece.addEventListener("dragstart", function (e) {
+                if (gameOver) {
+                    e.preventDefault();
+                    return;
+                }
                 draggedPiece = this;
                 clicks++;
-                updateClickScore();
             });
         });
 
-        /* -------- DROP (unchanged) -------- */
+        // ============================================================
+        //  DROP EVENTS
+        // ============================================================
         document.querySelectorAll(".dropzone").forEach(zone => {
             zone.addEventListener("dragover", function (e) {
+                if (gameOver) return;
                 e.preventDefault();
             });
 
-            zone.addEventListener("drop", function () {
-                clicks++;
-                updateClickScore();
+            zone.addEventListener("drop", function (e) {
+                if (gameOver) return;
+                if (!draggedPiece) return;
 
-                /* LOGICAL REASONING — first move should be piece1 or piece9 */
+                clicks++;
+
+                // LOGICAL REASONING FLAG: first move should be piece1 or piece9
                 if (!firstMoveDone) {
                     if (
                         draggedPiece.dataset.correct == "1" ||
                         draggedPiece.dataset.correct == "9"
                     ) {
-                        logicScore = 10;
+                        logicFlag = 1;
                     }
                     firstMoveDone = true;
                 }
 
-                /* ERROR SCORE — reduce if placed in wrong spot */
-                if (
-                    draggedPiece.dataset.correct !== this.dataset.spot
-                ) {
-                    wrongPlacements++;
-                    errorScore = Math.max(0, 10 - wrongPlacements);
-                }
-
-                /* normal dropping: if zone already has child, move it back */
                 if (this.children.length > 0) {
                     document.getElementById("pieces").appendChild(this.children[0]);
                 }
 
                 this.appendChild(draggedPiece);
+                draggedPiece = null;
             });
         });
 
-        /* ---------- CLICK SCORE (unchanged) ---------- */
-        function updateClickScore() {
-            if (clicks > 20) {
-                clickScore = Math.max(0, 10 - Math.floor((clicks - 20) / 5) - 1);
-            }
-        }
+        // ============================================================
+        //  RESET BUTTON
+        // ============================================================
+        function resetBoard() {
+            if (gameOver) return;
+            resetCount++;
 
-        /* ---------- TIME SCORE (unchanged) ---------- */
-        function updateTimeScore() {
-            let seconds = Math.floor((Date.now() - startTime) / 1000);
-            if (seconds <= 60) {
-                timeScore = 10;
-            } else {
-                timeScore = Math.max(0, 10 - Math.floor((seconds - 60) / 20) - 1);
-            }
-        }
-
-        /* ---------- CHECK (identical logic) ---------- */
-        function checkAnswer() {
             let zones = document.querySelectorAll(".dropzone");
-            let filled = 0;
+            let piecesContainer = document.getElementById("pieces");
+
             zones.forEach(zone => {
-                if (zone.children.length) filled++;
+                while (zone.children.length > 0) {
+                    piecesContainer.appendChild(zone.children[0]);
+                }
+                zone.classList.remove("correct");
+                zone.classList.remove("wrong");
             });
 
-            if (filled < 9) {
-                document.getElementById("result").innerHTML = "Place all 9 pictures before finishing the game.";
-                return;
-            }
+            document.getElementById("result").innerHTML = "";
+        }
 
-            updateTimeScore();
+        // ============================================================
+        //  EVALUATE & END GAME (called by Finish or Give Up)
+        // ============================================================
+        function evaluateGame(isGiveUp) {
+            if (gameOver) return;
+            gameOver = true;
+            giveUpFlag = isGiveUp ? 1 : 0;
 
+            stopTimer();
+            const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+
+            let zones = document.querySelectorAll(".dropzone");
             let correct = 0;
-            document.querySelectorAll(".dropzone").forEach(zone => {
+            let filled = 0;
+
+            zones.forEach(zone => {
                 zone.classList.remove("correct");
                 zone.classList.remove("wrong");
 
-                if (zone.children.length) {
+                if (zone.children.length > 0) {
+                    filled++;
                     let piece = zone.children[0];
                     if (piece.dataset.correct === zone.dataset.spot) {
                         zone.classList.add("correct");
@@ -468,48 +569,95 @@
                 }
             });
 
-            /* FINAL WEIGHTED SCORE (same formula) */
-            let finalScore = (errorScore * 0.60) + (timeScore * 0.20) + (logicScore * 0.10) + (clickScore * 0.10);
+            // Error score: number of spots NOT having the correct piece
+            let errorScore = 0;
+            zones.forEach(zone => {
+                if (zone.children.length === 0) {
+                    errorScore++;
+                } else {
+                    let piece = zone.children[0];
+                    if (piece.dataset.correct !== zone.dataset.spot) {
+                        errorScore++;
+                    }
+                }
+            });
 
+            let correctnessFlag = (correct === 9 && filled === 9) ? 1 : 0;
+
+            // Disable buttons & add game-over styling
+            document.getElementById("btn-finish").disabled = true;
+            document.getElementById("btn-giveup").disabled = true;
+            document.getElementById("btn-reset").disabled = true;
+
+            document.querySelectorAll(".piece").forEach(p => p.classList.add("game-over"));
+            document.querySelectorAll(".dropzone").forEach(z => z.classList.add("game-over"));
+
+            // Report to KB (all metrics still sent)
             if (!finishReported) {
                 finishReported = true;
                 window.__kb?.finish?.({
-                    finalScore: Number(finalScore.toFixed(2)),
-                    correct,
+                    errorScore: errorScore,
+                    timeScore: elapsedSeconds,
+                    logicFlag: logicFlag,
+                    clickScore: clicks,
+                    correctnessFlag: correctnessFlag,
+                    giveUpFlag: giveUpFlag,
+                    resetCount: resetCount,
+                    correct: correct,
                     placed: filled,
-                    total: 9,
-                    errorScore,
-                    timeScore,
-                    logicScore,
-                    clickScore
+                    total: 9
                 });
             }
 
-            if (correct === 9) {
-                document.getElementById("result").innerHTML = `
-🎉 Perfect Order!<br><br>
-Error Score: ${errorScore}/10 <br>
-Time Score: ${timeScore}/10 <br>
-Logic Score: ${logicScore}/10 <br>
-Click Score: ${clickScore}/10 <br><br>
-FINAL SCORE: ${finalScore.toFixed(2)} / 10
-`;
+            // Display only a simple game‑over message (no scores)
+            const resultDiv = document.getElementById("result");
+            if (isGiveUp) {
+                resultDiv.innerHTML = "🏁 Game ended. Thank you for playing!";
             } else {
-                document.getElementById("result").innerHTML = `
-${correct} of 9 correct <br><br>
-Error Score: ${errorScore}/10 <br>
-Time Score: ${timeScore}/10 <br>
-Logic Score: ${logicScore}/10 <br>
-Click Score: ${clickScore}/10 <br><br>
-Current Weighted Score: ${finalScore.toFixed(2)} / 10
-`;
+                if (correctnessFlag === 1) {
+                    resultDiv.innerHTML = "🎉 Perfect! Well done.";
+                } else {
+                    resultDiv.innerHTML = "👍 Game completed. Great effort!";
+                }
             }
         }
+
+        // ============================================================
+        //  FINISH BUTTON
+        // ============================================================
+        function checkAnswer() {
+            if (gameOver) return;
+
+            let zones = document.querySelectorAll(".dropzone");
+            let filled = 0;
+            zones.forEach(zone => {
+                if (zone.children.length) filled++;
+            });
+
+            if (filled < 9) {
+                document.getElementById("result").innerHTML =
+                    "Place all 9 pictures before finishing the game.";
+                return;
+            }
+
+            evaluateGame(false);
+        }
+
+        // ============================================================
+        //  GIVE UP BUTTON
+        // ============================================================
+        function giveUp() {
+            if (gameOver) return;
+            evaluateGame(true);
+        }
     </script>
+
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('online-class-picture-flow');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 

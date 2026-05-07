@@ -144,11 +144,13 @@
             margin-bottom: 1.5rem;
             font-family: monospace;
             font-weight: bold;
+            flex-wrap: wrap;
         }
 
         .stat-item {
             color: #b85c00;
             font-size: 1rem;
+            margin: 0.2rem 0;
         }
 
         .stat-value {
@@ -300,32 +302,29 @@
             margin: 0.5rem 0;
         }
 
-        .game-btn {
+        /* ----- Give Up Button Styling ----- */
+        .give-up-btn {
+            background: #ffb347;
+            border: 3px solid #ffaa66;
+            border-radius: 50px;
+            padding: 10px 30px;
+            font-size: 1.1rem;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 0.7rem 1.8rem;
-            border: none;
-            background: #ffaa44;
             color: #5a2e0e;
             cursor: pointer;
-            border-radius: 60px !important;
+            margin-top: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.1s linear;
-            margin-top: 0.5rem;
-            box-shadow: 0 6px 0 #b85c00;
+            letter-spacing: 1px;
+            transition: background 0.2s;
         }
-
-        .game-btn:hover {
-            background: #ffcc66;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #b85c00;
+        .give-up-btn:hover {
+            background: #ff9900;
         }
-
-        .game-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #b85c00;
+        .give-up-btn:disabled {
+            opacity: 0.6;
+            cursor: default;
         }
 
         footer {
@@ -348,13 +347,15 @@
         </div>
 
         <div class="desc-panel">
-            🍭 Each door has 5 yummy attributes: SHAPE · PATTERN · WINDOW · HANDLE · COLOR.<br>
-            Find the door where ALL attributes are DIFFERENT from the previous door. Click the correct one!
+            🍭 Beaver Josie is trapped in a magic house. She wants to get out but can only open a door if it is completely different from the door she just came through.<br>
+            🍭Two doors are completely different if their shape, pattern, window shape, and handle shape differ.<br>
+            🍭There are 3 rounds
         </div>
 
         <div class="stats-row">
             <div class="stat-item">🎯 ROUND: <span id="roundDisplay" class="stat-value">1</span></div>
             <div class="stat-item" id="errorStatItem">📊 CANDY SCORE: <span id="errorScoreDisplay" class="stat-value">10.0</span></div>
+            <div class="stat-item">✅ CORRECT: <span id="correctCountDisplay" class="stat-value">0</span></div>
             <div class="stat-item">⏱️ TIME: <span id="timeDisplay" class="stat-value">0s</span></div>
         </div>
 
@@ -371,7 +372,7 @@
         <div class="info-panel">
             <div id="result" class="result-text">⚡ Round 1 / 3 - Choose the right door</div>
             <div id="scoreInfo" class="score-text"></div>
-            <button class="game-btn" id="nextRoundBtn">➡️ NEXT ROUND</button>
+            <button id="giveUpButton" class="give-up-btn">🏳️ GIVE UP 🏳️</button>
         </div>
         <footer>🌈 floating candies | rainbow magic | trust your intuition 🍬</footer>
     </div>
@@ -388,10 +389,14 @@
         let choices = [];
         let currentRound = 1;
         const maxRounds = 3;
-        let errorScore = 10;
+        let errorScore = 0;
+        let totalErrors = 0;
+        let correctCount = 0;               // ✅ number of completely correct doors chosen
+        let giveUp = false;                 // 🏳️ flag that becomes true if student gives up
         let startTime = Date.now();
         let gameActive = true;
         let timerInterval = null;
+        let selectTimeout = null;           // to cancel pending round transition if give up
 
         const prevDoorDiv = document.getElementById("prevDoor");
         const choicesContainer = document.getElementById("choices");
@@ -400,8 +405,9 @@
         const roundDisplaySpan = document.getElementById("roundDisplay");
         const errorScoreSpan = document.getElementById("errorScoreDisplay");
         const timeDisplaySpan = document.getElementById("timeDisplay");
-        const nextRoundBtn = document.getElementById("nextRoundBtn");
-        const errorStatItem = document.getElementById("errorStatItem"); // for hiding error score display
+        const correctCountDisplay = document.getElementById("correctCountDisplay");
+        const giveUpButton = document.getElementById("giveUpButton");
+        const errorStatItem = document.getElementById("errorStatItem");
 
         function rand(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
@@ -472,13 +478,6 @@
             return errors;
         }
 
-        // Updated time score: starts at 10, decreases by 1 for every 20 seconds after 60s
-        function getTimeScore(seconds) {
-            if (seconds <= 60) return 10;
-            const penalty = Math.floor((seconds - 61) / 20) + 1;
-            return Math.max(0, 10 - penalty);
-        }
-
         function brightenColor(color) {
             if (color === 'purple') return '#cc66ff';
             if (color === 'green') return '#66ff66';
@@ -525,6 +524,10 @@
             timerInterval = setInterval(updateTimer, 1000);
         }
 
+        function updateCorrectDisplay() {
+            correctCountDisplay.innerText = correctCount;
+        }
+
         function renderGame() {
             prevDoorDiv.innerHTML = "";
             if (previousDoor) {
@@ -535,7 +538,8 @@
                 choicesContainer.appendChild(createDoorElement(door, i, true));
             });
             roundDisplaySpan.innerText = currentRound + " / " + maxRounds;
-            // Error score is hidden completely from student
+            errorStatItem.style.display = 'none';
+            updateCorrectDisplay();
         }
 
         let isWaiting = false;
@@ -546,17 +550,19 @@
             const chosen = choices[selectedIdx];
             const errors = countErrors(previousDoor, chosen);
 
-            // Still track error score internally, but don't show any feedback
-            if (errors > 0) {
-                errorScore -= errors * 0.5;
-                if (errorScore < 0) errorScore = 0;
+            if (errors === 0) {
+                correctCount++;
+                updateCorrectDisplay();
+            } else {
+                errorScore += errors ;
+                totalErrors += errors;
             }
 
-            // Neutral message – no right/wrong indication
             resultDiv.innerHTML = "🔹 Door selected. Loading next round...";
 
             gameActive = false;
-            setTimeout(() => {
+            // Store the timeout ID so we can cancel it on give up
+            selectTimeout = setTimeout(() => {
                 isWaiting = false;
                 if (currentRound === maxRounds) {
                     endGame();
@@ -567,82 +573,81 @@
                     renderGame();
                     gameActive = true;
                     resultDiv.innerHTML = `🔮 Round ${currentRound} / ${maxRounds} - Find the magic door!`;
-                    if (currentRound === maxRounds) {
-                        nextRoundBtn.innerText = "🏁 FINISH GAME";
-                    } else {
-                        nextRoundBtn.innerText = "➡️ NEXT ROUND";
-                    }
                 }
+                selectTimeout = null;
             }, 800);
         }
 
         function endGame() {
             if (timerInterval) clearInterval(timerInterval);
+            if (selectTimeout) clearTimeout(selectTimeout);   // prevent duplicate end
             gameActive = false;
 
             const totalTime = (Date.now() - startTime) / 1000;
-            const timeScore = getTimeScore(totalTime);
-            const finalErrorScore = Math.max(0, errorScore);
-            // Final score = 70% error + 30% time, out of 10
-            const totalScore = 0.7 * finalErrorScore + 0.3 * timeScore;
 
             choicesContainer.innerHTML = "";
             prevDoorDiv.innerHTML = "";
 
-            // Student sees only a completion message, no score
-            resultDiv.innerHTML = "✨ GAME COMPLETE ✨";
-            scoreInfoSpan.innerHTML = "";  // no score revealed
+            if (giveUp) {
+                resultDiv.innerHTML = "🏳️ GAME OVER – You gave up! 🌈";
+            } else {
+                resultDiv.innerHTML = "✨ GAME COMPLETE ✨";
+            }
 
-            nextRoundBtn.disabled = true;
-            nextRoundBtn.style.opacity = "0.5";
-            nextRoundBtn.innerText = "✨ GAME OVER ✨";
+            scoreInfoSpan.innerHTML = `✅ Correct doors: ${correctCount} | ❌ Errors: ${totalErrors} | 🍬 Candy score: ${errorScore.toFixed(1)}`;
 
-            // Keep hidden
             errorStatItem.style.display = 'none';
             timeDisplaySpan.innerText = totalTime.toFixed(1) + "s";
+            roundDisplaySpan.innerText = maxRounds + " / " + maxRounds;
 
-            // Still report score to task SDK (invisible to student)
-            window.__kb?.finish?.({ totalScore, finalErrorScore, timeScore, totalTime });
+            // Disable the give-up button after game ends
+            giveUpButton.disabled = true;
+
+            // Send final stats to the task SDK, including giveUp flag
+            window.__kb?.finish?.({
+                totalTime,
+                totalErrors,
+                errorScore,
+                correctCount,
+                giveUp: giveUp ? 1 : 0
+            });
         }
 
-        nextRoundBtn.onclick = () => {
-            if (!gameActive && !isWaiting && currentRound < maxRounds) {
-                currentRound++;
-                previousDoor = generateDoor();
-                choices = generateChoices(previousDoor);
-                renderGame();
-                gameActive = true;
-                resultDiv.innerHTML = `🔮 Round ${currentRound} / ${maxRounds} - Find the magic door!`;
-                if (currentRound === maxRounds) {
-                    nextRoundBtn.innerText = "🏁 FINISH GAME";
-                } else {
-                    nextRoundBtn.innerText = "➡️ NEXT ROUND";
-                }
-            } else if (currentRound === maxRounds && !gameActive && !isWaiting) {
-                endGame();
+        // ----- GIVE UP HANDLER -----
+        giveUpButton.addEventListener('click', () => {
+            if (!gameActive) return;
+            giveUp = true;
+            // Abort any pending transition
+            if (selectTimeout) {
+                clearTimeout(selectTimeout);
+                selectTimeout = null;
             }
-        };
+            endGame();
+        });
 
         function initGame() {
-            errorScore = 10;
+            errorScore = 0;
+            totalErrors = 0;
+            correctCount = 0;
+            giveUp = false;
             currentRound = 1;
             startTime = Date.now();
             gameActive = true;
             isWaiting = false;
+            selectTimeout = null;
             previousDoor = generateDoor();
             choices = generateChoices(previousDoor);
+
+            // Re-enable give-up button and reset display
+            giveUpButton.disabled = false;
+            updateCorrectDisplay();
+
             renderGame();
             startTimer();
 
-            // Hide error score completely from student
             errorStatItem.style.display = 'none';
-            scoreInfoSpan.innerHTML = ""; // no score text
+            scoreInfoSpan.innerHTML = "";
             resultDiv.innerHTML = "🔮 Round 1 / 3 - Choose the correct door";
-
-            nextRoundBtn.innerText = "➡️ NEXT ROUND";
-            nextRoundBtn.disabled = false;
-            nextRoundBtn.style.opacity = "1";
-            gameActive = true;
         }
 
         initGame();
@@ -720,8 +725,10 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('magic-house-3');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

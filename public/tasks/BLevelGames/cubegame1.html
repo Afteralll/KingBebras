@@ -21,17 +21,14 @@
             width: 100vw;
         }
 
-        /* Glass-morphism UI panel - MUCH SMALLER */
         #ui {
             position: absolute;
             top: 15px;
-            left: 0;
-            right: 0;
-            width: 100%;
+            left: 15px;
             z-index: 20;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
             pointer-events: none;
         }
 
@@ -39,32 +36,34 @@
             background: rgba(15, 25, 45, 0.85);
             backdrop-filter: blur(10px);
             border-radius: 1rem;
-            padding: 0.4rem 0.9rem 0.6rem 0.9rem;
+            padding: 0.8rem 1.2rem 1rem 1.2rem;
             display: inline-block;
             border: 1px solid rgba(100, 150, 255, 0.4);
             box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.4);
             pointer-events: auto;
             transition: all 0.2s ease;
+            max-width: 480px;
+            width: auto;
         }
 
         h2 {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             letter-spacing: -0.2px;
             background: linear-gradient(135deg, #ffffff, #b9d0ff);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.3rem;
             display: inline-block;
         }
 
         .question-badge {
             background: #1e2a3eaa;
             border-radius: 50px;
-            padding: 0.15rem 0.7rem;
+            padding: 0.2rem 0.9rem;
             display: inline-block;
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             font-weight: 500;
             margin-bottom: 0.4rem;
             backdrop-filter: blur(4px);
@@ -72,13 +71,79 @@
             color: #cfdfff;
         }
 
-        /* Answer palette - compact grid */
+        /* Explanation always visible */
+        .explanation-content {
+            background: rgba(10, 18, 32, 0.85);
+            border: 1px solid rgba(100, 150, 255, 0.25);
+            border-radius: 0.7rem;
+            padding: 0.6rem 0.8rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.65rem;
+            line-height: 1.5;
+            color: #cfd9f0;
+            backdrop-filter: blur(8px);
+            text-align: left;
+        }
+        .explanation-content .shape-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: flex-start;
+            margin: 0.5rem 0;
+        }
+        .explanation-content .shape-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: #dde4f8;
+        }
+        .explanation-content .shape-dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+        }
+        .explanation-content .dot-circle {
+            border-radius: 50%;
+            background: #FF4D6D;
+        }
+        .explanation-content .dot-diamond {
+            background: #9D4EDD;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .explanation-content .dot-ellipse {
+            width: 14px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E63946;
+        }
+        .explanation-content .dot-pentagon {
+            background: #3A86FF;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+        .explanation-content .dot-star {
+            background: #FFBE0B;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        .explanation-content .dot-triangle {
+            background: #2ECC71;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .timer {
+            font-size: 0.8rem;
+            color: #ccddff;
+            margin-bottom: 0.4rem;
+            font-family: monospace;
+            letter-spacing: 0.3px;
+        }
+
         #palette {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.35rem;
-            margin: 0.3rem 0 0.3rem 0;
+            justify-content: flex-start;
+            gap: 0.4rem;
+            margin: 0.3rem 0 0.5rem 0;
         }
 
         .answer-btn {
@@ -87,44 +152,83 @@
             border: 1px solid rgba(80, 130, 210, 0.5);
             color: white;
             font-weight: 500;
-            font-size: 0.7rem;
-            padding: 0.25rem 0.7rem;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.9rem;
             border-radius: 40px;
             cursor: pointer;
             transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 7px;
             font-family: inherit;
             letter-spacing: 0.2px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-            .answer-btn:hover {
-                background: #2c3f66;
-                border-color: #7aa9ff;
-                transform: translateY(-1px);
-            }
+        .answer-btn:hover {
+            background: #2c3f66;
+            border-color: #7aa9ff;
+            transform: translateY(-1px);
+        }
 
-            .answer-btn:active {
-                transform: translateY(1px);
-            }
+        .answer-btn:active {
+            transform: translateY(1px);
+        }
 
-        /* action buttons row - compact */
+        .answer-btn.selected {
+            background: #3f5e9e;
+            border-color: #ffd966;
+            box-shadow: 0 0 8px rgba(255, 220, 100, 0.4);
+            transform: scale(1.02);
+        }
+
+        .shape-badge {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: currentColor;
+        }
+        .shape-circle {
+            border-radius: 50%;
+            background: #FF4D6D;
+        }
+        .shape-diamond {
+            background: #9D4EDD;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .shape-ellipse {
+            width: 18px;
+            height: 11px;
+            border-radius: 50%;
+            background: #E63946;
+        }
+        .shape-pentagon {
+            background: #3A86FF;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+        .shape-star {
+            background: #FFBE0B;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        .shape-triangle {
+            background: #2ECC71;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
         .action-bar {
             display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 0.3rem;
+            justify-content: flex-start;
+            gap: 0.6rem;
+            margin-top: 0.4rem;
         }
 
         .action-btn {
             background: rgba(10, 20, 35, 0.9);
             border: 1px solid #4a627a;
-            padding: 0.25rem 0.8rem;
+            padding: 0.35rem 1rem;
             border-radius: 30px;
             font-weight: 500;
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.15s;
             color: #eef4ff;
@@ -132,17 +236,16 @@
             font-family: inherit;
         }
 
-            .action-btn:hover {
-                background: #2a3b54;
-                border-color: #80aaff;
-                transform: scale(0.97);
-            }
+        .action-btn:hover {
+            background: #2a3b54;
+            border-color: #80aaff;
+            transform: scale(0.97);
+        }
 
-            .action-btn:active {
-                background: #1e2c44;
-            }
+        .action-btn:active {
+            background: #1e2c44;
+        }
 
-        /* subtle indicator panel - smaller */
         .info-tip {
             position: absolute;
             bottom: 12px;
@@ -159,7 +262,6 @@
             border-left: 2px solid #5f8eff;
         }
 
-        /* subtle footer for orbit hint */
         .controls-hint {
             position: absolute;
             bottom: 12px;
@@ -176,36 +278,33 @@
             letter-spacing: 0.2px;
         }
 
-        /* selected state for answer */
-        .answer-btn.selected {
-            background: #3f5e9e;
-            border-color: #ffd966;
-            box-shadow: 0 0 8px rgba(255, 220, 100, 0.4);
-            transform: scale(1.02);
+        .game-over .answer-btn,
+        .game-over .action-btn {
+            pointer-events: none;
+            opacity: 0.6;
+            cursor: default;
         }
 
         @media (max-width: 650px) {
-            .game-container {
-                padding: 0.3rem 0.7rem 0.5rem 0.7rem;
-                margin: 0 10px;
+            #ui {
+                left: 5px;
+                top: 10px;
             }
-
+            .game-container {
+                padding: 0.5rem 0.8rem 0.7rem 0.8rem;
+                max-width: 95vw;
+            }
             .answer-btn {
-                padding: 0.2rem 0.6rem;
+                padding: 0.25rem 0.7rem;
+                font-size: 0.7rem;
+            }
+            .action-btn {
+                padding: 0.25rem 0.8rem;
                 font-size: 0.65rem;
             }
-
-            h2 {
-                font-size: 0.8rem;
-            }
-
-            .action-btn {
-                padding: 0.2rem 0.7rem;
-                font-size: 0.6rem;
-            }
-
-            .question-badge {
-                font-size: 0.6rem;
+            .explanation-content {
+                font-size: 0.58rem;
+                padding: 0.4rem 0.5rem;
             }
         }
     </style>
@@ -213,34 +312,62 @@
 <body>
 
     <div id="ui">
-        <div class="game-container">
+        <div class="game-container" id="gameContainer">
             <h2>🔍 BEBRAS CUBE</h2>
             <div class="question-badge">⚡ Which shape is opposite to the circle? ⚡</div>
 
+            <!-- Always visible explanation -->
+            <div class="explanation-content">
+                <h3>A <strong>Bebras cube</strong> has a different shape on each face. The six shapes are:</h3>
+                <div class="shape-row">
+                    <span class="shape-item"><span class="shape-dot dot-circle"></span> Pink circle</span>
+                    <span class="shape-item"><span class="shape-dot dot-diamond"></span> Purple diamond</span>
+                    <span class="shape-item"><span class="shape-dot dot-ellipse"></span> Red ellipse</span>
+                    <span class="shape-item"><span class="shape-dot dot-pentagon"></span> Blue pentagon</span>
+                    <span class="shape-item"><span class="shape-dot dot-star"></span> Orange star</span>
+                    <span class="shape-item"><span class="shape-dot dot-triangle"></span> Green triangle</span>
+                </div>
+                <h3>Eight identical Bebras cubes are stacked together to form a larger cube.<br>
+                     <strong>Question:</strong><br>
+                     In a single Bebras cube, which shape is on the face opposite the pink circle?.</h3>
+            </div>
+
+            <div class="timer" id="timerDisplay">⏱️ 0.0s</div>
+
             <div id="palette">
-                <button class="answer-btn" data-shape="circle">🔴 Circle</button>
-                <button class="answer-btn" data-shape="diamond">💎 Diamond</button>
-                <button class="answer-btn" data-shape="ellipse">🥚 Ellipse</button>
-                <button class="answer-btn" data-shape="pentagon">🔷 Pentagon</button>
-                <button class="answer-btn" data-shape="star">⭐ Star</button>
-                <button class="answer-btn" data-shape="triangle">🔺 Triangle</button>
+                <button class="answer-btn" data-shape="circle">
+                    <span class="shape-badge shape-circle"></span> Circle
+                </button>
+                <button class="answer-btn" data-shape="diamond">
+                    <span class="shape-badge shape-diamond"></span> Diamond
+                </button>
+                <button class="answer-btn" data-shape="ellipse">
+                    <span class="shape-badge shape-ellipse"></span> Ellipse
+                </button>
+                <button class="answer-btn" data-shape="pentagon">
+                    <span class="shape-badge shape-pentagon"></span> Pentagon
+                </button>
+                <button class="answer-btn" data-shape="star">
+                    <span class="shape-badge shape-star"></span> Star
+                </button>
+                <button class="answer-btn" data-shape="triangle">
+                    <span class="shape-badge shape-triangle"></span> Triangle
+                </button>
             </div>
 
             <div class="action-bar">
-                <button class="action-btn" id="finishBtn">✅ Finish & Score</button>
-                <button class="action-btn" id="resetBtn">🔄 Reset Session</button>
+                <button class="action-btn" id="finishBtn">✅ Finish</button>
                 <button class="action-btn" id="giveUpBtn">🏳️ Reveal Answer</button>
             </div>
         </div>
     </div>
     <div class="info-tip">
-        📊 Metrics active: click efficiency | drag time | error resilience
+        📊 Metrics: time · clicks · correctness · give-up
     </div>
     <div class="controls-hint">
         🖱️ Drag to rotate | Right-click to orbit
     </div>
 
-    <!-- three.js libraries -->
     <script type="importmap">
         {
             "imports": {
@@ -254,10 +381,10 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // ========== SETUP SCENE ==========
+        // --- SCENE SETUP ---
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050b14);
-        scene.fog = new THREE.FogExp2(0x050b14, 0.008); // subtle depth
+        scene.fog = new THREE.FogExp2(0x050b14, 0.008);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(4.8, 4.2, 5.5);
@@ -266,10 +393,9 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true; // for light aesthetics
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        // Controls with smooth damping
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
@@ -279,22 +405,33 @@
         controls.autoRotate = false;
         controls.target.set(0, 0, 0);
 
-        // ========== STATS (unchanged logic) ==========
+        // --- METRICS ---
         let clicks = 0;
-        let adjacencyErrors = 0;
-        let resets = 0;
-        let startTime = Date.now();
         let selectedAnswer = null;
-        let attempts = 0;
-        let errorScore = 10;
+        const startTime = Date.now();
+        let correctnessFlag = 0;
+        let giveUpFlag = 0;
+        let gameEnded = false;
 
-        // Drag tracking (exactly as original)
+        const timerDisplay = document.getElementById('timerDisplay');
+        const gameContainer = document.getElementById('gameContainer');
+        let timerInterval;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!gameEnded) {
+                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                    timerDisplay.textContent = `⏱️ ${elapsed}s`;
+                }
+            }, 100);
+        }
+        startTimer();
+
+        // Drag tracking (not used in scoring)
         let isDragging = false;
         let dragStart = 0;
-        let dragTime = 0;
         let hasMoved = false;
 
-        // ========== EVENT LISTENERS FOR DRAG & CLICKS ==========
         renderer.domElement.addEventListener("mousedown", () => {
             isDragging = true;
             hasMoved = false;
@@ -307,155 +444,69 @@
 
         renderer.domElement.addEventListener("mouseup", () => {
             if (isDragging && hasMoved) {
-                dragTime += (Date.now() - dragStart) / 1000;
+                // drag time not used
             }
             isDragging = false;
         });
 
-        // Global click tracking (document clicks, consistent with original)
-        document.addEventListener("click", (e) => {
-            // we count all clicks except if it's from the UI we still count per spec
-            clicks++;
+        document.addEventListener("click", () => {
+            if (!gameEnded) clicks++;
         });
 
-        // ========== ANSWER SELECTION (with UI active class) ==========
+        // --- ANSWER SELECTION ---
         function selectAnswer(shape) {
+            if (gameEnded) return;
             selectedAnswer = shape;
-            attempts++;
-
-            // highlight selected button
             document.querySelectorAll('.answer-btn').forEach(btn => {
-                if (btn.getAttribute('data-shape') === shape) {
-                    btn.classList.add('selected');
-                } else {
-                    btn.classList.remove('selected');
-                }
+                btn.classList.toggle('selected', btn.getAttribute('data-shape') === shape);
             });
-
-            if (shape !== "diamond") {
-                errorScore = Math.max(0, errorScore - 0.5);
-            }
         }
 
-        // ========== RESET GAME (preserves original logic) ==========
-        function resetGame() {
-            resets++;
-            selectedAnswer = null;
-            attempts = 0;
-            clicks = 0;
-            adjacencyErrors = 0;
-            dragTime = 0;
-            startTime = Date.now();
-            errorScore = 10;    // important: restore base error score
-
-            // clear UI highlight
-            document.querySelectorAll('.answer-btn').forEach(btn => btn.classList.remove('selected'));
-
-            // Optional subtle visual feedback
-            const container = document.querySelector('.game-container');
-            container.style.transform = 'scale(0.99)';
-            setTimeout(() => { container.style.transform = ''; }, 120);
+        // --- END GAME ---
+        function endGame() {
+            gameEnded = true;
+            clearInterval(timerInterval);
+            const finalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+            timerDisplay.textContent = `⏱️ ${finalTime}s`;
+            gameContainer.classList.add('game-over');
+            window.__kb?.send?.('cube_summary', {
+                elapsedSec: parseFloat(finalTime),
+                clicks: clicks,
+                correctness: correctnessFlag,
+                giveUpFlag: giveUpFlag
+            }, 0);
+            window.__kb?.finish?.({
+                elapsedSec: parseFloat(finalTime),
+                clicks: clicks,
+                correctness: correctnessFlag,
+                giveUpFlag: giveUpFlag
+            });
         }
 
-        // ========== GIVE UP (reveal answer) ==========
+        // --- GIVE UP ---
         function giveUp() {
-            alert("🔎 The correct answer is: 💎 Diamond\n\nThe diamond is positioned opposite to the circle on this cube.");
+            if (gameEnded) return;
+            giveUpFlag = 1;
+            endGame();
         }
 
-        // ========== FINISH GAME (original scoring untouched) ==========
+        // --- FINISH (any answer ends the game) ---
         function finishGame() {
-            if (!selectedAnswer) {
-                alert("⚠️ Please select an answer first (click on a shape button).");
-                return;
-            }
-
-            if (selectedAnswer !== "diamond") {
-                errorScore = Math.max(0, errorScore - 1);
-                alert("❌ Incorrect! -1 Error penalty. Keep observing the cube and try again.");
-                return;
-            }
-
-            const time = (Date.now() - startTime) / 1000;
-            const finalErrorScore = Math.max(0, errorScore - resets);
-
-            // Time score bands
-            const timeScore =
-                time < 60 ? 10 :
-                    time < 90 ? 9 :
-                        time < 120 ? 8 :
-                            time < 150 ? 7 :
-                                time < 180 ? 6 :
-                                    time < 210 ? 5 :
-                                        time < 240 ? 4 :
-                                            time < 270 ? 3 :
-                                                time < 300 ? 2 :
-                                                    time < 330 ? 1 : 0;
-
-            const clickScore =
-                clicks <= 5 ? 10 :
-                    clicks <= 10 ? 8 :
-                        clicks <= 15 ? 6 :
-                            clicks <= 20 ? 4 :
-                                clicks <= 25 ? 2 : 0;
-
-            const dragScore =
-                dragTime < 5 ? 10 :
-                    dragTime < 10 ? 8 :
-                        dragTime < 20 ? 6 :
-                            dragTime < 30 ? 4 :
-                                dragTime < 45 ? 2 : 0;
-
-            const finalScore = (
-                0.4 * finalErrorScore +
-                0.2 * timeScore +
-                0.2 * clickScore +
-                0.2 * dragScore
-            ).toFixed(2);
-
-            // formatting message
-            alert(`🎉 CORRECT! 🎉
-
-✨ Your Scorecard ✨
-━━━━━━━━━━━━━━━━━━━━
-🏆 Final Score: ${finalScore}/10
-📊 Error Score: ${finalErrorScore.toFixed(2)}/10
-⏱️ Time Score: ${timeScore}  (${time.toFixed(1)} sec)
-🖱️ Click Score: ${clickScore}  (${clicks} total clicks)
-🖱️ Drag Score: ${dragScore}  (${dragTime.toFixed(1)}s dragging)
-
-📈 Performance Data:
-• Answer Attempts: ${attempts}
-• Session Resets: ${resets}
-• Adjacency Errors: ${adjacencyErrors}
-━━━━━━━━━━━━━━━━━━━━
-💎 Diamond is opposite to the circle.`);
-
-            // Send a summary move so host scoring can use accurate task metrics
-            window.__kb?.send?.(
-                'cube_summary',
-                {
-                    wrongSelections: Math.max(0, attempts - 1),
-                    clicks,
-                    dragTimeSec: dragTime,
-                    elapsedSec: time
-                },
-                0
-            );
-            window.__kb?.finish?.({ finalScore: Number(finalScore), finalErrorScore, timeScore, clickScore, dragScore, time });
+            if (gameEnded) return;
+            if (!selectedAnswer) return;
+            correctnessFlag = (selectedAnswer === "diamond") ? 1 : 0;
+            endGame();
         }
 
-        // ========== TEXTURE CREATION (enhanced quality) ==========
+        // --- TEXTURE CREATION ---
         function createShapeTexture(type) {
             const canvas = document.createElement("canvas");
             canvas.width = 256;
             canvas.height = 256;
             const ctx = canvas.getContext("2d");
 
-            // clean background with slight gradient for professional look
             ctx.fillStyle = "#f8fafc";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // soft inner glow / shadow style
             ctx.shadowBlur = 0;
 
             const colors = {
@@ -476,24 +527,20 @@
             ctx.beginPath();
 
             const cx = 128, cy = 128;
-
             if (type === "circle") {
                 ctx.arc(cx, cy, 72, 0, Math.PI * 2);
-            }
-            else if (type === "triangle") {
+            } else if (type === "triangle") {
                 ctx.moveTo(cx, 40);
                 ctx.lineTo(40, 200);
                 ctx.lineTo(216, 200);
                 ctx.closePath();
-            }
-            else if (type === "diamond") {
+            } else if (type === "diamond") {
                 ctx.moveTo(cx, 28);
                 ctx.lineTo(208, cy);
                 ctx.lineTo(cx, 228);
                 ctx.lineTo(48, cy);
                 ctx.closePath();
-            }
-            else if (type === "pentagon") {
+            } else if (type === "pentagon") {
                 for (let i = 0; i < 5; i++) {
                     let angle = i * (2 * Math.PI / 5) - Math.PI / 2;
                     let x = cx + Math.cos(angle) * 78;
@@ -502,8 +549,7 @@
                     else ctx.lineTo(x, y);
                 }
                 ctx.closePath();
-            }
-            else if (type === "star") {
+            } else if (type === "star") {
                 for (let i = 0; i < 10; i++) {
                     let radius = i % 2 === 0 ? 78 : 42;
                     let angle = i * (Math.PI / 5) - Math.PI / 2;
@@ -513,15 +559,13 @@
                     else ctx.lineTo(x, y);
                 }
                 ctx.closePath();
-            }
-            else if (type === "ellipse") {
+            } else if (type === "ellipse") {
                 ctx.ellipse(cx, cy, 85, 58, 0, 0, Math.PI * 2);
             }
 
             ctx.fill();
             ctx.stroke();
             ctx.shadowBlur = 0;
-            // add subtle inner highlight
             ctx.strokeStyle = "#ffffffcc";
             ctx.lineWidth = 2.5;
             ctx.stroke();
@@ -531,7 +575,7 @@
             return texture;
         }
 
-        // ========== CUBE CONSTRUCTION (original face arrangement) ==========
+        // --- CUBE CONSTRUCTION ---
         const faceData = [
             ["circle", "pentagon", "triangle", "ellipse"],
             ["star", "triangle", "diamond", "ellipse"],
@@ -543,7 +587,6 @@
 
         function createFace(faceIndex, rotation, position) {
             const group = new THREE.Group();
-
             for (let i = 0; i < 4; i++) {
                 const shape = faceData[faceIndex][i];
                 const material = new THREE.MeshStandardMaterial({
@@ -553,16 +596,13 @@
                     metalness: 0.1,
                     emissive: 0x000000
                 });
-
                 const geometry = new THREE.PlaneGeometry(0.96, 0.96);
                 const mesh = new THREE.Mesh(geometry, material);
-
                 let x = (i % 2 === 0) ? -0.5 : 0.5;
                 let y = (i < 2) ? 0.5 : -0.5;
                 mesh.position.set(x, y, 0);
                 group.add(mesh);
             }
-
             group.rotation.set(rotation[0], rotation[1], rotation[2]);
             group.position.copy(position);
             scene.add(group);
@@ -576,14 +616,11 @@
         createFace(4, [0, -Math.PI / 2, 0], new THREE.Vector3(-offset, 0, 0));
         createFace(5, [0, Math.PI / 2, 0], new THREE.Vector3(offset, 0, 0));
 
-        // ========== DECORATIVE ELEMENTS (professional look) ==========
-        // subtle wireframe cube outline to enhance geometry
+        // --- DECORATIVE ELEMENTS ---
         const wireframeGeo = new THREE.BoxGeometry(2.04, 2.04, 2.04);
         const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x3a6ea5, wireframe: true, transparent: true, opacity: 0.12 });
-        const outlineCube = new THREE.Mesh(wireframeGeo, wireframeMat);
-        scene.add(outlineCube);
+        scene.add(new THREE.Mesh(wireframeGeo, wireframeMat));
 
-        // Add floating particles / ambient stars
         const starGeometry = new THREE.BufferGeometry();
         const starCount = 800;
         const starPositions = new Float32Array(starCount * 3);
@@ -597,34 +634,29 @@
         const starsField = new THREE.Points(starGeometry, starMaterial);
         scene.add(starsField);
 
-        // Better lighting: ambient + directional + rim light
-        const ambientLight = new THREE.AmbientLight(0x404060, 0.65);
-        scene.add(ambientLight);
-        const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+        // --- ENHANCED LIGHTING ---
+        scene.add(new THREE.AmbientLight(0x404060, 0.75));
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x444466, 0.4));
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.1);
         mainLight.position.set(3, 5, 4);
         mainLight.castShadow = true;
-        mainLight.receiveShadow = false;
         scene.add(mainLight);
-        const fillLight = new THREE.PointLight(0x4466cc, 0.4);
-        fillLight.position.set(-2, 1, 3);
-        scene.add(fillLight);
-        const backLight = new THREE.PointLight(0xffaa66, 0.35);
-        backLight.position.set(0, 1, -3.5);
-        scene.add(backLight);
 
-        // soft ground reflection effect (invisible but mood)
+        scene.add(new THREE.PointLight(0x4466cc, 0.4, 0, 0, 0, 3));
+        scene.add(new THREE.PointLight(0xffaa66, 0.35, 0, 1, -3.5));
+
         const gridHelper = new THREE.GridHelper(12, 20, 0x88aaff, 0x335588);
         gridHelper.position.y = -1.8;
         gridHelper.material.transparent = true;
         gridHelper.material.opacity = 0.2;
         scene.add(gridHelper);
 
-        // ========== BIND UI BUTTONS (preserve all original behaviors) ==========
+        // --- BIND UI BUTTONS ---
         document.querySelectorAll('.answer-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const shape = btn.getAttribute('data-shape');
-                selectAnswer(shape);
+                selectAnswer(btn.getAttribute('data-shape'));
             });
         });
 
@@ -633,43 +665,36 @@
             finishGame();
         });
 
-        document.getElementById('resetBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            resetGame();
-        });
-
         document.getElementById('giveUpBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             giveUp();
         });
 
-        // ========== ANIMATION LOOP ==========
+        // --- ANIMATION LOOP ---
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // update orbit
-            // subtle rotation for stars
+            controls.update();
             starsField.rotation.y += 0.0005;
             starsField.rotation.x += 0.0003;
             renderer.render(scene, camera);
         }
         animate();
 
-        // resize handler
-        window.addEventListener("resize", onWindowResize, false);
-        function onWindowResize() {
+        window.addEventListener("resize", () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+        });
 
-        // small console info (no logic change)
-        console.log("Bebras Cube ready — all original metrics preserved, professional styling applied.");
+        console.log("Bebras Cube ready – UI left-aligned, larger, explanation always visible.");
     </script>
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('cube-game-1');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

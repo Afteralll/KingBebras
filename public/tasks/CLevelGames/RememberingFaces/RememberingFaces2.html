@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>🌈 Image Sorting Game - Scored</title>
+    <title>🌈 Image Sorting Game – Responsive</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 
@@ -97,13 +97,13 @@
             z-index: 3;
         }
 
-            .cloud::before,
-            .cloud::after {
-                content: '';
-                position: absolute;
-                background: white;
-                border-radius: 50%;
-            }
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
 
         .cloud-1 {
             width: 120px;
@@ -114,21 +114,21 @@
             animation: cloudDrift 28s ease-in-out infinite;
         }
 
-            .cloud-1::before {
-                width: 65px;
-                height: 65px;
-                top: -35px;
-                left: 20px;
-                border-radius: 50%;
-            }
+        .cloud-1::before {
+            width: 65px;
+            height: 65px;
+            top: -35px;
+            left: 20px;
+            border-radius: 50%;
+        }
 
-            .cloud-1::after {
-                width: 80px;
-                height: 70px;
-                top: -30px;
-                left: 55px;
-                border-radius: 50%;
-            }
+        .cloud-1::after {
+            width: 80px;
+            height: 70px;
+            top: -30px;
+            left: 55px;
+            border-radius: 50%;
+        }
 
         .cloud-2 {
             width: 90px;
@@ -139,21 +139,21 @@
             animation: cloudDrift 22s ease-in-out 5s infinite;
         }
 
-            .cloud-2::before {
-                width: 50px;
-                height: 50px;
-                top: -28px;
-                left: 14px;
-                border-radius: 50%;
-            }
+        .cloud-2::before {
+            width: 50px;
+            height: 50px;
+            top: -28px;
+            left: 14px;
+            border-radius: 50%;
+        }
 
-            .cloud-2::after {
-                width: 58px;
-                height: 52px;
-                top: -22px;
-                left: 42px;
-                border-radius: 50%;
-            }
+        .cloud-2::after {
+            width: 58px;
+            height: 52px;
+            top: -22px;
+            left: 42px;
+            border-radius: 50%;
+        }
 
         .cloud-3 {
             width: 70px;
@@ -164,35 +164,33 @@
             animation: cloudDrift 25s ease-in-out 10s infinite;
         }
 
-            .cloud-3::before {
-                width: 40px;
-                height: 40px;
-                top: -22px;
-                left: 10px;
-                border-radius: 50%;
-            }
+        .cloud-3::before {
+            width: 40px;
+            height: 40px;
+            top: -22px;
+            left: 10px;
+            border-radius: 50%;
+        }
 
-            .cloud-3::after {
-                width: 44px;
-                height: 38px;
-                top: -18px;
-                left: 32px;
-                border-radius: 50%;
-            }
+        .cloud-3::after {
+            width: 44px;
+            height: 38px;
+            top: -18px;
+            left: 32px;
+            border-radius: 50%;
+        }
 
         @keyframes cloudDrift {
-            0%, 100% {
+            0%,
+            100% {
                 transform: translateX(0);
             }
-
             25% {
                 transform: translateX(35px);
             }
-
             50% {
                 transform: translateX(-20px);
             }
-
             75% {
                 transform: translateX(25px);
             }
@@ -210,81 +208,19 @@
             z-index: 4;
         }
 
-            .sparkle:nth-child(1) {
-                top: 15%;
-                left: 12%;
-                animation-delay: 0s;
-            }
-
-            .sparkle:nth-child(2) {
-                top: 25%;
-                left: 28%;
-                animation-delay: 0.8s;
-                width: 4px;
-                height: 4px;
-            }
-
-            .sparkle:nth-child(3) {
-                top: 10%;
-                left: 65%;
-                animation-delay: 1.6s;
-            }
-
-            .sparkle:nth-child(4) {
-                top: 20%;
-                left: 78%;
-                animation-delay: 0.4s;
-                width: 5px;
-                height: 5px;
-            }
-
-            .sparkle:nth-child(5) {
-                top: 30%;
-                left: 45%;
-                animation-delay: 2s;
-                width: 3px;
-                height: 3px;
-            }
-
-            .sparkle:nth-child(6) {
-                top: 8%;
-                left: 40%;
-                animation-delay: 1.2s;
-                width: 7px;
-                height: 7px;
-            }
-
-            .sparkle:nth-child(7) {
-                top: 18%;
-                left: 85%;
-                animation-delay: 0.3s;
-                width: 4px;
-                height: 4px;
-            }
-
-            .sparkle:nth-child(8) {
-                top: 28%;
-                left: 5%;
-                animation-delay: 1.9s;
-                width: 5px;
-                height: 5px;
-            }
+        .sparkle:nth-child(1) { top: 15%; left: 12%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 25%; left: 28%; animation-delay: 0.8s; width: 4px; height: 4px; }
+        .sparkle:nth-child(3) { top: 10%; left: 65%; animation-delay: 1.6s; }
+        .sparkle:nth-child(4) { top: 20%; left: 78%; animation-delay: 0.4s; width: 5px; height: 5px; }
+        .sparkle:nth-child(5) { top: 30%; left: 45%; animation-delay: 2s; width: 3px; height: 3px; }
+        .sparkle:nth-child(6) { top: 8%; left: 40%; animation-delay: 1.2s; width: 7px; height: 7px; }
+        .sparkle:nth-child(7) { top: 18%; left: 85%; animation-delay: 0.3s; width: 4px; height: 4px; }
+        .sparkle:nth-child(8) { top: 28%; left: 5%; animation-delay: 1.9s; width: 5px; height: 5px; }
 
         @keyframes twinkle {
-            0%, 100% {
-                opacity: 0.3;
-                transform: scale(0.8);
-            }
-
-            40% {
-                opacity: 1;
-                transform: scale(1.6);
-            }
-
-            70% {
-                opacity: 0.5;
-                transform: scale(1);
-            }
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1.6); }
+            70% { opacity: 0.5; transform: scale(1); }
         }
 
         /* --- Flying Candy --- */
@@ -299,88 +235,36 @@
             pointer-events: none;
         }
 
-        .candy-bob {
-            animation-name: candyBob;
-        }
-
-        .candy-drift {
-            animation-name: candyDrift;
-        }
-
-        .candy-wiggle {
-            animation-name: candyWiggle;
-        }
-
-        .candy-float {
-            animation-name: candyFloat;
-        }
+        .candy-bob { animation-name: candyBob; }
+        .candy-drift { animation-name: candyDrift; }
+        .candy-wiggle { animation-name: candyWiggle; }
+        .candy-float { animation-name: candyFloat; }
 
         @keyframes candyBob {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            30% {
-                transform: translateY(-35px) rotate(8deg);
-            }
-
-            60% {
-                transform: translateY(-12px) rotate(-4deg);
-            }
-
-            85% {
-                transform: translateY(-28px) rotate(3deg);
-            }
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            30% { transform: translateY(-35px) rotate(8deg); }
+            60% { transform: translateY(-12px) rotate(-4deg); }
+            85% { transform: translateY(-28px) rotate(3deg); }
         }
 
         @keyframes candyDrift {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            25% {
-                transform: translate(40px, -25px) rotate(10deg);
-            }
-
-            50% {
-                transform: translate(-15px, -45px) rotate(-6deg);
-            }
-
-            75% {
-                transform: translate(30px, -15px) rotate(5deg);
-            }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(40px, -25px) rotate(10deg); }
+            50% { transform: translate(-15px, -45px) rotate(-6deg); }
+            75% { transform: translate(30px, -15px) rotate(5deg); }
         }
 
         @keyframes candyWiggle {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            20% {
-                transform: translate(-25px, -20px) rotate(-12deg);
-            }
-
-            40% {
-                transform: translate(20px, -38px) rotate(8deg);
-            }
-
-            60% {
-                transform: translate(-10px, -15px) rotate(-5deg);
-            }
-
-            80% {
-                transform: translate(15px, -32px) rotate(10deg);
-            }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-25px, -20px) rotate(-12deg); }
+            40% { transform: translate(20px, -38px) rotate(8deg); }
+            60% { transform: translate(-10px, -15px) rotate(-5deg); }
+            80% { transform: translate(15px, -32px) rotate(10deg); }
         }
 
         @keyframes candyFloat {
-            0%, 100% {
-                transform: translate(0, 0) rotate(0deg) scale(1);
-            }
-
-            50% {
-                transform: translate(18px, -40px) rotate(6deg) scale(1.1);
-            }
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(18px, -40px) rotate(6deg) scale(1.1); }
         }
 
         /* ================= GAME CONTAINER ================= */
@@ -394,8 +278,28 @@
             -webkit-backdrop-filter: blur(10px);
             border-radius: 28px;
             padding: 20px 25px 30px 25px;
-          
-             
+        }
+
+        /* --- Instruction text --- */
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin: 10px auto 20px auto;
+            max-width: 900px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #4a3f6b;
+            line-height: 1.5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid #e8e0f0;
+            text-align: center;
+        }
+
+        .instruction-box strong {
+            color: #ff6b8a;
         }
 
         /* --- Title --- */
@@ -415,13 +319,8 @@
         }
 
         @keyframes rainbowShine {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .title-stars {
@@ -433,29 +332,16 @@
             text-shadow: 0 0 10px rgba(254, 202, 87, 0.6);
         }
 
-            .title-stars:nth-child(1) {
-                animation-delay: 0s;
-            }
-
-            .title-stars:nth-child(2) {
-                animation-delay: 0.35s;
-            }
+        .title-stars:nth-child(1) { animation-delay: 0s; }
+        .title-stars:nth-child(2) { animation-delay: 0.35s; }
 
         @keyframes starBounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-12px);
-            }
-
-            60% {
-                transform: translateY(-3px);
-            }
+            0%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-12px); }
+            60% { transform: translateY(-3px); }
         }
 
-        /* --- Stats --- */
+        /* --- Stats (only time visible) --- */
         #stats {
             display: flex;
             justify-content: center;
@@ -479,63 +365,47 @@
             font-family: 'Nunito', sans-serif;
         }
 
-            .stat-badge:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            }
-
-        .stat-icon {
-            font-size: 1.5em;
+        .stat-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .stat-value {
-            font-size: 1.3em;
-            font-weight: 800;
-            color: #5f3dc4;
-            min-width: 28px;
-            text-align: center;
-        }
+        .stat-icon { font-size: 1.5em; }
+        .stat-value { font-size: 1.3em; font-weight: 800; color: #5f3dc4; min-width: 28px; text-align: center; }
+        .stat-label { font-size: 0.8em; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
 
-        .stat-label {
-            font-size: 0.8em;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        /* --- Main Image --- */
+        /* --- Main Image Box (contains the big picture and the slots) --- */
         #mainImageBox {
-            width: 900px;
-            max-width: 95%;
+            width: 100%;
+            max-width: 1000px;
             margin: auto;
             background: white;
             border: 4px solid #e8dff5;
             border-radius: 20px;
-            padding: 12px;
+            padding: 2% 3%;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
             transition: box-shadow 0.3s, border-color 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-            #mainImageBox::after {
-                content: '';
-                position: absolute;
-                top: -30px;
-                right: -30px;
-                width: 80px;
-                height: 80px;
-                background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 2;
-            }
+        #mainImageBox::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
 
-            #mainImageBox:hover {
-                border-color: #c9b8e8;
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-            }
+        #mainImageBox:hover {
+            border-color: #c9b8e8;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
 
         #mainImage {
             width: 100%;
@@ -544,18 +414,19 @@
             display: block;
         }
 
-        /* --- Slots --- */
+        /* --- Slots (inside mainImageBox) --- */
         #slots {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 8px auto 22px auto;
+            flex-wrap: nowrap;        /* ensure single line */
+            gap: 1.5%;
+            margin: 3% auto 3% auto;
+            width: 100%;
         }
 
         .slot {
-            width: 105px;
-            height: 95px;
+            width: 11%;               /* ~ (100% - 7*1.5%) / 8 */
+            aspect-ratio: 21 / 19;    /* original 105x95 ratio */
             border: 3px dashed #d5c8ec;
             background: #fefcf5;
             border-radius: 16px;
@@ -569,91 +440,68 @@
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
         }
 
-            .slot::before {
-                content: '📥';
-                position: absolute;
-                font-size: 1.2em;
-                opacity: 0.25;
-                pointer-events: none;
-                transition: opacity 0.3s;
-            }
+        .slot::before {
+            content: '📥';
+            position: absolute;
+            font-size: 1.2em;
+            opacity: 0.25;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
 
-            .slot[data-filled]::before {
-                opacity: 0;
-                content: '';
-            }
+        .slot[data-filled]::before {
+            opacity: 0;
+            content: '';
+        }
 
-            .slot:hover {
-                border-color: #b49de0;
-                background: #f9f5ff;
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(164, 120, 232, 0.18);
-                border-style: solid;
-            }
+        .slot:hover {
+            border-color: #b49de0;
+            background: #f9f5ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(164, 120, 232, 0.18);
+            border-style: solid;
+        }
 
-            .slot.hover {
-                background: #e8fce8 !important;
-                border-color: #54d2a0 !important;
-                border-style: solid !important;
-                transform: scale(1.05);
-                box-shadow: 0 10px 30px rgba(84, 210, 160, 0.3) !important;
-            }
+        .slot.hover {
+            background: #e8fce8 !important;
+            border-color: #54d2a0 !important;
+            border-style: solid !important;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(84, 210, 160, 0.3) !important;
+        }
 
-            .slot img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                pointer-events: none;
-                z-index: 1;
-                position: relative;
-            }
-            /* Colorful slot accents */
-            .slot:nth-child(1) {
-                border-left: 4px solid #ff6b8a;
-            }
+        .slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 1;
+            position: relative;
+        }
 
-            .slot:nth-child(2) {
-                border-left: 4px solid #ff9f43;
-            }
+        .slot:nth-child(1) { border-left: 4px solid #ff6b8a; }
+        .slot:nth-child(2) { border-left: 4px solid #ff9f43; }
+        .slot:nth-child(3) { border-left: 4px solid #feca57; }
+        .slot:nth-child(4) { border-left: 4px solid #54d2a0; }
+        .slot:nth-child(5) { border-left: 4px solid #54a0ff; }
+        .slot:nth-child(6) { border-left: 4px solid #5f8aeb; }
+        .slot:nth-child(7) { border-left: 4px solid #a478e8; }
+        .slot:nth-child(8) { border-left: 4px solid #e878c8; }
 
-            .slot:nth-child(3) {
-                border-left: 4px solid #feca57;
-            }
-
-            .slot:nth-child(4) {
-                border-left: 4px solid #54d2a0;
-            }
-
-            .slot:nth-child(5) {
-                border-left: 4px solid #54a0ff;
-            }
-
-            .slot:nth-child(6) {
-                border-left: 4px solid #5f8aeb;
-            }
-
-            .slot:nth-child(7) {
-                border-left: 4px solid #a478e8;
-            }
-
-            .slot:nth-child(8) {
-                border-left: 4px solid #e878c8;
-            }
-
-        /* --- Pool --- */
+        /* --- Pool (unplaced images) --- */
         #pool {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 14px;
-            margin: auto;
-            min-height: 100px;
+            gap: 2%;
+            margin: 20px auto 10px auto;
+            max-width: 1000px;
             padding: 10px 0;
         }
 
         .item {
-            width: 135px;
-            height: 95px;
+            width: 12%;               /* roughly 7 items fit with gaps */
+            aspect-ratio: 135 / 95;
             background: white;
             border: 3px solid #e0d8f0;
             border-radius: 16px;
@@ -664,83 +512,98 @@
             position: relative;
         }
 
-            .item::after {
-                content: '';
-                position: absolute;
-                top: 8px;
-                left: 8px;
-                width: 30px;
-                height: 30px;
-                background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
-                border-radius: 50%;
-                pointer-events: none;
-            }
+        .item::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
 
-            .item:hover {
-                transform: translateY(-6px) scale(1.04);
-                box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
-                border-color: #b49de0;
-            }
+        .item:hover {
+            transform: translateY(-6px) scale(1.04);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.13);
+            border-color: #b49de0;
+        }
 
-            .item:active {
-                cursor: grabbing;
-                transform: scale(0.96);
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            }
+        .item:active {
+            cursor: grabbing;
+            transform: scale(0.96);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
 
-            .item img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                pointer-events: none;
-                position: relative;
-                z-index: 1;
-            }
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
+        }
 
-        /* --- Finish Button --- */
-        #finishBtn {
-            margin-top: 22px;
+        /* --- Buttons --- */
+        #finishBtn,
+        #resetBtn,
+        #giveUpBtn {
+            margin-top: 10px;
             padding: 14px 40px;
             font-size: 1.2em;
             font-family: 'Fredoka One', 'Nunito', cursive;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            background: linear-gradient(135deg, #ff6b8a 0%, #ff8e53 100%);
-            color: white;
             letter-spacing: 1px;
-            box-shadow: 0 8px 25px rgba(255, 107, 138, 0.4);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
-            #finishBtn::after {
-                content: '';
-                position: absolute;
-                top: -50%;
-                left: -60%;
-                width: 80%;
-                height: 200%;
-                background: rgba(255, 255, 255, 0.22);
-                border-radius: 50%;
-                transform: rotate(25deg);
-                transition: left 0.6s;
-            }
+        #finishBtn { background: linear-gradient(135deg, #ff6b8a 0%, #ff8e53 100%); }
+        #resetBtn { background: linear-gradient(135deg, #54a0ff 0%, #5f8aeb 100%); }
+        #giveUpBtn { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
 
-            #finishBtn:hover {
-                transform: translateY(-4px) scale(1.04);
-                box-shadow: 0 14px 38px rgba(255, 107, 138, 0.5);
-            }
+        #finishBtn::after,
+        #resetBtn::after,
+        #giveUpBtn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 80%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 50%;
+            transform: rotate(25deg);
+            transition: left 0.6s;
+        }
 
-                #finishBtn:hover::after {
-                    left: 120%;
-                }
+        #finishBtn:hover,
+        #resetBtn:hover,
+        #giveUpBtn:hover {
+            transform: translateY(-4px) scale(1.04);
+        }
 
-            #finishBtn:active {
-                transform: scale(0.95);
-                box-shadow: 0 4px 12px rgba(255, 107, 138, 0.35);
-            }
+        #finishBtn:hover { box-shadow: 0 14px 38px rgba(255, 107, 138, 0.5); }
+        #resetBtn:hover { box-shadow: 0 14px 38px rgba(84, 160, 255, 0.5); }
+        #giveUpBtn:hover { box-shadow: 0 14px 38px rgba(255, 107, 107, 0.5); }
+
+        #finishBtn:hover::after,
+        #resetBtn:hover::after,
+        #giveUpBtn:hover::after {
+            left: 120%;
+        }
+
+        #finishBtn:active,
+        #resetBtn:active,
+        #giveUpBtn:active {
+            transform: scale(0.95);
+        }
 
         /* --- Message --- */
         #message {
@@ -759,172 +622,53 @@
             min-width: 250px;
         }
 
-            #message:empty {
-                display: none;
-                padding: 0;
-                border: none;
-                box-shadow: none;
-                background: transparent;
-            }
-
-        @keyframes msgPop {
-            0% {
-                transform: scale(0.7);
-                opacity: 0;
-            }
-
-            60% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        #message:empty {
+            display: none;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+            background: transparent;
         }
 
-        /* ================= RESPONSIVE ================= */
+        @keyframes msgPop {
+            0% { transform: scale(0.7); opacity: 0; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Button row --- */
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        /* ================= RESPONSIVE (only adjust font-sized elements) ================= */
         @media (max-width: 768px) {
-            .game-title {
-                font-size: 1.8em;
-            }
-
-            .rainbow-wrapper {
-                width: 500px;
-                height: 260px;
-                top: -40px;
-            }
-
-            .rainbow-arc {
-                width: 460px;
-                height: 230px;
-                border-radius: 230px 230px 0 0;
-                box-shadow: 0 0 0 7px #ff9a9e, 0 0 0 15px #ffb347, 0 0 0 23px #ffe259, 0 0 0 31px #a8e6cf, 0 0 0 39px #7ec8e3, 0 0 0 47px #a29bfe, 0 0 0 55px #d4c5f9;
-            }
-
-            .slot {
-                width: 70px;
-                height: 65px;
-                border-radius: 12px;
-                font-size: 0.7em;
-            }
-
-                .slot::before {
-                    font-size: 0.9em;
-                }
-
-            .item {
-                width: 100px;
-                height: 72px;
-                border-radius: 12px;
-            }
-
-            .stat-badge {
-                padding: 6px 12px;
-                font-size: 0.85em;
-            }
-
-            #finishBtn {
-                padding: 12px 28px;
-                font-size: 1em;
-            }
-
-            .cloud-1 {
-                display: none;
-            }
-
-            .cloud-3 {
-                display: none;
-            }
-
-            .candy {
-                font-size: 20px;
-            }
-
-            #gameContainer {
-                padding: 14px 10px 20px 10px;
-                border-radius: 20px;
-            }
+            .game-title { font-size: 1.8em; }
+            .rainbow-wrapper { width: 500px; height: 260px; top: -40px; }
+            .rainbow-arc { width: 460px; height: 230px; border-radius: 230px 230px 0 0; box-shadow: 0 0 0 7px #ff9a9e, 0 0 0 15px #ffb347, 0 0 0 23px #ffe259, 0 0 0 31px #a8e6cf, 0 0 0 39px #7ec8e3, 0 0 0 47px #a29bfe, 0 0 0 55px #d4c5f9; }
+            .stat-badge { padding: 6px 12px; font-size: 0.85em; }
+            #finishBtn, #resetBtn, #giveUpBtn { padding: 12px 28px; font-size: 1em; }
+            .cloud-1 { display: none; }
+            .cloud-3 { display: none; }
+            .candy { font-size: 20px; }
+            #gameContainer { padding: 14px 10px 20px 10px; border-radius: 20px; }
+            .instruction-box { font-size: 1em; padding: 12px 15px; }
         }
 
         @media (max-width: 480px) {
-            .game-title {
-                font-size: 1.4em;
-            }
-
-            .rainbow-wrapper {
-                width: 340px;
-                height: 180px;
-                top: -30px;
-            }
-
-            .rainbow-arc {
-                width: 310px;
-                height: 155px;
-                border-radius: 155px 155px 0 0;
-                box-shadow: 0 0 0 5px #ff9a9e, 0 0 0 11px #ffb347, 0 0 0 17px #ffe259, 0 0 0 23px #a8e6cf, 0 0 0 29px #7ec8e3, 0 0 0 35px #a29bfe, 0 0 0 41px #d4c5f9;
-            }
-
-            .slot {
-                width: 58px;
-                height: 55px;
-                border-radius: 10px;
-                gap: 5px;
-                border-width: 2px;
-            }
-
-                .slot::before {
-                    font-size: 0.7em;
-                }
-
-                .slot:nth-child(1),
-                .slot:nth-child(2),
-                .slot:nth-child(3),
-                .slot:nth-child(4),
-                .slot:nth-child(5),
-                .slot:nth-child(6),
-                .slot:nth-child(7),
-                .slot:nth-child(8) {
-                    border-left-width: 3px;
-                }
-
-            #slots {
-                gap: 5px;
-            }
-
-            .item {
-                width: 75px;
-                height: 55px;
-                border-radius: 10px;
-                border-width: 2px;
-            }
-
-            #pool {
-                gap: 8px;
-            }
-
-            .stat-badge {
-                padding: 5px 10px;
-                font-size: 0.75em;
-                gap: 4px;
-            }
-
-            .stat-icon {
-                font-size: 1.2em;
-            }
-
-            .candy {
-                font-size: 16px;
-            }
-
-            .cloud-2 {
-                display: none;
-            }
-
-            #gameContainer {
-                padding: 10px 6px 16px 6px;
-                border-radius: 16px;
-            }
+            .game-title { font-size: 1.4em; }
+            .rainbow-wrapper { width: 340px; height: 180px; top: -30px; }
+            .rainbow-arc { width: 310px; height: 155px; border-radius: 155px 155px 0 0; box-shadow: 0 0 0 5px #ff9a9e, 0 0 0 11px #ffb347, 0 0 0 17px #ffe259, 0 0 0 23px #a8e6cf, 0 0 0 29px #7ec8e3, 0 0 0 35px #a29bfe, 0 0 0 41px #d4c5f9; }
+            .stat-badge { padding: 5px 10px; font-size: 0.75em; gap: 4px; }
+            .stat-icon { font-size: 1.2em; }
+            .candy { font-size: 16px; }
+            .cloud-2 { display: none; }
+            #gameContainer { padding: 10px 6px 16px 6px; border-radius: 16px; }
+            .instruction-box { font-size: 0.9em; padding: 10px 12px; }
         }
     </style>
 </head>
@@ -975,48 +719,52 @@
             <span class="title-stars">⭐</span>
         </h1>
 
+        
+
         <div id="stats">
-            <div class="stat-badge">
-                <span class="stat-icon">❌</span>
-                <span class="stat-label">Errors</span>
-                <span class="stat-value" id="errorScore">10</span>
-            </div>
+            <!-- Only time is visible -->
             <div class="stat-badge">
                 <span class="stat-icon">⏱️</span>
                 <span class="stat-label">Time</span>
-                <span class="stat-value" id="timeScore">10</span>
-            </div>
-            <div class="stat-badge">
-                <span class="stat-icon">👆</span>
-                <span class="stat-label">Clicks</span>
-                <span class="stat-value" id="clickScore">10</span>
+                <span class="stat-value" id="timeScore">00:00</span>
             </div>
         </div>
 
         <div id="mainImageBox">
+            <!-- Instruction text -->
+        <div class="instruction-box">
+            A group of 8 friends want to make sure that each one of them is wearing a different outfit to school.<br>
+            The friends have created unique outfits using a decision tree of different clothing and accessories.<br>
+            The first friend has arrived as shown below. According to the decision tree, they did <strong>not</strong> wear a shirt or scarf, but did wear earrings.<br>
+            <strong>QUESTION:</strong> Put the remaining pictures of the different outfits in the right place by dragging them to the question marks.
+        </div>
             <img id="mainImage" src="Main.PNG" alt="Main Image">
+            <div id="slots"></div>
         </div>
 
-        <div id="slots"></div>
         <div id="pool"></div>
 
-        <button id="finishBtn" onclick="finishGame()">🎉 Finish!</button>
+        <div class="button-row">
+            <button id="resetBtn" onclick="resetSorted()">🔄 Reset Sorted</button>
+            <button id="finishBtn" onclick="finishGame()">🎉 Finish!</button>
+            <button id="giveUpBtn" onclick="endGame(true)">🙈 Give Up</button>
+        </div>
 
         <div id="message"></div>
     </div>
 
     <script>
         /* ===============================
-        PUT THESE FILES IN SAME FOLDER:
-        main.png
-        1.png
-        2.png
-        3.png
-        4.png
-        5.png
-        6.png
-        7.png
-        8.png
+         PUT THESE FILES IN SAME FOLDER:
+         main.png
+         1.png
+         2.png
+         3.png
+         4.png
+         5.png
+         6.png
+         7.png
+         8.png
         =============================== */
 
         /* image 7 starts already sorted, so not in pool */
@@ -1043,28 +791,34 @@
 
         let selected = null;
         let clicks = 0;
-        let totalErrors = 0;
+        let totalErrors = 0;        // computed only at finish
         let gameEnded = false;
         let seconds = 0;
+        let resetCount = 0;
+        let giveUpFlag = 0;
+        let timerInterval = null;
 
         const pool = document.getElementById("pool");
         const slots = document.getElementById("slots");
         const message = document.getElementById("message");
 
-        const errorText = document.getElementById("errorScore");
         const timeText = document.getElementById("timeScore");
-        const clickText = document.getElementById("clickScore");
 
         /* ================= TIMER ================= */
-        setInterval(() => {
+        timerInterval = setInterval(() => {
             if (gameEnded) return;
             seconds++;
-            updateScores();
+            updateTimeDisplay();
         }, 1000);
 
-        /* ================= ERROR RULES ================= */
-        function getErrors(imgNum, slotNum) {
+        function updateTimeDisplay() {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timeText.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
 
+        /* ================= ERROR RULES (unchanged) ================= */
+        function getErrors(imgNum, slotNum) {
             if (imgNum === slotNum) return 0;
 
             /* paired switches */
@@ -1108,42 +862,8 @@
             return 3;
         }
 
-        /* ================= SCORE FUNCTIONS ================= */
-        function getErrorScore() {
-            return Math.max(0, 10 - totalErrors);
-        }
-
-        function getTimeScore() {
-            let score = 10;
-
-            if (seconds > 60) {
-                score -= 1;
-                score -= Math.floor((seconds - 60) / 20);
-            }
-
-            return Math.max(0, score);
-        }
-
-        function getClickScore() {
-            let score = 10;
-
-            if (clicks > 20) {
-                score -= 1;
-                score -= Math.floor((clicks - 21) / 5);
-            }
-
-            return Math.max(0, score);
-        }
-
-        function updateScores() {
-            errorText.textContent = getErrorScore();
-            timeText.textContent = getTimeScore();
-            clickText.textContent = getClickScore();
-        }
-
         /* ================= CREATE SLOTS ================= */
         for (let i = 1; i <= 8; i++) {
-
             const slot = document.createElement("div");
             slot.className = "slot";
 
@@ -1163,30 +883,20 @@
             slot.ondrop = (e) => {
                 e.preventDefault();
                 slot.classList.remove("hover");
-
                 const name = e.dataTransfer.getData("text/plain");
                 const item = images.find(x => x.name === name);
-
                 placeImage(slot, item, i);
             };
 
             slot.ondblclick = () => {
                 if (gameEnded) return;
                 if (!slot.dataset.filled) return;
-
                 const name = slot.dataset.filled;
-
                 /* lock image 7 already sorted */
                 if (name === "7") return;
-
-                images.push({
-                    name: name,
-                    img: originalMap[name]
-                });
-
+                images.push({ name: name, img: originalMap[name] });
                 slot.innerHTML = "";
                 slot.dataset.filled = "";
-
                 renderPool();
             };
 
@@ -1208,62 +918,114 @@
 
         /* ================= RENDER POOL ================= */
         function renderPool() {
-
             shuffleArray(images);
-
             pool.innerHTML = "";
-
             images.forEach(item => {
-
                 const div = document.createElement("div");
                 div.className = "item";
                 div.draggable = true;
                 div.innerHTML = `<img src="${item.img}">`;
-
                 div.onclick = () => {
                     if (gameEnded) return;
                     selected = item;
                     clicks++;
-                    updateScores();
                 };
-
                 div.ondragstart = (e) => {
                     if (gameEnded) return;
                     selected = item;
                     clicks++;
-                    updateScores();
-
                     e.dataTransfer.setData("text/plain", item.name);
                 };
-
                 pool.appendChild(div);
             });
         }
 
         /* ================= PLACE IMAGE ================= */
         function placeImage(slot, item, slotNumber) {
-
             if (gameEnded) return;
             if (!item) return;
             if (slot.dataset.filled) return;
-
-            const imgNum = parseInt(item.name);
-
-            totalErrors += getErrors(imgNum, slotNumber);
 
             slot.innerHTML = `<img src="${item.img}">`;
             slot.dataset.filled = item.name;
 
             images = images.filter(x => x.name !== item.name);
-
             selected = null;
-
             clicks++;
-            updateScores();
             renderPool();
         }
 
-        /* ================= FINISH ================= */
+        /* ================= RESET SORTED IMAGES ================= */
+        function resetSorted() {
+            if (gameEnded) return;
+            resetCount++;
+            const allSlots = document.querySelectorAll('#slots .slot');
+            allSlots.forEach(slot => {
+                const name = slot.dataset.filled;
+                // Keep the default image 7 in its slot
+                if (name && name !== "7") {
+                    images.push({ name: name, img: originalMap[name] });
+                    slot.innerHTML = '';
+                    slot.dataset.filled = '';
+                }
+            });
+            selected = null;
+            renderPool();
+        }
+
+        /* ================= END GAME (common) ================= */
+        function endGame(giveUp) {
+            if (gameEnded) return;
+            gameEnded = true;
+            clearInterval(timerInterval);
+
+            // Compute final error score based on final arrangement
+            let finalErrors = 0;
+            const allSlots = document.querySelectorAll('#slots .slot');
+            allSlots.forEach((slot, idx) => {
+                const filledName = slot.dataset.filled;
+                if (filledName) {
+                    const imgNum = parseInt(filledName);
+                    finalErrors += getErrors(imgNum, idx + 1);
+                }
+            });
+            totalErrors = finalErrors;
+
+            // Check correctness
+            let allFilled = true;
+            let allCorrect = true;
+            allSlots.forEach((slot, idx) => {
+                const filled = slot.dataset.filled;
+                if (!filled) {
+                    allFilled = false;
+                    allCorrect = false;
+                } else if (parseInt(filled) !== idx + 1) {
+                    allCorrect = false;
+                }
+            });
+            const correctness = (allFilled && allCorrect) ? 1 : 0;
+
+            if (giveUp) {
+                giveUpFlag = 1;
+                message.innerHTML = "😔 You gave up. Better luck next time!";
+            } else {
+                message.innerHTML = correctness
+                    ? "🎉 Perfect! All pictures in correct order! 🎉"
+                    : "🏁 Game Finished! ❌ Not all pictures are in the right place.";
+            }
+
+            // Send data to the platform
+            window.__kb?.finish?.({
+                correctness,
+                giveUpFlag,
+                resetCount,
+                totalErrors,
+                seconds,
+                clicks
+            });
+        }
+
+        /* ================= FINISH BUTTON ================= */
         function finishGame() {
             if (gameEnded) return;
             const filledSlots = document.querySelectorAll('#slots .slot[data-filled]').length;
@@ -1274,41 +1036,20 @@
                 }, 3000);
                 return;
             }
-            gameEnded = true;
-
-            const errorScore = getErrorScore();
-            const timeScore = getTimeScore();
-            const clickScore = getClickScore();
-            const finalScore = (errorScore * 0.6 + timeScore * 0.3 + clickScore * 0.1);
-
-            message.innerHTML =
-                "🏁 Game Finished!<br><br>" +
-                `❌ Error Score: <b>${errorScore.toFixed(2)}</b><br>` +
-                `⏱️ Time Score: <b>${timeScore.toFixed(2)}</b><br>` +
-                `👆 Click Score: <b>${clickScore.toFixed(2)}</b><br><br>` +
-                `✅ Saved.`;
-
-            window.__kb?.finish?.({
-                finalScore: Number(finalScore.toFixed(2)),
-                errorScore: Number(errorScore.toFixed(2)),
-                timeScore: Number(timeScore.toFixed(2)),
-                clickScore: Number(clickScore.toFixed(2)),
-                totalErrors,
-                seconds,
-                clicks
-            });
+            endGame(false);
         }
 
         /* ================= START ================= */
         renderPool();
-        updateScores();
+        updateTimeDisplay();
     </script>
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('remembering-faces-2');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
-
 </body>
 </html>

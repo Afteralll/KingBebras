@@ -167,6 +167,374 @@ function weightsToPercentString(w) {
   return `error ${pct(w.error)}, time ${pct(w.time)}, click ${pct(w.click)}${w.drag > 0 ? `, drag ${pct(w.drag)}` : ''}`;
 }
 
+function toNumberOrNull(v) {
+  if (v == null) return null;
+  const n = typeof v === 'string' && v.trim() !== '' ? Number(v) : Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function normalizeMonitoringFromFinishPayload(gamePayload) {
+  const raw = gamePayload && typeof gamePayload === 'object' ? gamePayload : {};
+  const norm = {};
+
+  // time (seconds)
+  const timeSec =
+    toNumberOrNull(raw.time) ??
+    toNumberOrNull(raw.seconds) ??
+    toNumberOrNull(raw.elapsedSec) ??
+    toNumberOrNull(raw.timeElapsed) ??
+    toNumberOrNull(raw.totalTime) ??
+    toNumberOrNull(raw.timeScore);
+  if (timeSec != null) norm.timeSec = timeSec;
+
+  // clicks
+  const clicks = toNumberOrNull(raw.clicks) ?? toNumberOrNull(raw.totalClicks) ?? toNumberOrNull(raw.clickScore) ?? toNumberOrNull(raw.clickCount);
+  if (clicks != null) norm.clicks = clicks;
+
+  // resets
+  const resets = toNumberOrNull(raw.resets) ?? toNumberOrNull(raw.resetCount) ?? toNumberOrNull(raw.resetCounter) ?? toNumberOrNull(raw.resetCounterValue);
+  if (resets != null) norm.resets = resets;
+
+  // give up
+  const giveUpRaw = raw.giveUpFlag ?? raw.giveUp;
+  if (giveUpRaw != null) {
+    const g = toNumberOrNull(giveUpRaw);
+    norm.giveUpFlag = g != null ? (g !== 0 ? 1 : 0) : Boolean(giveUpRaw) ? 1 : 0;
+  }
+
+  // correctness (could be flag or counter)
+  const correctnessFlag = raw.correctnessFlag ?? raw.correctness;
+  const correctnessCounter = raw.correctnessCounter ?? raw.correctCount ?? raw.correctRounds ?? raw.correctnessCount;
+  const totalCount = raw.totalRounds ?? raw.totalCount;
+  const correctness = {};
+  const solved = toNumberOrNull(correctnessFlag);
+  if (solved != null) correctness.solved = solved !== 0;
+  const cc = toNumberOrNull(correctnessCounter);
+  if (cc != null) correctness.correctCount = cc;
+  const tc = toNumberOrNull(totalCount);
+  if (tc != null) correctness.totalCount = tc;
+  if (Object.keys(correctness).length) norm.correctness = correctness;
+
+  // errors (some games call it errorScore but it may mean “count”; we keep both if present)
+  const errorScore = toNumberOrNull(raw.errorScore);
+  const errorCount = toNumberOrNull(raw.totalErrors);
+  const errors = {};
+  if (errorScore != null) errors.errorScore = errorScore;
+  if (errorCount != null) errors.errorCount = errorCount;
+  if (Object.keys(errors).length) norm.errors = errors;
+
+  // logical reasoning flag (some games/classes)
+  if (raw.logicalReasoningFlag != null) {
+    const lr = toNumberOrNull(raw.logicalReasoningFlag);
+    norm.logicalReasoningFlag = lr != null ? (lr !== 0 ? 1 : 0) : Boolean(raw.logicalReasoningFlag) ? 1 : 0;
+  }
+
+  // Keep all non-normalized keys as extra.
+  const used = new Set([
+    'time',
+    'seconds',
+    'elapsedSec',
+    'timeElapsed',
+    'totalTime',
+    'timeScore',
+    'clicks',
+    'totalClicks',
+    'clickScore',
+    'clickCount',
+    'resets',
+    'resetCount',
+    'resetCounter',
+    'resetCounterValue',
+    'giveUpFlag',
+    'giveUp',
+    'correctnessFlag',
+    'correctness',
+    'correctnessCounter',
+    'correctCount',
+    'correctRounds',
+    'correctnessCount',
+    'totalRounds',
+    'totalCount',
+    'errorScore',
+    'totalErrors',
+    'logicalReasoningFlag'
+  ]);
+  const extra = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (used.has(k)) continue;
+    extra[k] = v;
+  }
+
+  return { normalized: norm, extra, raw };
+}
+
+/**
+ * Prefer authoritative scores from the game's finish payload (same logic as the iframe).
+ * Falls back to null so scoreFromMoves can use moves / task-specific rules.
+ */
+function scoringFromGamePayload(taskDef, gamePayload, moves) {
+  if (!gamePayload || typeof gamePayload !== 'object') return null;
+  const p = gamePayload;
+  const weights = getWeightsForTask(taskDef);
+  const neutral = 10;
+
+  const clicksLogged = moves.filter((m) => m.move_type === 'click').length;
+  const moveTimes = moves.map((m) => new Date(m.ts).getTime()).filter(Number.isFinite).sort((a, b) => a - b);
+  const startMs = moveTimes.length ? moveTimes[0] : Date.now();
+  const elapsedFallback = Math.max(0, (Date.now() - startMs) / 1000);
+
+  const combinedFinal10 = () => {
+    const v = Number(p.finalScore ?? p.finalScoreValue ?? p.totalScore);
+    return Number.isFinite(v) ? clamp(v, 0, 10) : null;
+  };
+
+  const baseReturn = (opts) => ({
+    elapsedSec: opts.elapsedSec ?? elapsedFallback,
+    clicks: opts.clicks ?? clicksLogged,
+    errorScore: opts.errorScore,
+    timeScore: opts.timeScore,
+    clickScore: opts.clickScore,
+    dragScore: opts.dragScore ?? neutral,
+    final10: opts.final10,
+    finalScore: clamp(opts.final10 * 10, 0, 100),
+    dragTimeSec: opts.dragTimeSec
+  });
+
+  if (taskDef.type === 'magic_house') {
+    const err = Number(p.finalErrorScore);
+    const tim = Number(p.timeScore);
+    const tot = Number(p.totalScore);
+    const totalTime = Number(p.totalTime);
+    if (!Number.isFinite(err) || !Number.isFinite(tim)) return null;
+    const errorScore = clamp(err, 0, 10);
+    const timeScore = clamp(tim, 0, 10);
+    const cf = combinedFinal10();
+    const final10 =
+      Number.isFinite(tot) && tot >= 0
+        ? clamp(tot, 0, 10)
+        : cf ?? computeWeightedFinal10({
+            errorScore,
+            timeScore,
+            clickScore: neutral,
+            dragScore: neutral,
+            weights
+          });
+    const elapsedSec = Number.isFinite(totalTime) && totalTime >= 0 ? totalTime : elapsedFallback;
+    return baseReturn({ elapsedSec, errorScore, timeScore, clickScore: neutral, dragScore: neutral, final10 });
+  }
+
+  if (taskDef.type === 'shape_sudoku') {
+    const err = Number(p.finalErrorRaw);
+    const tim = Number(p.timeRaw ?? p.timeScore);
+    if (!Number.isFinite(err) || !Number.isFinite(tim)) return null;
+    const errorScore = clamp(err, 0, 10);
+    const timeScore = clamp(tim, 0, 10);
+    const cf = combinedFinal10();
+    const final10 =
+      cf ??
+      computeWeightedFinal10({
+        errorScore,
+        timeScore,
+        clickScore: neutral,
+        dragScore: neutral,
+        weights
+      });
+    const totalTime = Number(p.totalTime);
+    return baseReturn({
+      elapsedSec: Number.isFinite(totalTime) ? totalTime : elapsedFallback,
+      errorScore,
+      timeScore,
+      clickScore: neutral,
+      dragScore: neutral,
+      final10
+    });
+  }
+
+  if (taskDef.type === 'organizing_bracelets') {
+    const time = Number(p.time);
+    let errorScore = Number(p.errorScore);
+    let timeScore = Number(p.timeScore);
+    let clickScore = Number(p.clickScore);
+    const totalErrors = Number(p.totalErrors);
+    if (!Number.isFinite(errorScore) && Number.isFinite(totalErrors)) {
+      errorScore = clamp(10 - totalErrors * 0.5, 0, 10);
+    }
+    if (!Number.isFinite(timeScore) && Number.isFinite(time)) {
+      timeScore = time < 60 ? 10 : time < 120 ? 8 : time < 180 ? 6 : time < 240 ? 4 : 2;
+    }
+    if (!Number.isFinite(clickScore)) clickScore = neutral;
+    if (!Number.isFinite(errorScore) || !Number.isFinite(timeScore)) return null;
+    const cf = combinedFinal10();
+    const es = clamp(errorScore, 0, 10);
+    const ts = clamp(timeScore, 0, 10);
+    const cs = clamp(clickScore, 0, 10);
+    const final10 =
+      cf ??
+      computeWeightedFinal10({
+        errorScore: es,
+        timeScore: ts,
+        clickScore: cs,
+        dragScore: neutral,
+        weights
+      });
+    return baseReturn({
+      elapsedSec: Number.isFinite(time) ? time : elapsedFallback,
+      errorScore: es,
+      timeScore: ts,
+      clickScore: cs,
+      dragScore: neutral,
+      final10
+    });
+  }
+
+  if (taskDef.id === 'cube-game-1') {
+    const e = Number(p.finalErrorScore);
+    const t = Number(p.timeScore);
+    const c = Number(p.clickScore);
+    const d = Number(p.dragScore);
+    if (![e, t, c, d].every(Number.isFinite)) return null;
+    const errorScore = clamp(e, 0, 10);
+    const timeScore = clamp(t, 0, 10);
+    const clickScore = clamp(c, 0, 10);
+    const dragScore = clamp(d, 0, 10);
+    const cf = combinedFinal10();
+    const final10 =
+      cf ??
+      computeWeightedFinal10({
+        errorScore,
+        timeScore,
+        clickScore,
+        dragScore,
+        weights
+      });
+    const elapsed = Number(p.time);
+    return baseReturn({
+      elapsedSec: Number.isFinite(elapsed) ? elapsed : elapsedFallback,
+      clicks: Number.isFinite(Number(p.clicks)) ? Number(p.clicks) : clicksLogged,
+      errorScore,
+      timeScore,
+      clickScore,
+      dragScore,
+      final10
+    });
+  }
+
+  if (taskDef.id === 'bbq-party-2') {
+    const e = Number(p.errorScore);
+    const tim = Number(p.timeScore);
+    const clk = Number(p.clickScore);
+    const conn = Number(p.connectionScore);
+    if (![e, tim, clk, conn].every(Number.isFinite)) return null;
+    const fv = Number(p.finalScoreValue);
+    const final10 = Number.isFinite(fv)
+      ? clamp(fv, 0, 10)
+      : computeWeightedFinal10({
+          errorScore: clamp(e, 0, 10),
+          timeScore: clamp(tim, 0, 10),
+          clickScore: clamp(clk, 0, 10),
+          dragScore: clamp(conn, 0, 10),
+          weights
+        });
+    return baseReturn({
+      errorScore: clamp(e, 0, 10),
+      timeScore: clamp(tim, 0, 10),
+      clickScore: clamp(clk, 0, 10),
+      dragScore: clamp(conn, 0, 10),
+      final10
+    });
+  }
+
+  if (taskDef.id === 'coloring-page-3') {
+    const fs = Number(p.finalScore);
+    if (!Number.isFinite(fs)) return null;
+    const final10 = clamp(fs, 0, 10);
+    return baseReturn({
+      errorScore: final10,
+      timeScore: neutral,
+      clickScore: neutral,
+      dragScore: neutral,
+      final10
+    });
+  }
+
+  if (taskDef.id === 'online-class-picture-flow') {
+    const e = Number(p.errorScore);
+    const tim = Number(p.timeScore);
+    const clk = Number(p.clickScore);
+    const logic = Number(p.logicScore);
+    if (![e, tim, clk, logic].every(Number.isFinite)) return null;
+    const cf = combinedFinal10();
+    const final10 =
+      cf ??
+      computeWeightedFinal10({
+        errorScore: clamp(e, 0, 10),
+        timeScore: clamp(tim, 0, 10),
+        clickScore: clamp(clk, 0, 10),
+        dragScore: clamp(logic, 0, 10),
+        weights
+      });
+    return baseReturn({
+      errorScore: clamp(e, 0, 10),
+      timeScore: clamp(tim, 0, 10),
+      clickScore: clamp(clk, 0, 10),
+      dragScore: clamp(logic, 0, 10),
+      final10
+    });
+  }
+
+  if (taskDef.id === 'burger-recipe-2') {
+    const fs = Number(p.finalScore);
+    if (!Number.isFinite(fs)) return null;
+    const final10 = clamp(fs, 0, 10);
+    const e = Number(p.errorScore);
+    const tim = Number(p.timeScore);
+    const clk = Number(p.clickScore);
+    const hasParts = [e, tim, clk].every(Number.isFinite);
+    return baseReturn({
+      errorScore: hasParts ? clamp(e, 0, 10) : final10,
+      timeScore: hasParts ? clamp(tim, 0, 10) : neutral,
+      clickScore: hasParts ? clamp(clk, 0, 10) : neutral,
+      dragScore: neutral,
+      final10
+    });
+  }
+
+  const err = Number(p.errorScore ?? p.finalErrorScore);
+  const tim = Number(p.timeScore ?? p.timeRaw);
+  const clk = Number(p.clickScore);
+  const dragExtra = Number(p.dragScore ?? p.connectionScore ?? p.logicScore);
+  if (![err, tim, clk].every(Number.isFinite)) return null;
+
+  const dragScore = Number.isFinite(dragExtra) ? clamp(dragExtra, 0, 10) : neutral;
+  const cf = combinedFinal10();
+  const final10 =
+    cf ??
+    computeWeightedFinal10({
+      errorScore: clamp(err, 0, 10),
+      timeScore: clamp(tim, 0, 10),
+      clickScore: clamp(clk, 0, 10),
+      dragScore,
+      weights
+    });
+
+  let elapsedRaw;
+  for (const key of ['totalTime', 'seconds', 'time']) {
+    const n = Number(p[key]);
+    if (Number.isFinite(n) && n >= 0) {
+      elapsedRaw = n;
+      break;
+    }
+  }
+  return baseReturn({
+    elapsedSec: elapsedRaw !== undefined ? elapsedRaw : elapsedFallback,
+    errorScore: clamp(err, 0, 10),
+    timeScore: clamp(tim, 0, 10),
+    clickScore: clamp(clk, 0, 10),
+    dragScore,
+    final10
+  });
+}
+
 function safeJsonParse(str) {
   try {
     return JSON.parse(str);
@@ -175,7 +543,10 @@ function safeJsonParse(str) {
   }
 }
 
-function scoreFromMoves(taskDef, moves) {
+function scoreFromMoves(taskDef, moves, gamePayload = null) {
+  const fromGame = scoringFromGamePayload(taskDef, gamePayload, moves);
+  if (fromGame) return fromGame;
+
   const errorStart = 10;
   const timeStart = 10;
   const clickStart = 10;
@@ -477,42 +848,32 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
 
   const tasksByAttempt = db
     .prepare(
-      `SELECT task_id, final_score, breakdown_json
+      `SELECT task_id, started_at, finished_at, breakdown_json, game_payload_json
        FROM attempt_tasks
        WHERE attempt_id = ?`
     );
 
-  const taskDefs = new Map(TASKS.map((t) => [t.id, t]));
-  const catWeights = { A: 0.22, B: 0.33, C: 0.55 };
-
   const out = students.map((s) => {
     const a = attemptByUser.get(s.id) ?? null;
-    const taskScores = {};
-    const taskBreakdowns = {};
-    const cat = { A: { sum: 0, max: 0 }, B: { sum: 0, max: 0 }, C: { sum: 0, max: 0 } };
+    const taskMonitoring = {};
 
     if (a) {
       const rows = tasksByAttempt.all(a.id);
       for (const r of rows) {
-        taskScores[r.task_id] = r.final_score;
-        taskBreakdowns[r.task_id] = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
-        const def = taskDefs.get(r.task_id);
-        const catKey = def?.category ?? null;
-        if (catKey && cat[catKey]) {
-          cat[catKey].max += Number(def?.maxScore ?? 100);
-          if (Number.isFinite(r.final_score)) cat[catKey].sum += Number(r.final_score);
-        }
+        const parsedBreakdown = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
+        const parsedPayload = r.game_payload_json ? safeJsonParse(r.game_payload_json) : null;
+        // Prefer stored monitoring breakdown; if missing, derive from raw finish payload.
+        const monitoring =
+          parsedBreakdown && typeof parsedBreakdown === 'object' && (parsedBreakdown.normalized || parsedBreakdown.extra || parsedBreakdown.raw)
+            ? parsedBreakdown
+            : normalizeMonitoringFromFinishPayload(parsedPayload);
+        taskMonitoring[r.task_id] = {
+          startedAt: r.started_at ?? null,
+          finishedAt: r.finished_at ?? null,
+          monitoring
+        };
       }
     }
-
-    const catPct = (k) => (cat[k].max > 0 ? (cat[k].sum / cat[k].max) * 100 : null);
-    const catA = catPct('A');
-    const catB = catPct('B');
-    const catC = catPct('C');
-    const overallWeighted =
-      (Number.isFinite(catA) ? catA * catWeights.A : 0) +
-      (Number.isFinite(catB) ? catB * catWeights.B : 0) +
-      (Number.isFinite(catC) ? catC * catWeights.C : 0);
 
     return {
       studentId: s.id,
@@ -521,10 +882,7 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
       attemptId: a?.id ?? null,
       startedAt: a?.started_at ?? null,
       finishedAt: a?.finished_at ?? null,
-      categoryPercents: { A: catA, B: catB, C: catC },
-      overallWeightedPercent: a ? overallWeighted : null,
-      taskScores,
-      taskBreakdowns
+      taskMonitoring
     };
   });
 
@@ -533,11 +891,8 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
     tasks: TASKS.map((t) => ({
       id: t.id,
       title: t.title,
-      category: t.category,
-      maxScore: t.maxScore ?? 100,
-      weights: normalizeWeights(t?.scoring?.weights ?? { error: 0.6, time: 0.3, click: 0.1, drag: 0 })
-    })),
-    overallWeights: { A: 0.22, B: 0.33, C: 0.55 }
+      category: t.category
+    }))
   });
 });
 
@@ -681,7 +1036,7 @@ app.post('/api/attempts/start', requireAuth, requireStudent, (req, res) => {
   const insertTask = db.prepare(
     `INSERT INTO attempt_tasks (attempt_id, task_id, task_index) VALUES (?, ?, ?)`
   );
-  TASKS.slice(0, 15).forEach((t, idx) => insertTask.run(attemptId, t.id, idx));
+  TASKS.forEach((t, idx) => insertTask.run(attemptId, t.id, idx));
 
   return res.json({ ok: true, attemptId, existing: false, startedAt: created?.started_at ?? nowIso(), finishedAt: null });
 });
@@ -711,7 +1066,7 @@ app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, (req, res
   const rows = db
     .prepare(
       `
-      SELECT task_id, task_index, started_at, finished_at, final_score
+      SELECT task_id, task_index, started_at, finished_at, breakdown_json, game_payload_json
       FROM attempt_tasks
       WHERE attempt_id = ?
       ORDER BY task_index ASC
@@ -724,7 +1079,7 @@ app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, (req, res
       taskIndex: r.task_index,
       startedAt: r.started_at,
       finishedAt: r.finished_at,
-      finalScore: r.final_score
+      monitoringAvailable: Boolean(r.finished_at && (r.breakdown_json || r.game_payload_json))
     }))
   });
 });
@@ -800,24 +1155,13 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
     .get(attemptId, taskId, req.user.userId);
   if (!allowed) return res.status(403).json({ error: 'not_allowed' });
 
-  const moves = db
-    .prepare(
-      `SELECT ts, move_type, payload_json, penalty
-       FROM moves
-       WHERE attempt_id = ? AND task_id = ?
-       ORDER BY id ASC`
-    )
-    .all(attemptId, taskId);
-
-  const scoring = scoreFromMoves(taskDef, moves);
-  const weights = getWeightsForTask(taskDef);
+  const monitoring = normalizeMonitoringFromFinishPayload(gamePayload);
 
   const info = db
     .prepare(
       `
       UPDATE attempt_tasks
       SET finished_at = COALESCE(finished_at, ?),
-          final_score = COALESCE(final_score, ?),
           breakdown_json = COALESCE(breakdown_json, ?),
           game_payload_json = COALESCE(game_payload_json, ?)
       WHERE attempt_id = ? AND task_id = ?
@@ -825,20 +1169,7 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
     )
     .run(
       nowIso(),
-      scoring.finalScore,
-      JSON.stringify({
-        errorScore: scoring.errorScore,
-        timeScore: scoring.timeScore,
-        clickScore: scoring.clickScore,
-        dragScore: scoring.dragScore,
-        elapsedSec: scoring.elapsedSec,
-        clicks: scoring.clicks,
-        dragTimeSec: scoring.dragTimeSec,
-        weights,
-        weightsText: weightsToPercentString(weights),
-        final10: scoring.final10,
-        finalScore: scoring.finalScore
-      }),
+      JSON.stringify(monitoring),
       gamePayload ? JSON.stringify(gamePayload) : null,
       attemptId,
       taskId
@@ -847,18 +1178,7 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
   if (info.changes === 0) return res.status(404).json({ error: 'attempt_task_not_found' });
   return res.json({
     ok: true,
-    finalScore: scoring.finalScore,
-    breakdown: {
-      errorScore: scoring.errorScore,
-      timeScore: scoring.timeScore,
-      clickScore: scoring.clickScore,
-      dragScore: scoring.dragScore,
-      elapsedSec: scoring.elapsedSec,
-      clicks: scoring.clicks,
-      dragTimeSec: scoring.dragTimeSec
-    },
-    weights: weights,
-    weightsText: weightsToPercentString(weights),
+    monitoring,
     finalAnswer: finalAnswer ?? null
   });
 });

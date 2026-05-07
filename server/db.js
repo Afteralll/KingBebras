@@ -7,6 +7,7 @@ const SCHEMA_PATH = path.join(process.cwd(), 'server', 'schema.sql');
 
 export function openDb() {
   const db = new Database(DB_PATH);
+  db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   const schema = fs.readFileSync(SCHEMA_PATH, 'utf8');
   db.exec(schema);

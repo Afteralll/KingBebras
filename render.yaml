@@ -1,0 +1,14 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Use Dashboard → Settings → Custom Domain to attach your domain (CNAME to onrender.com).
+# For always-on traffic, switch the service plan from Free to a paid instance in the dashboard.
+services:
+  - type: web
+    name: kingbebras
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

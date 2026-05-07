@@ -27,10 +27,86 @@
             background: #e9f2e9;
             border-radius: 48px;
             padding: 24px 24px 30px;
-            box-shadow: 0 20px 30px rgba(0,0,0,0.5), inset 0 1px 4px rgba(255,255,255,0.6);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255, 255, 255, 0.6);
             border: 2px solid #c8dcc8;
         }
 
+        /* ---------- INSTRUCTION PANEL ---------- */
+        .instructions-panel {
+            background: #f5f0dc;
+            border-radius: 30px;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05), 0 4px 0 #b7a87a;
+            border: 2px solid #cfbc8b;
+        }
+
+        .instructions-heading {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1e3a2e;
+            margin: 0 0 12px 0;
+            text-align: center;
+            background: #e7dbb2;
+            padding: 8px;
+            border-radius: 20px;
+        }
+
+        .arrow-explanations {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .explain-item {
+            background: #e7dbb2;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2d3e1f;
+            box-shadow: inset 0 -3px 0 #b89a6a;
+            border: 1px solid #faf0db;
+        }
+
+        .arrow-icon {
+            font-size: 1.9rem;
+            filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.15));
+        }
+
+        .guide-image {
+            background: #fefae0;
+            border: 3px dashed #c0a864;
+            border-radius: 20px;
+            padding: 10px 12px;
+            margin-top: 6px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            color: #1f3a2a;
+            flex-wrap: wrap;
+        }
+
+        .question-text {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #1e3a2e;
+            text-align: center;
+            margin: 12px 0 0 0;
+            background: #efe6c3;
+            padding: 8px;
+            border-radius: 16px;
+        }
+
+        /* ---------- REST OF ORIGINAL STYLES (UNCHANGED) ---------- */
         h1 {
             text-align: center;
             margin: 0 0 12px 0;
@@ -45,15 +121,15 @@
             gap: 12px;
         }
 
-            h1 span {
-                font-size: 2rem;
-            }
+        h1 span {
+            font-size: 2rem;
+        }
 
         .grid-panel {
             background: #5b8c5c;
             padding: 20px 20px 15px;
             border-radius: 40px;
-            box-shadow: inset 0 0 0 2px #3b6e3b, inset 0 8px 8px rgba(0,0,0,0.1), 0 8px 0 #2d4a2d;
+            box-shadow: inset 0 0 0 2px #3b6e3b, inset 0 8px 8px rgba(0, 0, 0, 0.1), 0 8px 0 #2d4a2d;
             border-bottom: 3px solid #7da07d;
         }
 
@@ -84,7 +160,7 @@
         }
 
         .bug-emoji {
-            filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, 0.3));
             transform: scale(1.2);
         }
 
@@ -101,7 +177,7 @@
             border-radius: 60px;
             padding: 18px 12px;
             margin: 20px 0 15px;
-            box-shadow: inset 0 4px 6px rgba(0,0,0,0.1), inset 0 0 0 3px #ebdbbc, 0 6px 0 #7a6242;
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1), inset 0 0 0 3px #ebdbbc, 0 6px 0 #7a6242;
         }
 
         .slot-row {
@@ -126,11 +202,11 @@
             border: 2px dashed #b8d0b8;
         }
 
-            .slot.filled {
-                border: 3px solid #f9e076;
-                background: #6f9a6f;
-                box-shadow: inset 0 -2px 0 #3a5e3a, inset 0 0 0 3px #d4e8b0, 0 4px 0 #1f3a1f;
-            }
+        .slot.filled {
+            border: 3px solid #f9e076;
+            background: #6f9a6f;
+            box-shadow: inset 0 -2px 0 #3a5e3a, inset 0 0 0 3px #d4e8b0, 0 4px 0 #1f3a1f;
+        }
 
         .arrow-palette {
             display: flex;
@@ -156,52 +232,68 @@
             color: #2d3e1f;
         }
 
-            .arrow-token:active {
-                cursor: grabbing;
-                opacity: 0.8;
-                transform: scale(0.97);
-            }
+        .arrow-token:active {
+            cursor: grabbing;
+            opacity: 0.8;
+            transform: scale(0.97);
+        }
 
-            .arrow-token.disabled {
-                opacity: 0.25;
-                cursor: not-allowed;
-                pointer-events: none;
-                box-shadow: inset 0 -2px 0 #7a6e3e, 0 3px 0 #5f4e2e;
-            }
+        .arrow-token.disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: inset 0 -2px 0 #7a6e3e, 0 3px 0 #5f4e2e;
+        }
 
         .controls {
             display: flex;
             justify-content: space-between;
-            gap: 15px;
+            gap: 12px;
             margin: 15px 0 10px;
+            flex-wrap: wrap;
         }
 
         button {
             background: #f3d37c;
             border: none;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 12px 24px;
+            font-size: 1.1rem;
+            padding: 12px 18px;
             border-radius: 40px;
             box-shadow: inset 0 -3px 0 #c09f4a, inset 0 0 0 2px #ffefb0, 0 6px 0 #8b6f32;
             cursor: pointer;
             color: #1f3a2a;
             flex: 1;
+            min-width: 90px;
             transition: all 0.07s;
             border: 2px solid #fae29c;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
-            button:active {
-                transform: translateY(4px);
-                box-shadow: inset 0 -1px 0 #c09f4a, inset 0 0 0 2px #ffefb0, 0 2px 0 #8b6f32;
-            }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 -1px 0 #c09f4a, inset 0 0 0 2px #ffefb0, 0 2px 0 #8b6f32;
+        }
 
-            button:disabled {
-                opacity: 0.5;
-                transform: none;
-                pointer-events: none;
-            }
+        button:disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+        }
+
+        #giveUpBtn {
+            background: #e06767;
+            box-shadow: inset 0 -3px 0 #a04040, inset 0 0 0 2px #ffb0b0, 0 6px 0 #6b3030;
+            border-color: #f0a0a0;
+            color: #fff;
+            flex: 0.8;
+        }
+
+        #giveUpBtn:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 -1px 0 #a04040, inset 0 0 0 2px #ffb0b0, 0 2px 0 #6b3030;
+        }
 
         .score-panel {
             display: flex;
@@ -213,22 +305,24 @@
             font-weight: 600;
             margin-top: 10px;
             box-shadow: inset 0 2px 5px #0f1e15, 0 4px 0 #0e1e12;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .score-item {
             text-align: center;
             background: #2b4a2b;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 30px;
-            min-width: 90px;
+            min-width: 70px;
             box-shadow: inset 0 1px 3px #5f8b5f;
+            font-size: 0.9rem;
         }
 
-        .final-score {
-            font-size: 1.7rem;
+        .score-item span {
             font-weight: 800;
             color: #fdebb3;
-            text-shadow: 2px 2px 0 #1f3a1f;
+            font-size: 1.1rem;
         }
 
         .message {
@@ -242,10 +336,36 @@
 <body>
     <div class="game-container">
         <h1>
-            <span>🐞</span> BUG ROUTE <span>🏠</span>
+            <span>🐞</span> JOURNEY TO THE HIVE <span>🏠</span>
+            
         </h1>
+        <!-- ---------- INSTRUCTION BLOCK ---------- -->
+        <div class="instructions-panel">
+            <div class="instructions-heading">
+                🐞The Bug knows these commands:
+            </div>
+            <div class="arrow-explanations">
+                <div class="explain-item">
+                    <span class="arrow-icon">⬆️</span> Forward: moves one square in its direction
+                </div>
+                <div class="explain-item">
+                    <span class="arrow-icon">↷</span> Right: turns right
+                </div>
+                <div class="explain-item">
+                    <span class="arrow-icon">↶</span> Left: turns left
+                </div>
+            </div>
+            <div class="guide-image">
+                <img src="D:\Study\Bachelor Thesis\Journey to the hive\ExampleKM.jpg" alt="Arrow movement guide" style="max-width: 100%; height: auto; border-radius: 12px;">
+            </div>
+           
+        </div>
 
-        <!-- 3x3 grid -->
+        <!-- ---------- ORIGINAL HEADER & GAME ---------- -->
+        
+        <div class="question-text">
+            ❓ Which commands will make the bug go to the square with the yellow hive?
+        </div>
         <div class="grid-panel">
             <div class="grid" id="gridContainer"></div>
             <div style="display: flex; justify-content: space-between; padding: 0 8px;">
@@ -255,29 +375,26 @@
             </div>
         </div>
 
-        <!-- Command slots (5) -->
         <div class="sequence-area">
             <div class="slot-row" id="slotRow">
-                <!-- 5 slots generated in js -->
             </div>
         </div>
 
-        <!-- Arrow palette (3 straight, 1 left, 1 right) -->
         <div class="arrow-palette" id="palette"></div>
 
         <div class="controls">
-            <button id="runBtn">▶ RUN</button>
-            <button id="resetBtn">⟲ RESET</button>
+            <button id="finishBtn">🏁 FINISH</button>
+            <button id="giveUpBtn">🏳️ GIVE UP</button>
+            <button id="resetBtn">⟲ RESET ARROWS</button>
         </div>
 
-        <div class="message" id="messageDisplay">Drag arrows to slots → sort to reach yellow house</div>
+        <div class="message" id="messageDisplay">Drag arrows to slots → arrange sequence → press FINISH</div>
 
-        <!-- Scoreboard -->
         <div class="score-panel">
-            <div class="score-item">📦 Placements <span id="placementCount">0</span></div>
             <div class="score-item">⏱️ Time <span id="timeDisplay">0</span>s</div>
             <div class="score-item">🖱️ Clicks <span id="clickCount">0</span></div>
-            <div class="score-item final-score">⭐ <span id="finalScoreDisplay">0.00</span></div>
+            <div class="score-item">✅ Correct <span id="correctnessDisplay">0</span></div>
+            <div class="score-item">🔄 Resets <span id="resetDisplay">0</span></div>
         </div>
     </div>
 
@@ -285,57 +402,49 @@
         (function () {
             "use strict";
 
-            // ----- GAME CONSTANTS -----
             const GRID_SIZE = 3;
-            // Starting position: bottom middle (row 2, col 1)
             const START_ROW = 2;
             const START_COL = 1;
-            const START_DIR = 'up'; // facing up (north)
+            const START_DIR = 'up';
 
-            // House positions: top row (row 0)
             const HOUSE_YELLOW = { row: 0, col: 0 };
             const HOUSE_RED = { row: 0, col: 1 };
             const HOUSE_BLUE = { row: 0, col: 2 };
 
-            // Correct sequences (arrow types in order)
             const SOLUTION_1 = ['left', 'straight', 'right', 'straight', 'straight'];
             const SOLUTION_2 = ['straight', 'left', 'straight', 'right', 'straight'];
             const SLOT_COUNT = 5;
 
-            // Arrow inventory (tokens)
             const INIT_ARROWS = [
                 { type: 'straight', count: 3 },
                 { type: 'left', count: 1 },
                 { type: 'right', count: 1 }
             ];
 
-            // ----- GAME STATE -----
-            let grid = [];                // 2D array for UI display (houses, bug)
-            let slots = new Array(SLOT_COUNT).fill(null); // each holds arrow type or null
-            let arrowInventory = JSON.parse(JSON.stringify(INIT_ARROWS)); // deep copy
+            let slots = new Array(SLOT_COUNT).fill(null);
+            let arrowInventory = JSON.parse(JSON.stringify(INIT_ARROWS));
 
-            // Scoring trackers
-            let placementCount = 0;       // total times an arrow placed into slot (even if replaced)
             let clickCounter = 0;
             let timerSeconds = 0;
             let timerInterval = null;
             let timerRunning = false;
-            let gameFinished = false;     // when run & success, stop scoring changes
-            let finalScoreValue = 0;
+            let gameFinished = false;
+            let resetCounter = 0;
+            let giveUpFlag = 0;
+            let correctnessCounter = 0;
 
-            // DOM elements
             const gridEl = document.getElementById('gridContainer');
             const slotRow = document.getElementById('slotRow');
             const paletteEl = document.getElementById('palette');
-            const runBtn = document.getElementById('runBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            const giveUpBtn = document.getElementById('giveUpBtn');
             const resetBtn = document.getElementById('resetBtn');
             const msgDisplay = document.getElementById('messageDisplay');
-            const placementSpan = document.getElementById('placementCount');
             const timeSpan = document.getElementById('timeDisplay');
             const clickSpan = document.getElementById('clickCount');
-            const finalScoreSpan = document.getElementById('finalScoreDisplay');
+            const correctnessSpan = document.getElementById('correctnessDisplay');
+            const resetSpan = document.getElementById('resetDisplay');
 
-            // ----- UTILS: direction & movement -----
             const dirDelta = {
                 'up': { dr: -1, dc: 0 },
                 'down': { dr: 1, dc: 0 },
@@ -346,12 +455,11 @@
             function turn(currentDir, turnDir) {
                 const order = ['up', 'right', 'down', 'left'];
                 let idx = order.indexOf(currentDir);
-                if (turnDir === 'left') idx = (idx + 3) % 4;  // left turn = counterclockwise
+                if (turnDir === 'left') idx = (idx + 3) % 4;
                 else if (turnDir === 'right') idx = (idx + 1) % 4;
                 return order[idx];
             }
 
-            // ----- RENDER GRID (static houses + bug) -----
             function renderGrid() {
                 gridEl.innerHTML = '';
                 for (let r = 0; r < GRID_SIZE; r++) {
@@ -359,12 +467,11 @@
                         const cell = document.createElement('div');
                         cell.className = 'cell';
 
-                        // Houses (top row)
                         if (r === 0) {
                             cell.classList.add('house');
-                            if (c === 0) cell.style.backgroundColor = '#f9e076'; // yellow
-                            else if (c === 1) cell.style.backgroundColor = '#e06767'; // red
-                            else if (c === 2) cell.style.backgroundColor = '#6b9fd1'; // blue
+                            if (c === 0) cell.style.backgroundColor = '#f9e076';
+                            else if (c === 1) cell.style.backgroundColor = '#e06767';
+                            else if (c === 2) cell.style.backgroundColor = '#6b9fd1';
                             cell.textContent = '🏠';
                             if (c === 0) cell.textContent = '🏠🟡';
                             else if (c === 1) cell.textContent = '🏠🔴';
@@ -374,10 +481,8 @@
                             cell.style.backgroundColor = '#eeddbb';
                         }
 
-                        // Bug at start position
                         if (r === START_ROW && c === START_COL) {
                             cell.innerHTML = '<span class="bug-emoji">🐞</span>';
-                            // direction indicator
                             const dirSpan = document.createElement('span');
                             dirSpan.className = 'direction-indicator';
                             dirSpan.textContent = START_DIR === 'up' ? '⬆️' : '➡️';
@@ -389,7 +494,6 @@
                 }
             }
 
-            // ----- RENDER SLOTS -----
             function renderSlots() {
                 slotRow.innerHTML = '';
                 for (let i = 0; i < SLOT_COUNT; i++) {
@@ -400,15 +504,14 @@
                     if (slots[i]) {
                         const arrowType = slots[i];
                         if (arrowType === 'straight') slotDiv.textContent = '⬆️';
-                        else if (arrowType === 'left') slotDiv.textContent = '↶';   // clear left turn
-                        else if (arrowType === 'right') slotDiv.textContent = '↷';  // clear right turn
+                        else if (arrowType === 'left') slotDiv.textContent = '↶';
+                        else if (arrowType === 'right') slotDiv.textContent = '↷';
                     } else {
                         slotDiv.textContent = '▢';
                         slotDiv.style.fontSize = '2.5rem';
                         slotDiv.style.opacity = '0.7';
                     }
 
-                    // Drop events
                     slotDiv.addEventListener('dragover', (e) => e.preventDefault());
                     slotDiv.addEventListener('drop', handleSlotDrop);
 
@@ -416,7 +519,6 @@
                 }
             }
 
-            // ----- RENDER PALETTE (draggable tokens) -----
             function renderPalette() {
                 paletteEl.innerHTML = '';
                 arrowInventory.forEach((item, idx) => {
@@ -432,14 +534,14 @@
                         else token.textContent = '↷';
 
                         token.addEventListener('dragstart', handleDragStart);
-                        token.addEventListener('click', () => { incrementClick(); }); // clicks count
+                        token.addEventListener('click', () => {
+                            incrementClick();
+                        });
                         paletteEl.appendChild(token);
                     }
                 });
-                // If any token count zero, they won't appear (disabled naturally)
             }
 
-            // ----- Drag & Drop handlers -----
             let draggedType = null;
 
             function handleDragStart(e) {
@@ -455,14 +557,14 @@
                 draggedType = token.dataset.type;
                 e.dataTransfer.setData('text/plain', draggedType);
                 e.dataTransfer.effectAllowed = 'move';
-                startTimer(); // first interaction starts timer
-                incrementClick(); // drag start counts as click? We'll count on mousedown anyway but safe.
+                startTimer();
+                incrementClick();
             }
 
             function handleSlotDrop(e) {
                 e.preventDefault();
                 if (gameFinished) {
-                    msgDisplay.textContent = '⏳ Game finished. Press RESET to try again.';
+                    msgDisplay.textContent = '⏳ Game finished. Press RESET ARROWS to try again.';
                     return;
                 }
                 startTimer();
@@ -473,71 +575,52 @@
                 const arrowType = e.dataTransfer.getData('text/plain');
                 if (!arrowType) return;
 
-                // Check if we have that arrow available in inventory
                 const invItem = arrowInventory.find(item => item.type === arrowType);
                 if (!invItem || invItem.count <= 0) {
                     msgDisplay.textContent = `⚠️ No ${arrowType} arrows left!`;
                     return;
                 }
 
-                // If slot already filled, we need to return that arrow to inventory first
                 if (slots[index] !== null) {
                     const oldType = slots[index];
                     const oldInv = arrowInventory.find(item => item.type === oldType);
                     if (oldInv) oldInv.count += 1;
                 }
 
-                // Place new arrow
                 slots[index] = arrowType;
                 invItem.count -= 1;
 
-                // Increase placement counter (every drop counts)
-                placementCount++;
-                updatePlacementDisplay();
-
-                // Re-render
                 renderSlots();
                 renderPalette();
 
                 msgDisplay.textContent = `Placed ${arrowType} in slot ${index + 1}`;
             }
 
-            // ----- Reset functionality -----
-            function fullReset() {
-                // Stop timer
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                    timerRunning = false;
+            function resetArrows() {
+                if (gameFinished) return;
+
+                for (let i = 0; i < SLOT_COUNT; i++) {
+                    if (slots[i] !== null) {
+                        const oldType = slots[i];
+                        const oldInv = arrowInventory.find(item => item.type === oldType);
+                        if (oldInv) oldInv.count += 1;
+                        slots[i] = null;
+                    }
                 }
 
-                // Reset state
-                slots = new Array(SLOT_COUNT).fill(null);
-                arrowInventory = JSON.parse(JSON.stringify(INIT_ARROWS));
-                placementCount = 0;
-                clickCounter = 0;
-                timerSeconds = 0;
-                gameFinished = false;
-                finalScoreValue = 0;
+                resetCounter++;
+                updateAllDisplays();
 
-                updatePlacementDisplay();
-                updateTimeDisplay();
-                updateClickDisplay();
-                finalScoreSpan.textContent = '0.00';
-
-                renderGrid();
                 renderSlots();
                 renderPalette();
 
-                msgDisplay.textContent = '🔄 Reset. Drag arrows into slots.';
-                runBtn.disabled = false;
+                msgDisplay.textContent = `🔄 Arrows reset. (Reset #${resetCounter})`;
             }
 
-            // ----- Scoring & counters -----
             function incrementClick() {
                 if (gameFinished) return;
                 clickCounter++;
-                updateClickDisplay();
+                updateAllDisplays();
             }
 
             function startTimer() {
@@ -546,41 +629,29 @@
                 timerInterval = setInterval(() => {
                     if (gameFinished) return;
                     timerSeconds++;
-                    updateTimeDisplay();
+                    updateAllDisplays();
                 }, 1000);
             }
 
-            function updatePlacementDisplay() {
-                placementSpan.textContent = placementCount;
-            }
-            function updateTimeDisplay() {
+            function updateAllDisplays() {
                 timeSpan.textContent = timerSeconds;
-            }
-            function updateClickDisplay() {
                 clickSpan.textContent = clickCounter;
+                correctnessSpan.textContent = correctnessCounter;
+                resetSpan.textContent = resetCounter;
             }
 
-            // ----- Run simulation & check solution -----
-            function runSimulation() {
-                if (gameFinished) {
-                    msgDisplay.textContent = '🏁 Already completed! Reset to play again.';
-                    return;
-                }
+            function checkCorrectness() {
+                if (slots.includes(null)) return 0;
+                const seqStr = slots.join(',');
+                const sol1Str = SOLUTION_1.join(',');
+                const sol2Str = SOLUTION_2.join(',');
+                return (seqStr === sol1Str || seqStr === sol2Str) ? 1 : 0;
+            }
 
-                // Check all slots filled
-                if (slots.includes(null)) {
-                    msgDisplay.textContent = '❓ Fill all 5 slots first!';
-                    return;
-                }
-
-                const sequence = [...slots];
-
-                // Simulate bug movement
+            function simulateBug(sequence) {
                 let bugRow = START_ROW;
                 let bugCol = START_COL;
                 let dir = START_DIR;
-                let success = false;
-                let reachedYellow = false;
 
                 for (let cmd of sequence) {
                     if (cmd === 'straight') {
@@ -591,120 +662,104 @@
                         dir = turn(dir, cmd);
                     }
 
-                    // Check bounds
                     if (bugRow < 0 || bugRow >= GRID_SIZE || bugCol < 0 || bugCol >= GRID_SIZE) {
-                        msgDisplay.textContent = '💥 Bug fell off the grid!';
-                        return;
+                        return { reachedYellow: false, finalRow: bugRow, finalCol: bugCol, fellOff: true };
                     }
 
-                    // Check if reached yellow house
                     if (bugRow === HOUSE_YELLOW.row && bugCol === HOUSE_YELLOW.col) {
-                        reachedYellow = true;
-                        break;
+                        return { reachedYellow: true, finalRow: bugRow, finalCol: bugCol, fellOff: false };
                     }
                 }
 
-                if (!reachedYellow) {
-                    // After all commands, check final position
-                    if (bugRow === HOUSE_YELLOW.row && bugCol === HOUSE_YELLOW.col) reachedYellow = true;
-                }
-
-                if (!reachedYellow) {
-                    msgDisplay.textContent = `🐞 Ended at (${bugRow},${bugCol}). Not yellow house.`;
-                    return;
-                }
-
-                // Check if sequence matches either solution
-                const seqStr = sequence.join(',');
-                const sol1Str = SOLUTION_1.join(',');
-                const sol2Str = SOLUTION_2.join(',');
-
-                if (seqStr !== sol1Str && seqStr !== sol2Str) {
-                    msgDisplay.textContent = `✅ Reached yellow, but not the optimal path. Score affected.`;
-                    // Still success? Game spec says "only two right answers" -> maybe we only give score for correct sequences.
-                    // We'll treat as success but calculate score (error count might be high).
-                    // We'll still stop timer etc.
-                    finishGame(true);
-                    return;
-                }
-
-                // Perfect solution!
-                msgDisplay.textContent = '🎉 PERFECT! Bug reached yellow house with optimal sequence!';
-                finishGame(true);
+                const reachedYellow = (bugRow === HOUSE_YELLOW.row && bugCol === HOUSE_YELLOW.col);
+                return { reachedYellow, finalRow: bugRow, finalCol: bugCol, fellOff: false };
             }
 
-            function finishGame(isWin) {
+            function finishGame(gaveUp = false) {
                 if (gameFinished) return;
                 gameFinished = true;
+
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                     timerRunning = false;
                 }
-                runBtn.disabled = true;
 
-                // Calculate scores
-                // Error score: based on placements, min placements = 5 (each arrow dropped once)
-                const MIN_PLACEMENTS = 5;
-                let errors = Math.max(0, placementCount - MIN_PLACEMENTS);
-                let errorScore = Math.max(0, 10 - errors);
+                finishBtn.disabled = true;
+                giveUpBtn.disabled = true;
+                resetBtn.disabled = true;
 
-                // Time score: starts at 10, -1 for >60s, additional -1 every 20s after
-                let timeScore = 10;
-                if (timerSeconds > 60) {
-                    let extra = Math.floor((timerSeconds - 61) / 20) + 1;
-                    timeScore = Math.max(0, 10 - extra);
+                if (gaveUp) {
+                    giveUpFlag = 1;
+                    correctnessCounter = 0;
+                } else {
+                    correctnessCounter = checkCorrectness();
                 }
 
-                // Click score: starts 10, >20 clicks -1, every +5 clicks additional -1
-                let clickScore = 10;
-                if (clickCounter > 20) {
-                    let extraClicks = Math.floor((clickCounter - 21) / 5) + 1;
-                    clickScore = Math.max(0, 10 - extraClicks);
+                updateAllDisplays();
+
+                let simResult = null;
+                if (!slots.includes(null)) {
+                    simResult = simulateBug([...slots]);
                 }
 
-                const finalScore = (0.6 * errorScore) + (0.3 * timeScore) + (0.1 * clickScore);
-                finalScoreValue = Math.round(finalScore * 100) / 100;
-                finalScoreSpan.textContent = finalScoreValue.toFixed(2);
+                const data = {
+                    time: timerSeconds,
+                    clicks: clickCounter,
+                    correctness: correctnessCounter,
+                    giveUp: giveUpFlag,
+                    resets: resetCounter,
+                    sequence: [...slots]
+                };
 
-                msgDisplay.textContent += ` Final score: ${finalScoreValue.toFixed(2)}`;
+                window.__kb?.finish?.(data);
 
-                window.__kb?.finish?.({ finalScoreValue, errorScore, timeScore, clickScore, isWin });
+                if (gaveUp) {
+                    msgDisplay.textContent = '🏳️ Gave up. Scores stored.';
+                } else if (correctnessCounter === 1) {
+                    msgDisplay.textContent = '🎉 PERFECT! Correct optimal sequence! Bug reaches yellow house!';
+                } else if (simResult && simResult.reachedYellow) {
+                    msgDisplay.textContent = '⚠️ Bug reached yellow house, but not an optimal sequence. Correctness = 0.';
+                } else if (simResult && simResult.fellOff) {
+                    msgDisplay.textContent = '💥 Bug fell off the grid! Scores stored.';
+                } else if (simResult) {
+                    msgDisplay.textContent = `⏹️ Finished. Bug ended at (${simResult.finalRow},${simResult.finalCol}). Correctness = 0.`;
+                } else {
+                    msgDisplay.textContent = '⏹️ Finished. Not all slots filled. Correctness = 0.';
+                }
             }
 
-            // ----- Event listeners & initialization -----
             function init() {
                 renderGrid();
                 renderSlots();
                 renderPalette();
 
-                // Click counter for whole document (but we also count on buttons)
                 document.addEventListener('click', (e) => {
                     if (gameFinished) return;
-                    // Avoid counting palette token clicks multiple times (they already count)
                     if (e.target.closest('.arrow-token')) return;
+                    if (e.target.closest('button')) return;
                     incrementClick();
                 });
 
-                // Buttons also count clicks
-                runBtn.addEventListener('click', () => {
+                finishBtn.addEventListener('click', () => {
                     incrementClick();
-                    if (!gameFinished) runSimulation();
+                    if (!gameFinished) finishGame(false);
+                });
+
+                giveUpBtn.addEventListener('click', () => {
+                    incrementClick();
+                    if (!gameFinished) finishGame(true);
                 });
 
                 resetBtn.addEventListener('click', () => {
                     incrementClick();
-                    fullReset();
+                    if (!gameFinished) resetArrows();
                 });
 
-                // Prevent default drag over on body
                 document.addEventListener('dragover', (e) => e.preventDefault());
                 document.addEventListener('drop', (e) => e.preventDefault());
 
-                // initial score display
-                updatePlacementDisplay();
-                updateTimeDisplay();
-                updateClickDisplay();
+                updateAllDisplays();
             }
 
             init();
@@ -713,8 +768,10 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('journey-to-the-hive-3');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

@@ -1,3 +1,6 @@
+import { teacherT, translateWeightsLine, currentTeacherLang } from './teacher-i18n.js';
+import { applyUiI18n, currentUiLang, uiT } from './ui-i18n.js';
+
 const $ = (sel) => document.querySelector(sel);
 
 const state = {
@@ -9,36 +12,15 @@ const state = {
   examEndsAt: null,
   generatedCredentials: [],
   teacherResultsPreview: '',
+  teacherResultsPayload: null,
   teacherCredentialsLoaded: false
 };
 
-let translateScriptLoading = false;
-let translateReady = false;
 let timerIntervalId = null;
 const EXAM_DURATION_MS = 45 * 60 * 1000;
 
-async function api(path, opts = {}) {
-  const res = await fetch(path, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...(opts.headers ?? {}) },
-    ...opts
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(json?.error ?? 'request_failed'), { res, json });
-  return json;
-}
-
-function show(el, yes) {
-  el.style.display = yes ? '' : 'none';
-}
-
-function setAlert(el, kind, msg) {
-  if (!msg) return show(el, false);
-  el.classList.remove('ok', 'bad');
-  el.classList.add(kind);
-  el.textContent = msg;
-  show(el, true);
-}
+let translateScriptLoading = false;
+let translateReady = false;
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -86,7 +68,15 @@ function ensureGoogleTranslateLoaded() {
   });
 }
 
+function setGoogTransCookie(lang) {
+  // cookie format: /<source>/<target>
+  const target = lang === 'de' || lang === 'ar' ? lang : 'en';
+  const value = `/en/${target}`;
+  document.cookie = `googtrans=${encodeURIComponent(value)}; path=/`;
+}
+
 async function translatePageTo(lang) {
+  setGoogTransCookie(lang);
   await ensureGoogleTranslateLoaded();
   for (let i = 0; i < 40; i++) {
     const combo = document.querySelector('.goog-te-combo');
@@ -98,6 +88,29 @@ async function translatePageTo(lang) {
     await wait(100);
   }
   return false;
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers ?? {}) },
+    ...opts
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(json?.error ?? 'request_failed'), { res, json });
+  return json;
+}
+
+function show(el, yes) {
+  el.style.display = yes ? '' : 'none';
+}
+
+function setAlert(el, kind, msg) {
+  if (!msg) return show(el, false);
+  el.classList.remove('ok', 'bad');
+  el.classList.add(kind);
+  el.textContent = msg;
+  show(el, true);
 }
 
 function isExamRunning() {
@@ -172,7 +185,7 @@ function startExamTimer() {
 function renderMe() {
   const me = $('#me');
   if (!state.me?.authenticated) {
-    me.textContent = 'Not logged in';
+    me.textContent = uiT('not_logged_in');
     show($('#logoutBtn'), false);
     show($('#authCard'), true);
     show($('#sessionCard'), false);
@@ -182,7 +195,14 @@ function renderMe() {
     renderExamControls();
     return;
   }
-  me.textContent = `Logged in as ${state.me.username}${state.me.role ? ` (${state.me.role})` : ''}`;
+  me.textContent = uiT(
+    'logged_in_as',
+    {
+      username: state.me.username,
+      rolePart: state.me.role ? ` (${state.me.role})` : ''
+    },
+    currentUiLang()
+  );
   show($('#logoutBtn'), true);
   show($('#authCard'), false);
   const isTeacher = state.me.role === 'teacher';
@@ -200,9 +220,11 @@ function renderGeneratedCredentials() {
     output.value = '';
     return;
   }
+  const lang = currentTeacherLang();
+  const t = (k) => teacherT(lang, k);
   output.value = state.generatedCredentials
     .map((r, idx) => {
-      const createdAt = r.createdAt ? ` | created: ${r.createdAt}` : '';
+      const createdAt = r.createdAt ? ` | ${t('created')}: ${r.createdAt}` : '';
       return `${idx + 1}. ${r.name} | ${r.username} | ${r.password}${createdAt}`;
     })
     .join('\n');
@@ -212,6 +234,120 @@ function renderTeacherResultsPreview() {
   const el = $('#teacherResults');
   if (!el) return;
   el.value = state.teacherResultsPreview ?? '';
+}
+
+function buildTeacherMarksPreview(res, lang) {
+  const t = (k) => teacherT(lang, k);
+  const lines = [];
+  lines.push(t('monitoringTitleLine'));
+  lines.push('='.repeat(90));
+  for (const s of res.students ?? []) {
+    let statusKey = 'statusNotStarted';
+    if (s.finishedAt) statusKey = 'statusFinished';
+    else if (s.startedAt) statusKey = 'statusStarted';
+    const name = (s.name || '').trim() || t('noName');
+    lines.push(`${name} | ${s.username} | ${t(statusKey)} | ${t('attemptStartedAt')}: ${s.startedAt ?? '—'} | ${t('attemptFinishedAt')}: ${s.finishedAt ?? '—'}`);
+    for (const task of res.tasks ?? []) {
+      const tm = s.taskMonitoring?.[task.id] ?? null;
+      if (!tm?.finishedAt && !tm?.startedAt) continue;
+      const raw = tm?.monitoring?.raw ?? null;
+      const rawPairs = raw && typeof raw === 'object'
+        ? Object.keys(raw)
+            .sort((a, b) => a.localeCompare(b))
+            .filter((k) => {
+              // Hide redundant totals if errorScore is already present (e.g. Magic House uses errorScore as total).
+              if (k === 'totalScore' && Object.prototype.hasOwnProperty.call(raw, 'errorScore')) return false;
+              return true;
+            })
+            .map((k) => {
+              const v = raw[k];
+              const valueStr =
+                v == null ? '' : typeof v === 'string' ? v : typeof v === 'number' || typeof v === 'boolean' ? String(v) : JSON.stringify(v);
+              return `${k}=${valueStr}`;
+            })
+            .filter(Boolean)
+        : [];
+      lines.push(
+        `  - ${task.title} (${task.category})${rawPairs.length ? ` | ${rawPairs.join(' | ')}` : ''}`
+      );
+    }
+    lines.push('-'.repeat(90));
+  }
+  return lines.join('\n');
+}
+
+function csvEscape(value) {
+  const s = String(value ?? '');
+  if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+  return s;
+}
+
+function buildTeacherCsv(res, lang) {
+  const t = (key) => teacherT(lang, key);
+  const students = res.students ?? [];
+  const taskIds = (res.tasks ?? []).map((x) => x.id);
+  const rawKeysByTask = {};
+  for (const tid of taskIds) rawKeysByTask[tid] = new Set();
+  for (const s of students) {
+    for (const tid of taskIds) {
+      const raw = s?.taskMonitoring?.[tid]?.monitoring?.raw;
+      if (!raw || typeof raw !== 'object') continue;
+      for (const k of Object.keys(raw)) {
+        if (k === 'totalScore' && Object.prototype.hasOwnProperty.call(raw, 'errorScore')) continue;
+        rawKeysByTask[tid].add(k);
+      }
+    }
+  }
+
+  const header = [
+    t('csv_name'),
+    t('csv_username'),
+    t('csv_attempt_id'),
+    t('csv_started_at'),
+    t('csv_finished_at'),
+    ...taskIds.flatMap((tid) => {
+      const keys = Array.from(rawKeysByTask[tid] ?? []).sort((a, b) => a.localeCompare(b));
+      return [
+        ...keys.map((k) => `${tid}__${k}`)
+      ];
+    })
+  ];
+  const lines = [header.map(csvEscape).join(',')];
+
+  for (const s of students) {
+    const row = [
+      s.name ?? '',
+      s.username,
+      s.attemptId ?? '',
+      s.startedAt ?? '',
+      s.finishedAt ?? '',
+      ...taskIds.flatMap((tid) => {
+        const tm = s?.taskMonitoring?.[tid] ?? null;
+        const raw = tm?.monitoring?.raw && typeof tm.monitoring.raw === 'object' ? tm.monitoring.raw : null;
+        const keys = Array.from(rawKeysByTask[tid] ?? []).sort((a, b) => a.localeCompare(b));
+        return [
+          ...keys.map((k) => {
+            const v = raw ? raw[k] : null;
+            if (v == null) return '';
+            if (typeof v === 'string') return v;
+            if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+            return JSON.stringify(v);
+          })
+        ];
+      })
+    ];
+    lines.push(row.map(csvEscape).join(','));
+  }
+  return lines.join('\n');
+}
+
+function rerenderTeacherLocalized() {
+  if (state.me?.role !== 'teacher') return;
+  renderGeneratedCredentials();
+  if (state.teacherResultsPayload) {
+    state.teacherResultsPreview = buildTeacherMarksPreview(state.teacherResultsPayload, currentTeacherLang());
+    renderTeacherResultsPreview();
+  }
 }
 
 async function refreshTeacherCredentials() {
@@ -252,7 +388,7 @@ function renderTasks() {
     if (isFinished) {
       const status = document.createElement('span');
       status.className = 'taskScore';
-      status.textContent = 'Game finished';
+      status.textContent = uiT('game_finished');
       right.append(status);
     }
 
@@ -272,18 +408,25 @@ function enterTaskFullscreen() {
 
 function openTask(task) {
   if (!isExamRunning()) {
-    setAlert($('#sessionMsg'), 'bad', 'Start the exam first.');
+    setAlert($('#sessionMsg'), 'bad', uiT('start_exam_first'));
     return;
   }
   if (state.resultsByTaskId?.[task.id]) {
-    setAlert($('#sessionMsg'), 'bad', 'This game is already finished.');
+    setAlert($('#sessionMsg'), 'bad', uiT('game_already_finished'));
     return;
   }
   state.activeTask = task;
   $('#taskTitle').textContent = task.title;
   $('#taskMeta').textContent = `Task id: ${task.id}${task.category ? ` • Difficulty ${task.category}` : ''} • Max score: ${task.maxScore ?? 100}`;
   const frame = $('#taskFrame');
-  frame.src = task.url ?? `/tasks/${task.id}/index.html`;
+  const lang = $('#translateLang')?.value ?? 'en';
+  try {
+    localStorage.setItem('kb_lang', lang);
+  } catch {
+    // ignore
+  }
+  const baseUrl = task.url ?? `/tasks/${task.id}/index.html`;
+  frame.src = baseUrl.includes('?') ? `${baseUrl}&lang=${encodeURIComponent(lang)}` : `${baseUrl}?lang=${encodeURIComponent(lang)}`;
   show($('#taskCard'), true);
   setAlert($('#taskMsg'), 'ok', null);
   // Opening a game should immediately go fullscreen.
@@ -364,13 +507,13 @@ async function refreshMe() {
         state.examEndsAt = endsAt;
         if (endsAt > Date.now()) {
           startExamTimer();
-          setAlert($('#sessionMsg'), 'ok', 'Exam resumed. Timer continued from your original start time.');
+          setAlert($('#sessionMsg'), 'ok', uiT('exam_resumed'));
         }
       }
       const { tasks: attemptTasks } = await api(`/api/attempts/${state.attemptId}/tasks`);
       for (const row of attemptTasks) {
         if (!row?.finishedAt) continue;
-        state.resultsByTaskId[row.taskId] = { finished: true, backendScore: row.finalScore };
+        state.resultsByTaskId[row.taskId] = { finished: true };
       }
     }
     renderTimer();
@@ -391,11 +534,11 @@ async function createAttempt() {
 
 async function startExam() {
   if (state.me?.role === 'teacher') {
-    setAlert($('#sessionMsg'), 'bad', 'Teacher accounts cannot start student exams.');
+    setAlert($('#sessionMsg'), 'bad', uiT('teacher_cannot_start'));
     return;
   }
   if (state.attemptId) {
-    setAlert($('#sessionMsg'), 'bad', 'Exam already started for this account.');
+    setAlert($('#sessionMsg'), 'bad', uiT('exam_already_started'));
     return;
   }
   const startRes = await createAttempt();
@@ -413,18 +556,7 @@ async function startExam() {
   renderTimer();
   renderTasks();
   renderExamControls();
-  setAlert($('#sessionMsg'), 'ok', 'Exam started. Timer is now fixed and cannot be restarted.');
-}
-
-function getGameDisplayScore(payload) {
-  const raw =
-    payload?.finalScore ??
-    payload?.finalScoreValue ??
-    payload?.totalScore ??
-    payload?.score ??
-    null;
-  const score = Number(raw);
-  return Number.isFinite(score) ? score : null;
+  setAlert($('#sessionMsg'), 'ok', uiT('exam_started'));
 }
 
 async function finishTask(gamePayload = null) {
@@ -440,11 +572,10 @@ async function finishTask(gamePayload = null) {
     })
   });
   state.resultsByTaskId[taskId] = {
-    backendScore: res.finalScore,
     finished: true
   };
   renderTasks();
-  setAlert($('#taskMsg'), 'ok', 'Game finished.');
+  setAlert($('#taskMsg'), 'ok', uiT('game_finished'));
   closeTaskFrame();
 }
 
@@ -471,7 +602,6 @@ async function endChallenge(auto = false) {
           })
         });
         state.resultsByTaskId[row.taskId] = {
-          backendScore: res.finalScore,
           finished: true
         };
       } catch {
@@ -490,7 +620,7 @@ async function endChallenge(auto = false) {
     renderExamControls();
   }
 
-  setAlert($('#sessionMsg'), 'ok', auto ? 'Time is up. Challenge submitted automatically.' : 'Challenge submitted.');
+  setAlert($('#sessionMsg'), 'ok', auto ? uiT('time_up_auto_submit') : uiT('challenge_submitted'));
 }
 
 async function logMove(evt) {
@@ -538,7 +668,7 @@ $('#loginBtn').addEventListener('click', async () => {
     });
     await refreshMe();
   } catch (e) {
-    setAlert($('#authMsg'), 'bad', `Login failed: ${e.json?.error ?? 'unknown'}`);
+    setAlert($('#authMsg'), 'bad', uiT('login_failed', { err: e.json?.error ?? 'unknown' }));
   }
 });
 
@@ -550,9 +680,9 @@ $('#registerBtn').addEventListener('click', async () => {
       method: 'POST',
       body: JSON.stringify({ username: $('#username').value, password: $('#password').value, role })
     });
-    setAlert($('#authMsg'), 'ok', 'Registered. Now click Login.');
+    setAlert($('#authMsg'), 'ok', uiT('registered_now_login'));
   } catch (e) {
-    setAlert($('#authMsg'), 'bad', `Register failed: ${e.json?.error ?? 'unknown'}`);
+    setAlert($('#authMsg'), 'bad', uiT('register_failed', { err: e.json?.error ?? 'unknown' }));
   }
 });
 
@@ -564,6 +694,7 @@ $('#logoutBtn').addEventListener('click', async () => {
   state.resultsByTaskId = {};
   state.examEndsAt = null;
   state.teacherCredentialsLoaded = false;
+  state.teacherResultsPayload = null;
   show($('#taskCard'), false);
   renderTimer();
   renderExamControls();
@@ -576,16 +707,16 @@ $('#startExamBtn')?.addEventListener('click', async () => {
   } catch (e) {
     const err = e.json?.error ?? 'unknown';
     if (err === 'attempt_already_completed') {
-      setAlert($('#sessionMsg'), 'bad', 'You already completed your only attempt.');
+      setAlert($('#sessionMsg'), 'bad', uiT('already_completed_only_attempt'));
       return;
     }
-    setAlert($('#sessionMsg'), 'bad', `Could not start exam: ${err}`);
+    setAlert($('#sessionMsg'), 'bad', uiT('could_not_start_exam', { err }));
   }
 });
 
 $('#endExamBtn')?.addEventListener('click', () => {
   endChallenge(false).catch(() => {
-    setAlert($('#sessionMsg'), 'bad', 'Could not submit challenge right now.');
+    setAlert($('#sessionMsg'), 'bad', uiT('could_not_submit'));
   });
 });
 
@@ -609,43 +740,17 @@ $('#uploadStudentsBtn')?.addEventListener('click', async () => {
     state.generatedCredentials = res.credentials ?? [];
     state.teacherCredentialsLoaded = true;
     renderGeneratedCredentials();
-    setAlert($('#teacherMsg'), 'ok', `Created ${res.count ?? state.generatedCredentials.length} student accounts.`);
+    setAlert($('#teacherMsg'), 'ok', uiT('created_student_accounts', { count: res.count ?? state.generatedCredentials.length }));
   } catch (e) {
-    setAlert($('#teacherMsg'), 'bad', `Upload failed: ${e.json?.error ?? 'unknown'}`);
+    setAlert($('#teacherMsg'), 'bad', uiT('upload_failed', { err: e.json?.error ?? 'unknown' }));
   }
 });
 
 async function refreshTeacherMarks() {
   const res = await api('/api/teacher/students/results');
-  const lines = [];
-  lines.push('Overall weighted total: A=22%, B=33%, C=55%');
-  lines.push('='.repeat(90));
-  for (const s of res.students ?? []) {
-    const overall = Number.isFinite(s.overallWeightedPercent) ? `${s.overallWeightedPercent.toFixed(2)}%` : '—';
-    const a = Number.isFinite(s.categoryPercents?.A) ? s.categoryPercents.A.toFixed(2) : '—';
-    const b = Number.isFinite(s.categoryPercents?.B) ? s.categoryPercents.B.toFixed(2) : '—';
-    const c = Number.isFinite(s.categoryPercents?.C) ? s.categoryPercents.C.toFixed(2) : '—';
-    const status = s.finishedAt ? 'finished' : s.startedAt ? 'started' : 'not started';
-    const name = (s.name || '').trim() || '(no name)';
-    lines.push(`${name} | ${s.username} | ${status} | overall: ${overall} | A:${a}% B:${b}% C:${c}%`);
-    const taskBreakdowns = s.taskBreakdowns ?? {};
-    const taskScores = s.taskScores ?? {};
-    for (const task of res.tasks ?? []) {
-      const scoreRaw = taskScores[task.id];
-      if (!Number.isFinite(scoreRaw)) continue;
-      const bkd = taskBreakdowns[task.id] ?? {};
-      const err = Number.isFinite(bkd.errorScore) ? Number(bkd.errorScore).toFixed(2) : '—';
-      const tim = Number.isFinite(bkd.timeScore) ? Number(bkd.timeScore).toFixed(2) : '—';
-      const clk = Number.isFinite(bkd.clickScore) ? Number(bkd.clickScore).toFixed(2) : '—';
-      const drg = Number.isFinite(bkd.dragScore) ? Number(bkd.dragScore).toFixed(2) : '—';
-      const formula = bkd.weightsText ?? 'error 60%, time 30%, click 10%';
-      lines.push(
-        `  - ${task.title} (${task.category}) | final=${Number(scoreRaw).toFixed(2)} | error=${err} time=${tim} click=${clk} drag=${drg} | formula: ${formula}`
-      );
-    }
-    lines.push('-'.repeat(90));
-  }
-  state.teacherResultsPreview = lines.join('\n');
+  state.teacherResultsPayload = res;
+  const lang = currentTeacherLang();
+  state.teacherResultsPreview = buildTeacherMarksPreview(res, lang);
   renderTeacherResultsPreview();
 }
 
@@ -653,9 +758,9 @@ $('#refreshResultsBtn')?.addEventListener('click', async () => {
   setAlert($('#teacherMsg'), 'ok', null);
   try {
     await refreshTeacherMarks();
-    setAlert($('#teacherMsg'), 'ok', 'Marks refreshed.');
+    setAlert($('#teacherMsg'), 'ok', uiT('marks_refreshed'));
   } catch (e) {
-    setAlert($('#teacherMsg'), 'bad', `Could not load marks: ${e.json?.error ?? 'unknown'}`);
+    setAlert($('#teacherMsg'), 'bad', uiT('could_not_load_marks', { err: e.json?.error ?? 'unknown' }));
   }
 });
 
@@ -663,28 +768,66 @@ $('#refreshCredentialsBtn')?.addEventListener('click', async () => {
   setAlert($('#teacherMsg'), 'ok', null);
   try {
     await refreshTeacherCredentials();
-    setAlert($('#teacherMsg'), 'ok', 'Credentials refreshed.');
+    setAlert($('#teacherMsg'), 'ok', uiT('credentials_refreshed'));
   } catch (e) {
-    setAlert($('#teacherMsg'), 'bad', `Could not load credentials: ${e.json?.error ?? 'unknown'}`);
+    setAlert($('#teacherMsg'), 'bad', uiT('could_not_load_credentials', { err: e.json?.error ?? 'unknown' }));
   }
 });
 
-$('#downloadResultsBtn')?.addEventListener('click', () => {
-  // Excel opens CSV files directly.
-  window.location.href = '/api/teacher/students/results.csv';
+$('#downloadResultsBtn')?.addEventListener('click', async () => {
+  const lang = currentTeacherLang();
+  setAlert($('#teacherMsg'), 'ok', null);
+  try {
+    const res = await api('/api/teacher/students/results');
+    state.teacherResultsPayload = res;
+    state.teacherResultsPreview = buildTeacherMarksPreview(res, lang);
+    renderTeacherResultsPreview();
+    const csv = buildTeacherCsv(res, lang);
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kingbebras-results.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    setAlert($('#teacherMsg'), 'bad', uiT('could_not_download', { err: e.json?.error ?? 'unknown' }));
+  }
 });
 
 $('#translateBtn')?.addEventListener('click', async () => {
   const lang = $('#translateLang')?.value ?? 'en';
   try {
-    const ok = await translatePageTo(lang);
-    if (!ok) {
-      setAlert($('#taskMsg'), 'bad', 'Translator is not ready yet. Try again.');
-    }
+    // Keep AI/i18n work present but inactive; Google Translate handles visible strings.
+    await translatePageTo(lang);
   } catch {
-    setAlert($('#taskMsg'), 'bad', 'Could not load translator right now.');
+    // ignore
   }
+  rerenderTeacherLocalized(); // teacher textarea/local labels still need rerender
 });
+
+$('#translateLang')?.addEventListener('change', () => {
+  try {
+    localStorage.setItem('kb_lang', $('#translateLang')?.value ?? 'en');
+  } catch {
+    // ignore
+  }
+  // Keep our built-in i18n available (hidden), but do not force-apply it now.
+  // applyUiI18n(currentUiLang());
+  rerenderTeacherLocalized();
+});
+
+// Initial language setup.
+try {
+  const saved = localStorage.getItem('kb_lang');
+  if (saved && $('#translateLang')) $('#translateLang').value = saved;
+} catch {
+  // ignore
+}
+// Do not auto-apply our built-in UI i18n while using Google Translate.
+// applyUiI18n(currentUiLang());
 
 refreshMe().catch(() => {});
 

@@ -21,7 +21,7 @@
             padding: 16px 24px;
             border-radius: 40px;
             border-left: 4px solid #ffbe0b;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
             pointer-events: none;
             z-index: 10;
         }
@@ -36,7 +36,7 @@
             padding: 16px 24px;
             border-radius: 40px;
             border-right: 4px solid #3a86ff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
             pointer-events: none;
             z-index: 10;
             text-align: right;
@@ -48,14 +48,14 @@
             left: 50%;
             transform: translateX(-50%);
             color: #fff;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             padding: 10px 30px;
             border-radius: 60px;
             font-size: 1.2rem;
             font-weight: 600;
             letter-spacing: 1px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             pointer-events: none;
             z-index: 10;
             transition: background 0.3s, border 0.3s;
@@ -67,12 +67,12 @@
             bottom: 30px;
             right: 30px;
             color: #ddd;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 8px 20px;
             border-radius: 30px;
             font-size: 1rem;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             pointer-events: none;
             z-index: 10;
         }
@@ -82,14 +82,45 @@
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 8px 24px;
             border-radius: 30px;
             backdrop-filter: blur(4px);
             pointer-events: none;
-            border: 1px solid rgba(255,215,100,0.3);
+            border: 1px solid rgba(255, 215, 100, 0.3);
+        }
+
+        #click-counter-display {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        #give-up-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(180, 40, 40, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #ff8888;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        #give-up-btn:hover {
+            background: rgba(220, 50, 50, 0.9);
+            transform: scale(1.03);
         }
     </style>
 </head>
@@ -97,15 +128,20 @@
     <div id="info">
         <span style="font-size: 1.4rem; margin-right: 10px;">🧬 BEAD MATCH</span>
         <span style="opacity:0.9;">Drag the bracelet to a tray or "NO MATCH"</span>
+        <div style="font-size:0.8rem; margin-top:8px; opacity:0.85; line-height:1.4;">
+            There are 3 rounds. Each round shows 3 flying balls with a specific color pattern.<br>
+            There are 7 trays, each with a different color pattern.<br>
+            You must drag and drop the bracelet onto the correct matching tray.
+        </div>
+        <div id="click-counter-display">🖱️ Clicks: <span id="click-counter">0</span></div>
     </div>
     <div id="stats">
-        <div>⚠️ Errors: <span id="error-count">0</span></div>
         <div>⏱️ Time: <span id="time-display">0.0</span>s</div>
-        <div>🖱️ Click score: <span id="click-score">10.00</span></div>
     </div>
     <div id="message-area">✨ Round 1 · Drag to match</div>
     <div id="round-indicator">🔮 <span id="round-num">1</span>/3</div>
     <div id="instruction">👇 Click & DRAG the bracelet — release over a tray or red zone</div>
+    <button id="give-up-btn">🏳️ Give Up</button>
 
     <script type="importmap">
         {
@@ -224,8 +260,13 @@
         // ================= COLOR UTILS =================
         function getColor(c) {
             const colors = {
-                red: 0xff4d6d, blue: 0x3a86ff, green: 0x2ecc71, yellow: 0xffbe0b,
-                black: 0x222222, white: 0xffffff, purple: 0x9d4edd
+                red: 0xff4d6d,
+                blue: 0x3a86ff,
+                green: 0x2ecc71,
+                yellow: 0xffbe0b,
+                black: 0x222222,
+                white: 0xffffff,
+                purple: 0x9d4edd
             };
             return colors[c] || 0x888888;
         }
@@ -233,24 +274,32 @@
         // ================= GAME STATE =================
         let round = 0;
         let totalErrors = 0;
-        let clickScore = 10;
+        let correctCount = 0;          // tracked internally, never shown to student
+        let clickScore = 0;
         let startTime = Date.now();
         let gameActive = true;
+        let giveUp = false;
 
-        const errorSpan = document.getElementById('error-count');
         const timeSpan = document.getElementById('time-display');
-        const clickScoreSpan = document.getElementById('click-score');
+        const clickScoreSpan = document.getElementById('click-counter');
         const messageDiv = document.getElementById('message-area');
         const roundSpan = document.getElementById('round-num');
 
         function updateUI() {
-            errorSpan.textContent = totalErrors;
             const elapsed = (Date.now() - startTime) / 1000;
             timeSpan.textContent = elapsed.toFixed(1);
-            clickScoreSpan.textContent = clickScore.toFixed(2);
+            clickScoreSpan.textContent = clickScore;
+            // correctCount is not displayed
             roundSpan.textContent = `${round + 1}/${rounds.length}`;
         }
         setInterval(updateUI, 100);
+
+        document.addEventListener('mousedown', () => {
+            if (gameActive) {
+                clickScore++;
+                updateUI();
+            }
+        });
 
         // ================= DATA =================
         const rounds = [
@@ -316,8 +365,11 @@
             pattern.forEach((c, i) => {
                 const colorVal = getColor(c);
                 const blockMat = new THREE.MeshStandardMaterial({
-                    color: colorVal, roughness: 0.25, metalness: 0.1,
-                    emissive: new THREE.Color(colorVal).multiplyScalar(0.25), emissiveIntensity: 0.5
+                    color: colorVal,
+                    roughness: 0.25,
+                    metalness: 0.1,
+                    emissive: new THREE.Color(colorVal).multiplyScalar(0.25),
+                    emissiveIntensity: 0.5
                 });
                 const block = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.1, 1.9), blockMat);
                 block.position.set(-1.0 + i, 0.32, 0);
@@ -353,9 +405,13 @@
         function createNoMatchZone() {
             const geo = new THREE.BoxGeometry(3.4, 0.3, 2.4);
             const mat = new THREE.MeshStandardMaterial({
-                color: 0xaa2222, transparent: true, opacity: 0.55,
-                emissive: new THREE.Color(0x550000), emissiveIntensity: 1.2,
-                roughness: 0.3, metalness: 0.0
+                color: 0xaa2222,
+                transparent: true,
+                opacity: 0.55,
+                emissive: new THREE.Color(0x550000),
+                emissiveIntensity: 1.2,
+                roughness: 0.3,
+                metalness: 0.0
             });
             noMatchZone = new THREE.Mesh(geo, mat);
             noMatchZone.position.set(0, 0.2, 5.2);
@@ -411,9 +467,13 @@
             pattern.forEach((c, i) => {
                 const colorVal = getColor(c);
                 const beadMat = new THREE.MeshStandardMaterial({
-                    color: colorVal, roughness: 0.15, metalness: 0.1,
-                    emissive: new THREE.Color(colorVal).multiplyScalar(0.3), emissiveIntensity: 0.8,
-                    transparent: true, opacity: 0.95
+                    color: colorVal,
+                    roughness: 0.15,
+                    metalness: 0.1,
+                    emissive: new THREE.Color(colorVal).multiplyScalar(0.3),
+                    emissiveIntensity: 0.8,
+                    transparent: true,
+                    opacity: 0.95
                 });
                 const bead = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 16), beadMat);
                 bead.castShadow = true;
@@ -446,13 +506,12 @@
 
         // ================= MATCH HELPERS =================
         function equal(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
-        function colorDifference(a, b) { let diff = 0; for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diff++; return diff; }
 
-        // ================= DRAG SYSTEM (FIXED) =================
+        // ================= DRAG SYSTEM =================
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let dragging = false;
-        let hasDragged = false;          // To enforce actual drag movement
+        let hasDragged = false;
         let dragOffset = new THREE.Vector3();
         const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -1.5);
 
@@ -464,21 +523,18 @@
 
             raycaster.setFromCamera(mouse, camera);
 
-            // Only start drag if we hit the bracelet or its children
             if (bracelet) {
                 const hits = raycaster.intersectObject(bracelet, true);
                 if (hits.length > 0) {
                     dragging = true;
                     hasDragged = false;
 
-                    // Compute drag offset at current bracelet height
                     const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -bracelet.position.y);
                     const target = new THREE.Vector3();
                     if (raycaster.ray.intersectPlane(plane, target)) {
                         dragOffset.copy(bracelet.position).sub(target);
                     }
 
-                    // Visual feedback
                     bracelet.children.forEach(child => { if (child.isMesh) child.material.emissiveIntensity = 1.4; });
                     e.preventDefault();
                 }
@@ -495,7 +551,7 @@
             const target = new THREE.Vector3();
             if (raycaster.ray.intersectPlane(dragPlane, target)) {
                 bracelet.position.copy(target.add(dragOffset));
-                hasDragged = true;  // Moved sufficiently
+                hasDragged = true;
             }
         });
 
@@ -506,24 +562,19 @@
                     bracelet.children.forEach(child => { if (child.isMesh) child.material.emissiveIntensity = 0.8; });
                 }
 
-                // Only process drop if the bracelet was actually dragged
                 if (hasDragged) {
                     handleDrop();
                 } else {
-                    // If clicked without dragging, remind the player
                     showMessage('👆 Drag the bracelet to a tray!', '#ffaa00');
                 }
             }
         });
 
-        // ================= DROP LOGIC =================
+        // ================= DROP LOGIC (no correctness feedback) =================
         function handleDrop() {
             if (!gameActive) return;
 
-            clickScore = Math.max(0, clickScore - 0.3);
-            updateUI();
-
-            mouse.x = (mouse.x !== undefined) ? mouse.x : 0; // fallback
+            mouse.x = (mouse.x !== undefined) ? mouse.x : 0;
             mouse.y = (mouse.y !== undefined) ? mouse.y : 0;
             raycaster.setFromCamera(mouse, camera);
 
@@ -542,33 +593,28 @@
             const hasMatch = trays.some(t => equal(t.pattern, currentPattern));
 
             if (matchedTray) {
-                const diff = colorDifference(currentPattern, matchedTray.pattern);
-                if (diff === 0) {
-                    showMessage('✅ Correct! Next round...', '#2ecc71');
-                    nextRound();
-                    return;
+                // Tray drop: silently evaluate correctness
+                if (equal(currentPattern, matchedTray.pattern)) {
+                    correctCount++;
+                } else {
+                    totalErrors++;
                 }
-                // More than one mismatch = 2 errors, otherwise 1 error
-                const penalty = (diff >= 2) ? 2 : 1;
-                totalErrors += penalty;
-                updateUI();
-                showMessage(`❌ Wrong tray! ${penalty} error${penalty > 1 ? 's' : ''} (${diff} mismatches)`, '#ff4d6d');
+                nextRound();   // always advance, no message
                 return;
             }
 
             if (noMatchHit.length) {
+                // No‑match zone drop
                 if (hasMatch) {
-                    totalErrors += 2;
-                    updateUI();
-                    showMessage('❌ There IS a matching tray! +2 errors', '#ff4d6d');
+                    totalErrors++;
                 } else {
-                    showMessage('✅ Correct! No match. Next round...', '#2ecc71');
-                    nextRound();
+                    correctCount++;
                 }
+                nextRound();   // always advance, no message
                 return;
             }
 
-            // Dropped somewhere else
+            // Dropped on empty space
             showMessage('↩️ Drop on a tray or the red zone', '#ffaa00');
         }
 
@@ -594,21 +640,38 @@
             updateUI();
         }
 
-        function endGame() {
+        function finishGame() {
             gameActive = false;
             const time = (Date.now() - startTime) / 1000;
-            // Error penalty: -0.5 per error (changed from 1.5)
-            let errorScore = Math.max(0, 10 - totalErrors * 0.5);
-            let timeScore = time < 60 ? 10 : time < 120 ? 8 : time < 180 ? 6 : time < 240 ? 4 : 2;
-            const finalScore = (0.6 * errorScore + 0.3 * timeScore + 0.1 * clickScore).toFixed(2);
 
-            messageDiv.innerHTML = `🏆 FINAL SCORE: ${finalScore}/10 &nbsp; | &nbsp; Errors: ${totalErrors}`;
+            // Final message shows only time and clicks (no correct count)
+            messageDiv.innerHTML = `🎯 Game Complete! &nbsp; | &nbsp; Time: ${time.toFixed(1)}s &nbsp; | &nbsp; Clicks: ${clickScore}`;
             messageDiv.style.background = '#2a2a4a';
 
-            alert(`🎯 FINAL RESULTS\n\nErrors: ${totalErrors}\nError Score: ${errorScore.toFixed(2)} (10 - ${totalErrors}×0.5)\nTime: ${time.toFixed(1)}s (Score: ${timeScore})\nClick Score: ${clickScore.toFixed(2)}\n\n⭐ FINAL SCORE: ${finalScore}/10`);
-
-            window.__kb?.finish?.({ totalErrors, time, finalScore: Number(finalScore) });
+            window.__kb?.finish?.({
+                totalErrors,
+                time,
+                totalClicks: clickScore,
+                correctCount,      // still sent to backend
+                giveUp: giveUp ? 1 : 0
+            });
         }
+
+        function endGame() {
+            finishGame();
+        }
+
+        // ================= GIVE UP HANDLER =================
+        document.getElementById('give-up-btn').addEventListener('click', () => {
+            if (!gameActive) return;
+            giveUp = true;
+            gameActive = false;
+
+            messageDiv.textContent = '🏳️ You gave up.';
+            messageDiv.style.background = 'rgba(80, 0, 0, 0.8)';
+
+            finishGame();
+        });
 
         // ================= INIT =================
         buildBoard();
@@ -657,8 +720,10 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('organizing-bracelets-3');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

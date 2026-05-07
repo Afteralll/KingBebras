@@ -1,0 +1,15 @@
+{
+  "🐞 Bug to Yellow House · Arrow Coding": "🐞 الحشرة إلى البيت الأصفر · برمجة الأسهم",
+  "🐞The Bug knows these commands:": "🐞 تعرف الحشرة هذه الأوامر:",
+  "❓ Which commands will make the bug go to the square with the yellow hive?": "❓ ما الأوامر التي ستجعل الحشرة تصل إلى المربع الذي يحتوي على الخلية الصفراء؟",
+  "🏁 FINISH": "🏁 إنهاء",
+  "🏳️ GIVE UP": "🏳️ استسلام",
+  "⟲ RESET ARROWS": "⟲ إعادة ضبط الأسهم",
+  "Drag arrows to slots → arrange sequence → press FINISH": "اسحب الأسهم إلى الخانات → رتّب التسلسل → اضغط إنهاء",
+  "⏳ Game finished. Press RESET ARROWS to try again.": "⏳ انتهت اللعبة. اضغط إعادة ضبط الأسهم للمحاولة مرة أخرى.",
+  "🎉 PERFECT! Correct optimal sequence! Bug reaches yellow house!": "🎉 ممتاز! تسلسل مثالي صحيح! تصل الحشرة إلى البيت الأصفر!",
+  "⚠️ Bug reached yellow house, but not an optimal sequence. Correctness = 0.": "⚠️ وصلت الحشرة إلى البيت الأصفر لكن التسلسل ليس مثاليًا. الصحة = 0.",
+  "💥 Bug fell off the grid! Scores stored.": "💥 سقطت الحشرة خارج الشبكة! تم حفظ النتائج.",
+  "⏹️ Finished. Not all slots filled. Correctness = 0.": "⏹️ تم الإنهاء. ليست كل الخانات ممتلئة. الصحة = 0."
+}
+

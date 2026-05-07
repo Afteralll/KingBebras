@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>🍔 Candy Rainbow Burger Builder</title>
+    <title>🍔 Burger recipe </title>
 
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
 
@@ -19,9 +19,9 @@
             --lavender: #e8d5f5;
             --white: #fffef9;
             --dark: #4a3040;
-            --shadow-soft: 0 6px 20px rgba(180, 120, 160, 0.25);
-            --shadow-glow: 0 0 25px rgba(255, 150, 200, 0.5);
-            --shadow-candy: 0 8px 0 rgba(0, 0, 0, 0.12);
+            --shadow-soft: 0 3px 12px rgba(180, 120, 160, 0.2);
+            --shadow-glow: 0 0 18px rgba(255, 150, 200, 0.4);
+            --shadow-candy: 0 5px 0 rgba(0, 0, 0, 0.08);
         }
 
         * {
@@ -34,38 +34,20 @@
             font-family: 'Nunito', 'Arial', sans-serif;
             min-height: 100vh;
             text-align: center;
-            padding: 25px 15px 40px;
-            position: relative;
-            overflow-x: hidden;
-            /* 🌈 Animated Rainbow Gradient Background */
+            padding: 12px 12px 15px;
             background: linear-gradient(135deg, #ffe0ec, #ffe9c8, #fff9c0, #e0f7e9, #d4f0ff, #e8dcff, #ffe0f5, #ffdce8, #fff3cd, #d6f5f5);
             background-size: 600% 600%;
             animation: rainbowBgShift 18s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         @keyframes rainbowBgShift {
-            0% {
-                background-position: 0% 0%;
-            }
-
-            25% {
-                background-position: 100% 0%;
-            }
-
-            50% {
-                background-position: 100% 100%;
-            }
-
-            75% {
-                background-position: 0% 100%;
-            }
-
-            100% {
-                background-position: 0% 0%;
-            }
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
         }
 
-        /* ✨ Sparkle overlay */
         body::before {
             content: '';
             position: fixed;
@@ -75,478 +57,372 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            background: radial-gradient(3px 3px at 8% 12%, #fff 70%, transparent), radial-gradient(3px 3px at 22% 28%, #fff 70%, transparent), radial-gradient(3px 3px at 35% 8%, #fff 70%, transparent), radial-gradient(3px 3px at 48% 35%, #fff 70%, transparent), radial-gradient(3px 3px at 55% 18%, #fff 70%, transparent), radial-gradient(3px 3px at 68% 45%, #fff 70%, transparent), radial-gradient(3px 3px at 75% 12%, #fff 70%, transparent), radial-gradient(3px 3px at 82% 30%, #fff 70%, transparent), radial-gradient(3px 3px at 90% 20%, #fff 70%, transparent), radial-gradient(3px 3px at 15% 55%, #fff 70%, transparent), radial-gradient(3px 3px at 28% 70%, #fff 70%, transparent), radial-gradient(3px 3px at 42% 60%, #fff 70%, transparent), radial-gradient(3px 3px at 58% 72%, #fff 70%, transparent), radial-gradient(3px 3px at 72% 58%, #fff 70%, transparent), radial-gradient(3px 3px at 85% 65%, #fff 70%, transparent), radial-gradient(2px 2px at 10% 80%, #fff 80%, transparent), radial-gradient(2px 2px at 33% 88%, #fff 80%, transparent), radial-gradient(2px 2px at 50% 78%, #fff 80%, transparent), radial-gradient(2px 2px at 65% 85%, #fff 80%, transparent), radial-gradient(2px 2px at 80% 75%, #fff 80%, transparent);
+            background: radial-gradient(2px 2px at 8% 12%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 22% 28%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 35% 8%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 48% 35%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 55% 18%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 68% 45%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 75% 12%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 82% 30%, #fff 70%, transparent),
+                        radial-gradient(2px 2px at 90% 20%, #fff 70%, transparent),
+                        radial-gradient(1.5px 1.5px at 15% 55%, #fff 80%, transparent),
+                        radial-gradient(1.5px 1.5px at 28% 70%, #fff 80%, transparent),
+                        radial-gradient(1.5px 1.5px at 42% 60%, #fff 80%, transparent),
+                        radial-gradient(1.5px 1.5px at 58% 72%, #fff 80%, transparent),
+                        radial-gradient(1.5px 1.5px at 72% 58%, #fff 80%, transparent),
+                        radial-gradient(1.5px 1.5px at 85% 65%, #fff 80%, transparent);
             animation: sparkleTwinkle 3s ease-in-out infinite alternate;
         }
 
         @keyframes sparkleTwinkle {
-            0% {
-                opacity: 0.5;
-            }
-
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0.4; }
+            100% { opacity: 0.9; }
         }
 
-        /* 🍭 Floating candy decorations */
         body::after {
-            content: '🍬🍭🍡🧁🍬🍭🍡🧁';
+            content: '🍬🍭🍡🧁';
             position: fixed;
-            bottom: 10px;
-            right: 15px;
-            font-size: 38px;
+            bottom: 5px;
+            right: 10px;
+            font-size: 24px;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.7;
-            letter-spacing: 12px;
-            animation: floatCandy 6s ease-in-out infinite;
+            opacity: 0.5;
+            letter-spacing: 8px;
         }
 
-        @keyframes floatCandy {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            25% {
-                transform: translateY(-18px) rotate(3deg);
-            }
-
-            50% {
-                transform: translateY(-6px) rotate(-2deg);
-            }
-
-            75% {
-                transform: translateY(-22px) rotate(1deg);
-            }
-        }
-
-        /* Main container */
         .main-wrapper {
             position: relative;
             z-index: 1;
-            max-width: 800px;
+            max-width: 650px;
+            width: 100%;
             margin: 0 auto;
         }
 
-        /* 🎀 Rules Card */
         .rules-card {
             background: linear-gradient(135deg, #fffef9 0%, #fff0f7 50%, #fdf0ff 100%);
-            border: 3px solid #ffb3c6;
-            border-radius: 22px;
-            padding: 18px 22px;
-            margin: 0 auto 22px;
-            max-width: 600px;
-            box-shadow: var(--shadow-soft), inset 0 2px 0 rgba(255, 255, 255, 0.8);
-            position: relative;
+            border: 2px solid #ffb3c6;
+            border-radius: 16px;
+            padding: 8px 14px;
+            margin: 0 auto 10px;
+            max-width: 550px;
+            box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.8);
             text-align: left;
+            font-size: 0.8em;
         }
 
-            .rules-card::before {
-                content: '📋';
-                position: absolute;
-                top: -20px;
-                left: 20px;
-                font-size: 32px;
-            }
+        .rules-card h3 {
+            font-family: 'Fredoka One', cursive;
+            color: #e8577c;
+            font-size: 1.2em;
+            margin-bottom: 4px;
+        }
 
-            .rules-card h3 {
-                font-family: 'Fredoka One', cursive;
-                color: #e8577c;
-                font-size: 1.3em;
-                margin-bottom: 10px;
-                letter-spacing: 1px;
-                text-shadow: 1px 1px 0 #ffe0ec;
-            }
+        .rules-card ol {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: rule-counter;
+        }
 
-            .rules-card ol {
-                list-style: none;
-                padding-left: 0;
-                counter-reset: rule-counter;
-            }
+        .rules-card ol li {
+            counter-increment: rule-counter;
+            font-weight: 700;
+            color: #5a3048;
+            font-size: 0.7em;
+            padding: 4px 8px 4px 28px;
+            margin: 2px 0;
+            background: rgba(255,180,200,0.2);
+            border-radius: 20px;
+            border: 1.5px dashed #ffccd9;
+        }
 
-                .rules-card ol li {
-                    counter-increment: rule-counter;
-                    font-weight: 700;
-                    color: #5a3048;
-                    font-size: 0.95em;
-                    padding: 7px 12px 7px 40px;
-                    position: relative;
-                    background: rgba(255, 180, 200, 0.2);
-                    border-radius: 30px;
-                    margin: 6px 0;
-                    letter-spacing: 0.3px;
-                    border: 2px dashed #ffccd9;
-                }
+        .rules-card ol li::before {
+            content: counter(rule-counter);
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ff85a2, #ff5e8a);
+            color: #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.7em;
+            font-weight: 900;
+        }
 
-                    .rules-card ol li::before {
-                        content: counter(rule-counter);
-                        position: absolute;
-                        left: 8px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width: 26px;
-                        height: 26px;
-                        background: linear-gradient(135deg, #ff85a2, #ff5e8a);
-                        color: #fff;
-                        border-radius: 50%;
-                        text-align: center;
-                        line-height: 26px;
-                        font-size: 0.85em;
-                        font-weight: 900;
-                        box-shadow: 0 3px 8px rgba(255, 100, 130, 0.4);
-                    }
+        /* 🖼️ Bottle image styling */
+        .bottle-img {
+            display: block;
+            margin: 8px auto 4px;
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid #ffccd9;
+            box-shadow: 0 2px 8px rgba(180,120,160,0.15);
+        }
+
+        .bottle-caption {
+            text-align: center;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: #7a4a60;
+            margin-top: 2px;
+            font-style: italic;
+        }
 
         h1 {
             font-family: 'Fredoka One', cursive;
-            font-size: 3em;
-            margin-bottom: 6px;
-            letter-spacing: 2px;
+            font-size: 1.8em;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
             background: linear-gradient(135deg, #ff6b8a, #ff9a56, #ffcd56, #7ef5c8, #7ec8e3, #b57edc, #ff85c0);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: rainbowText 5s ease infinite;
-            filter: drop-shadow(2px 3px 2px rgba(180, 100, 130, 0.3));
-            position: relative;
-            z-index: 2;
+            filter: drop-shadow(1px 2px 1px rgba(180,100,130,0.3));
         }
 
         @keyframes rainbowText {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* 📊 Stats */
+        /* Only time remains visible */
         #stats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-bottom: 22px;
-            position: relative;
-            z-index: 2;
+            margin-bottom: 10px;
         }
 
-            #stats > div {
-                background: #fffef9;
-                border: 3px solid #ffc8d8;
-                border-radius: 40px;
-                padding: 12px 22px;
-                font-weight: 900;
-                font-size: 1em;
-                color: #5a3048;
-                box-shadow: var(--shadow-candy), var(--shadow-soft);
-                letter-spacing: 0.5px;
-                transition: transform 0.2s;
-                position: relative;
-            }
+        #stats > div {
+            background: #fffef9;
+            border: 2px solid #ffc8d8;
+            border-radius: 24px;
+            padding: 5px 14px;
+            font-weight: 900;
+            font-size: 0.75em;
+            color: #5a3048;
+            box-shadow: var(--shadow-candy), var(--shadow-soft);
+        }
 
-                #stats > div:hover {
-                    transform: translateY(-3px) scale(1.03);
-                    box-shadow: var(--shadow-glow), var(--shadow-candy);
-                }
+        #stats span {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff85a2, #ff5e8a);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            min-width: 40px;
+            text-align: center;
+            margin-left: 3px;
+            font-size: 0.95em;
+        }
 
-            #stats span {
-                display: inline-block;
-                background: linear-gradient(135deg, #ff85a2, #ff5e8a);
-                color: #fff;
-                padding: 3px 12px;
-                border-radius: 20px;
-                min-width: 45px;
-                text-align: center;
-                margin-left: 5px;
-                font-size: 1.05em;
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            }
-
-        /* 🧁 Ingredient Pool */
         #pool {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 28px;
-            padding: 18px 12px;
-            background: rgba(255, 255, 255, 0.45);
-            border-radius: 30px;
-            border: 3px dashed #ffb3d9;
-            box-shadow: inset 0 0 40px rgba(255, 200, 220, 0.3);
-            backdrop-filter: blur(4px);
-            position: relative;
-            z-index: 2;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 10px 8px;
+            background: rgba(255,255,255,0.45);
+            border-radius: 22px;
+            border: 2px dashed #ffb3d9;
+            box-shadow: inset 0 0 20px rgba(255,200,220,0.3);
+            backdrop-filter: blur(3px);
         }
 
         .item {
-            width: 125px;
-            height: 58px;
-            border: 3px solid #e8789a;
-            border-radius: 16px;
+            width: 85px;
+            height: 40px;
+            border: 2px solid #e8789a;
+            border-radius: 12px;
             background: linear-gradient(180deg, #fffef9 0%, #fff0f5 100%);
             cursor: grab;
             overflow: hidden;
-            box-shadow: var(--shadow-candy), 0 3px 10px rgba(200, 140, 160, 0.2);
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            box-shadow: var(--shadow-candy), 0 2px 6px rgba(200,140,160,0.2);
+            transition: all 0.2s;
         }
 
-            .item::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border-radius: 13px;
-                box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.7);
-                pointer-events: none;
-            }
+        .item:hover {
+            transform: translateY(-3px) scale(1.05);
+            border-color: #ff5e8a;
+            box-shadow: var(--shadow-glow), 0 8px 18px rgba(255,120,160,0.35);
+        }
 
-            .item:hover {
-                transform: translateY(-5px) scale(1.06);
-                border-color: #ff5e8a;
-                box-shadow: var(--shadow-glow), 0 12px 28px rgba(255, 120, 160, 0.35);
-                background: #fff;
-            }
+        .item:active {
+            cursor: grabbing;
+            transform: scale(0.96);
+        }
 
-            .item:active {
-                cursor: grabbing;
-                transform: scale(0.94);
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            }
+        .item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            border-radius: 10px;
+        }
 
-            .item img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                pointer-events: none;
-                border-radius: 13px;
-            }
-
-        /* 🍔 Burger Stack */
         #burger {
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
-            gap: 5px;
-            width: 170px;
-            margin: auto;
-            padding: 18px 10px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 30px;
-            border: 3px dashed #d4b8e8;
-            box-shadow: inset 0 0 30px rgba(200, 170, 220, 0.25);
-            backdrop-filter: blur(3px);
-            position: relative;
-            z-index: 2;
+            gap: 3px;
+            width: 120px;
+            margin: 0 auto 12px;
+            padding: 8px 6px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 20px;
+            border: 2px dashed #d4b8e8;
+            box-shadow: inset 0 0 20px rgba(200,170,220,0.2);
+            backdrop-filter: blur(2px);
         }
 
         .slot {
-            width: 145px;
-            height: 54px;
-            border: 3px dashed #c9a0dc;
-            border-radius: 16px;
+            width: 100px;
+            height: 38px;
+            border: 2px dashed #c9a0dc;
+            border-radius: 12px;
             background: #fffef9;
             overflow: hidden;
-            transition: all 0.25s;
-            box-shadow: 0 4px 10px rgba(160, 120, 180, 0.15);
-            position: relative;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(160,120,180,0.15);
         }
 
-            .slot::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                border-radius: 13px;
-                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-                pointer-events: none;
-            }
+        .slot.hover {
+            background: #f0fff4;
+            border-color: #7ef5c8;
+            box-shadow: 0 0 16px rgba(120,240,180,0.6);
+            transform: scale(1.04);
+            border-style: solid;
+        }
 
-            .slot.hover {
-                background: #f0fff4;
-                border-color: #7ef5c8;
-                box-shadow: 0 0 22px rgba(120, 240, 180, 0.6), 0 6px 16px rgba(0, 0, 0, 0.08);
-                transform: scale(1.05);
-                border-style: solid;
-            }
+        .slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            border-radius: 10px;
+        }
 
-            .slot img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                pointer-events: none;
-                border-radius: 13px;
-            }
+        .slot[data-filled] {
+            border-style: solid;
+            border-color: #ffb3c6;
+            background: linear-gradient(180deg, #fffef9 0%, #fff5f8 100%);
+        }
 
-            .slot[data-filled] {
-                border-style: solid;
-                border-color: #ffb3c6;
-                background: linear-gradient(180deg, #fffef9 0%, #fff5f8 100%);
-                box-shadow: 0 5px 14px rgba(200, 140, 160, 0.25);
-            }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
 
-        /* 🎯 Finish Button */
         button {
-            margin-top: 22px;
-            padding: 14px 40px;
-            font-size: 1.2em;
+            padding: 7px 18px;
+            font-size: 0.85em;
             font-family: 'Fredoka One', cursive;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             border: none;
-            border-radius: 50px;
+            border-radius: 30px;
             cursor: pointer;
             background: linear-gradient(135deg, #ff7eb3, #ff758c, #ffb347);
-            background-size: 200% 200%;
-            animation: btnShimmer 3s ease infinite;
             color: #fff;
-            box-shadow: var(--shadow-candy), 0 8px 25px rgba(255, 120, 150, 0.45);
-            transition: all 0.25s;
-            position: relative;
-            z-index: 2;
-            text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-candy), 0 5px 15px rgba(255,120,150,0.4);
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
         }
 
-        @keyframes btnShimmer {
-            0% {
-                background-position: 0% 50%;
-            }
+        button.reset-btn {
+            background: linear-gradient(135deg, #ffb347, #ff9a3c);
+        }
 
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+        button.giveup-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
         }
 
         button:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 14px 35px rgba(255, 120, 150, 0.55), 0 10px 0 rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(255,120,150,0.5);
         }
 
         button:active {
-            transform: translateY(2px) scale(0.96);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(1px) scale(0.97);
         }
 
-        /* 💬 Message */
         #message {
-            margin-top: 18px;
-            font-size: 1.3em;
+            margin-top: 10px;
+            font-size: 0.8em;
             font-weight: 900;
             font-family: 'Fredoka One', cursive;
             color: #e8577c;
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 24px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 18px;
             border: 2px dashed #ffb3c6;
             display: inline-block;
-            min-width: 200px;
+            min-width: 160px;
             box-shadow: var(--shadow-soft);
-            position: relative;
-            z-index: 2;
-            line-height: 1.7;
+            line-height: 1.5;
         }
 
-        /* 🎀 Responsive */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            .item {
-                width: 95px;
-                height: 46px;
-                border-radius: 12px;
-            }
-
-            .slot {
-                width: 120px;
-                height: 44px;
-                border-radius: 12px;
-            }
-
-            #pool {
-                gap: 8px;
-                padding: 12px 6px;
-                border-radius: 20px;
-            }
-
-            #burger {
-                width: 140px;
-                gap: 3px;
-                padding: 10px 6px;
-            }
-
-            .rules-card {
-                padding: 12px 14px;
-                border-radius: 16px;
-            }
-
-                .rules-card ol li {
-                    font-size: 0.8em;
-                    padding: 6px 10px 6px 34px;
-                }
-
-            button {
-                padding: 12px 28px;
-                font-size: 1em;
-            }
-
-            #stats > div {
-                padding: 10px 14px;
-                font-size: 0.85em;
-            }
+        @media (max-width: 500px) {
+            .item { width: 70px; height: 34px; }
+            .slot { width: 90px; height: 32px; }
+            h1 { font-size: 1.4em; }
+            button { padding: 6px 12px; font-size: 0.75em; }
+            #stats > div { padding: 4px 10px; font-size: 0.7em; }
+            .bottle-img { max-width: 160px; }
         }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
-
-        <!-- 🍭 Rules Card -->
+        <h1>🍔 Burger recipe </h1>
         <div class="rules-card">
+            <p class="bottle-caption">Mei is making burgers according to the rules below.</p>
             <h3>📋 Rules</h3>
             <ol>
-                <li>The sauce should be right above the meat.</li>
-                <li>Meat and cheese should be below the pickles, lettuce and onions.</li>
-                <li>Onions should not be in contact with the buns.</li>
+                <li><h2>The sauce should be right above the meat.</h2></li>
+                <li><h2>Meat and cheese should be below the pickles, lettuce and onions.</h2></li>
+                <li><h2>Onions should not be in contact with the buns.</h2></li>
             </ol>
+            <!-- ⚠️ Remember to use a relative path like "IngredientsKM.png" if the file is in the same folder -->
+            <img src="D:\Study\Bachelor Thesis\Burger Recipe\IngredientsKM.png" alt="Paint bottles" class="bottle-img">
+            <p class="bottle-caption">Create the burger following the rules above.</p>
         </div>
 
-        <h1>🍔 Candy Rainbow Burger</h1>
-
-        <div id="stats">
-            <div>🌸 Error: <span id="errorScore">10.0</span></div>
-            <div>⏱️ Time: <span id="timeScore">10.0</span></div>
-            <div>👆 Clicks: <span id="clickScore">10.0</span></div>
-        </div>
-
+        <p class="bottle-caption">drag and drop the ingredients below to make the burger</p>
         <div id="pool"></div>
         <div id="burger"></div>
 
-        <button onclick="finishGame()">✨ Finish ✨</button>
+        <!-- Only time visible to the student -->
+        <div id="stats">
+            <div>⏱️ Time: <span id="timeScore">0.0</span>s</div>
+        </div>
+
+        <div class="button-group">
+            <button onclick="finishGame()">✨ Finish ✨</button>
+            <button onclick="resetBurger()" class="reset-btn">🔄 Reset</button>
+            <button onclick="giveUp()" class="giveup-btn">🏳️ Give Up</button>
+        </div>
 
         <div id="message"></div>
-
     </div>
 
     <script>
-        let ingredients = [
+        const ingredientsData = [
             { name: "Top Bun", img: "TopBun.PNG" },
             { name: "Bottom Bun", img: "BottomBun.PNG" },
             { name: "Meat", img: "Meat.PNG" },
@@ -558,46 +434,45 @@
         ];
 
         const imgMap = {};
-        ingredients.forEach(i => imgMap[i.name] = i.img);
+        ingredientsData.forEach(i => imgMap[i.name] = i.img);
 
-        const correctOrder = [
-            "Bottom Bun",
-            "Meat",
-            "Sauce",
-            "Pickles",
-            "Lettuce",
-            "Onions",
-            "Cheese",
-            "Top Bun"
-        ];
-
+        let ingredients = [...ingredientsData];
         let selected = null;
         let clickCount = 0;
         let gameEnded = false;
 
-        let errorScore = 10;
-        let timeScore = 10;
-        let clickScore = 10;
+        // Scores & flags (still tracked, not displayed)
+        let errorScore = 0;
+        let timeScore = 0;
+        let clickScore = 0;
+        let resetCounter = 0;
+        let giveUpFlag = 0;
+        let correctnessFlag = 0;
 
-        let timer = setInterval(() => {
-            if (gameEnded) return;
-            timeScore = Math.max(0, timeScore - 0.05);
-            updateUI();
-        }, 1000);
+        const startTime = Date.now();
+        let liveTimerInterval = null;
 
         const pool = document.getElementById("pool");
         const burger = document.getElementById("burger");
         const message = document.getElementById("message");
 
         function updateUI() {
-            document.getElementById("errorScore").textContent = errorScore.toFixed(1);
+            // Only update time
             document.getElementById("timeScore").textContent = timeScore.toFixed(1);
-            document.getElementById("clickScore").textContent = clickScore.toFixed(1);
         }
+
+        // ⏱️ Live timer
+        liveTimerInterval = setInterval(() => {
+            if (gameEnded) {
+                clearInterval(liveTimerInterval);
+                return;
+            }
+            timeScore = (Date.now() - startTime) / 1000;
+            updateUI();
+        }, 100);
 
         function renderPool() {
             pool.innerHTML = "";
-
             ingredients.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "item";
@@ -607,13 +482,13 @@
                 div.onclick = () => {
                     if (gameEnded) return;
                     selected = item;
-                    useClick();
+                    recordClick();
                 };
 
                 div.ondragstart = (e) => {
                     if (gameEnded) return;
                     selected = item;
-                    useClick();
+                    recordClick();
                     e.dataTransfer.setData("text/plain", item.name);
                 };
 
@@ -621,27 +496,22 @@
             });
         }
 
-        function useClick() {
+        function recordClick() {
             clickCount++;
-            clickScore = Math.max(0, 10 - (clickCount * 0.2));
-            updateUI();
+            clickScore = clickCount;
+            // No UI update because clicks are hidden
         }
 
         function placeIngredient(slot, item, index) {
             if (gameEnded) return;
             if (!item || slot.dataset.filled) return;
 
-            useClick();
+            recordClick();
 
             slot.innerHTML = `<img src="${item.img}" alt="${item.name}">`;
             slot.dataset.filled = item.name;
 
-            if (correctOrder[index] !== item.name) {
-                errorScore = Math.max(0, errorScore - 0.5);
-            }
-
             ingredients = ingredients.filter(x => x.name !== item.name);
-
             selected = null;
             renderPool();
             updateUI();
@@ -660,15 +530,12 @@
                     slot.classList.add("hover");
                 };
 
-                slot.ondragleave = () => {
-                    slot.classList.remove("hover");
-                };
+                slot.ondragleave = () => slot.classList.remove("hover");
 
                 slot.ondrop = (e) => {
                     if (gameEnded) return;
                     e.preventDefault();
                     slot.classList.remove("hover");
-
                     const name = e.dataTransfer.getData("text/plain");
                     const item = ingredients.find(x => x.name === name);
                     placeIngredient(slot, item, i);
@@ -677,14 +544,8 @@
                 slot.ondblclick = () => {
                     if (gameEnded) return;
                     if (!slot.dataset.filled) return;
-
                     const name = slot.dataset.filled;
-
-                    ingredients.push({
-                        name: name,
-                        img: imgMap[name]
-                    });
-
+                    ingredients.push({ name, img: imgMap[name] });
                     slot.innerHTML = "";
                     slot.dataset.filled = "";
                     renderPool();
@@ -694,57 +555,116 @@
             }
         }
 
-        function finishGame() {
-            if (gameEnded) return;
+        // 📏 Rule evaluation (used only when Finish is pressed)
+        function computeErrorScore(arr) {
+            let violations = 0;
+            const idx = {};
+            arr.forEach((name, i) => { if (name) idx[name] = i; });
 
-            gameEnded = true;
-            clearInterval(timer);
+            const meat = idx["Meat"] ?? -1;
+            const sauce = idx["Sauce"] ?? -1;
+            const cheese = idx["Cheese"] ?? -1;
+            const pickles = idx["Pickles"] ?? -1;
+            const lettuce = idx["Lettuce"] ?? -1;
+            const onions = idx["Onions"] ?? -1;
+            const bottomBun = idx["Bottom Bun"] ?? -1;
+            const topBun = idx["Top Bun"] ?? -1;
 
-            const current = [...document.querySelectorAll(".slot")]
-                .map(s => s.dataset.filled || "");
+            // Rule 1: sauce right above meat
+            if (meat === -1 || sauce === -1 || sauce !== meat + 1) violations++;
 
-            let correctPlaced = 0;
+            // Rule 2: meat & cheese below pickles, lettuce, onions
+            const veggies = [pickles, lettuce, onions].filter(i => i !== -1);
+            if (meat === -1 || cheese === -1) {
+                violations++;
+            } else if (veggies.length > 0) {
+                const maxBottom = Math.max(meat, cheese);
+                if (veggies.some(v => v <= maxBottom)) violations++;
+            }
 
-            for (let i = 0; i < 8; i++) {
-                if (current[i] === correctOrder[i]) {
-                    correctPlaced++;
+            // Rule 3: onions not touching buns
+            if (onions !== -1) {
+                if ((bottomBun !== -1 && onions === bottomBun + 1) ||
+                    (topBun !== -1 && onions === topBun - 1)) {
+                    violations++;
                 }
             }
 
-            let accuracyBonus = (correctPlaced / 8) * 10;
+            return violations;
+        }
 
-            let finalScore =
-                (errorScore * 0.60) +
-                (timeScore * 0.30) +
-                (clickScore * 0.10);
+        function endGame(giveUp = false) {
+            if (gameEnded) return;
+            gameEnded = true;
+            clearInterval(liveTimerInterval);
 
-            finalScore = ((finalScore + accuracyBonus) / 2);
+            // Final time
+            timeScore = (Date.now() - startTime) / 1000;
+            updateUI(); // show final time
 
-            message.innerHTML =
-                "🏁 Game Finished!<br><br>" +
-                "✅ Correct Layers: " + correctPlaced + "/8<br>" +
-                "✅ Saved.";
+            if (giveUp) {
+                errorScore = 0;
+                correctnessFlag = 0;
+                giveUpFlag = 1;
+            } else {
+                giveUpFlag = 0;
+                const current = [...document.querySelectorAll(".slot")].map(s => s.dataset.filled || "");
+                errorScore = computeErrorScore(current);
+                const allFilled = current.every(name => name !== "");
+                correctnessFlag = (allFilled && errorScore === 0) ? 1 : 0;
+            }
 
+            // Simple message – NO scores, NO feedback on correctness
+            message.innerHTML = giveUp ? "🏳️ You gave up!" : "🏁 Game Finished!";
+
+            // All data still sent to the platform
             window.__kb?.finish?.({
-                finalScore: Number(finalScore.toFixed(2)),
-                correctPlaced,
-                errorScore: Number(errorScore.toFixed(2)),
-                timeScore: Number(timeScore.toFixed(2)),
-                clickScore: Number(clickScore.toFixed(2)),
-                clickCount
+                errorScore,
+                timeScore: parseFloat(timeScore.toFixed(1)),
+                clickScore: clickCount,
+                resetCounter,
+                correctnessFlag,
+                giveUpFlag
             });
+        }
+
+        function finishGame() {
+            endGame(false);
+        }
+
+        function giveUp() {
+            endGame(true);
+        }
+
+        function resetBurger() {
+            if (gameEnded) return;
+            const slots = document.querySelectorAll(".slot");
+            slots.forEach(slot => {
+                const name = slot.dataset.filled;
+                if (name) {
+                    if (!ingredients.some(i => i.name === name)) {
+                        ingredients.push({ name, img: imgMap[name] });
+                    }
+                    slot.innerHTML = "";
+                    slot.dataset.filled = "";
+                }
+            });
+            resetCounter++;
+            renderPool();
         }
 
         renderPool();
         createSlots();
         updateUI();
     </script>
+
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('burger-recipe-2');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
-
 </body>
 </html>

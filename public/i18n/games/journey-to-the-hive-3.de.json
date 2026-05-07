@@ -1,0 +1,15 @@
+{
+  "🐞 Bug to Yellow House · Arrow Coding": "🐞 Käfer zum gelben Haus · Pfeil-Codierung",
+  "🐞The Bug knows these commands:": "🐞 Der Käfer kennt diese Befehle:",
+  "❓ Which commands will make the bug go to the square with the yellow hive?": "❓ Welche Befehle bringen den Käfer zum Feld mit dem gelben Bienenstock?",
+  "🏁 FINISH": "🏁 BEENDEN",
+  "🏳️ GIVE UP": "🏳️ AUFGEBEN",
+  "⟲ RESET ARROWS": "⟲ PFEILE ZURÜCKSETZEN",
+  "Drag arrows to slots → arrange sequence → press FINISH": "Pfeile in die Felder ziehen → Reihenfolge festlegen → BEENDEN drücken",
+  "⏳ Game finished. Press RESET ARROWS to try again.": "⏳ Spiel beendet. Drücke PFEILE ZURÜCKSETZEN, um es erneut zu versuchen.",
+  "🎉 PERFECT! Correct optimal sequence! Bug reaches yellow house!": "🎉 PERFEKT! Optimale Reihenfolge! Der Käfer erreicht das gelbe Haus!",
+  "⚠️ Bug reached yellow house, but not an optimal sequence. Correctness = 0.": "⚠️ Der Käfer erreicht das gelbe Haus, aber die Reihenfolge ist nicht optimal. Korrektheit = 0.",
+  "💥 Bug fell off the grid! Scores stored.": "💥 Der Käfer ist vom Raster gefallen! Ergebnisse gespeichert.",
+  "⏹️ Finished. Not all slots filled. Correctness = 0.": "⏹️ Beendet. Nicht alle Felder sind gefüllt. Korrektheit = 0."
+}
+

@@ -36,7 +36,6 @@
             padding-bottom: 40px;
         }
 
-        /* ---------- ANIMATED BACKGROUND (unchanged) ---------- */
         .cloud {
             position: fixed;
             background: white;
@@ -49,60 +48,27 @@
             height: 50px;
         }
 
-            .cloud::after {
-                content: '';
-                position: absolute;
-                background: white;
-                border-radius: 50%;
-                width: 70px;
-                height: 55px;
-                top: 5px;
-                left: -30px;
-                box-shadow: 40px -8px 0 8px white;
-            }
-
-        .cloud1 {
-            top: 6%;
-            left: 5%;
-            animation: floatCloud 22s linear infinite;
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            width: 70px;
+            height: 55px;
+            top: 5px;
+            left: -30px;
+            box-shadow: 40px -8px 0 8px white;
         }
 
-        .cloud2 {
-            top: 14%;
-            left: 55%;
-            animation: floatCloud 28s linear 5s infinite;
-            transform: scale(0.7);
-        }
-
-        .cloud3 {
-            top: 22%;
-            left: 30%;
-            animation: floatCloud 24s linear 12s infinite;
-            transform: scale(0.9);
-        }
-
-        .cloud4 {
-            top: 8%;
-            left: 75%;
-            animation: floatCloud 30s linear 18s infinite;
-            transform: scale(0.55);
-        }
-
-        .cloud5 {
-            top: 18%;
-            left: 15%;
-            animation: floatCloud 26s linear 3s infinite;
-            transform: scale(0.75);
-        }
+        .cloud1 { top: 6%; left: 5%; animation: floatCloud 22s linear infinite; }
+        .cloud2 { top: 14%; left: 55%; animation: floatCloud 28s linear 5s infinite; transform: scale(0.7); }
+        .cloud3 { top: 22%; left: 30%; animation: floatCloud 24s linear 12s infinite; transform: scale(0.9); }
+        .cloud4 { top: 8%; left: 75%; animation: floatCloud 30s linear 18s infinite; transform: scale(0.55); }
+        .cloud5 { top: 18%; left: 15%; animation: floatCloud 26s linear 3s infinite; transform: scale(0.75); }
 
         @keyframes floatCloud {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(120vw);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(120vw); }
         }
 
         .rainbow-container {
@@ -129,31 +95,16 @@
             opacity: 0.35;
             animation: rainbowPulse 6s ease-in-out infinite;
         }
-
-            .rainbow-arc:nth-child(2) {
-                width: 560px;
-                height: 280px;
-                border-radius: 280px 280px 0 0;
-                opacity: 0.3;
-                animation-delay: 0.3s;
-            }
-
-            .rainbow-arc:nth-child(3) {
-                width: 520px;
-                height: 260px;
-                border-radius: 260px 260px 0 0;
-                opacity: 0.25;
-                animation-delay: 0.6s;
-            }
+        .rainbow-arc:nth-child(2) {
+            width: 560px; height: 280px; border-radius: 280px 280px 0 0; opacity: 0.3; animation-delay: 0.3s;
+        }
+        .rainbow-arc:nth-child(3) {
+            width: 520px; height: 260px; border-radius: 260px 260px 0 0; opacity: 0.25; animation-delay: 0.6s;
+        }
 
         @keyframes rainbowPulse {
-            0%, 100% {
-                opacity: 0.3;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.5; }
         }
 
         .candy {
@@ -164,95 +115,21 @@
             animation: flyCandy linear infinite;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
         }
-
-        .candy1 {
-            top: -60px;
-            left: 8%;
-            animation-duration: 14s;
-            font-size: 38px;
-        }
-
-        .candy2 {
-            top: -80px;
-            left: 25%;
-            animation-duration: 18s;
-            animation-delay: 3s;
-            font-size: 28px;
-        }
-
-        .candy3 {
-            top: -70px;
-            left: 42%;
-            animation-duration: 16s;
-            animation-delay: 6s;
-            font-size: 34px;
-        }
-
-        .candy4 {
-            top: -90px;
-            left: 58%;
-            animation-duration: 20s;
-            animation-delay: 1s;
-            font-size: 26px;
-        }
-
-        .candy5 {
-            top: -65px;
-            left: 72%;
-            animation-duration: 15s;
-            animation-delay: 8s;
-            font-size: 36px;
-        }
-
-        .candy6 {
-            top: -75px;
-            left: 88%;
-            animation-duration: 17s;
-            animation-delay: 4s;
-            font-size: 30px;
-        }
-
-        .candy7 {
-            top: -85px;
-            left: 15%;
-            animation-duration: 19s;
-            animation-delay: 10s;
-            font-size: 32px;
-        }
-
-        .candy8 {
-            top: -55px;
-            left: 50%;
-            animation-duration: 13s;
-            animation-delay: 7s;
-            font-size: 40px;
-        }
+        .candy1 { top: -60px; left: 8%; animation-duration: 14s; font-size: 38px; }
+        .candy2 { top: -80px; left: 25%; animation-duration: 18s; animation-delay: 3s; font-size: 28px; }
+        .candy3 { top: -70px; left: 42%; animation-duration: 16s; animation-delay: 6s; font-size: 34px; }
+        .candy4 { top: -90px; left: 58%; animation-duration: 20s; animation-delay: 1s; font-size: 26px; }
+        .candy5 { top: -65px; left: 72%; animation-duration: 15s; animation-delay: 8s; font-size: 36px; }
+        .candy6 { top: -75px; left: 88%; animation-duration: 17s; animation-delay: 4s; font-size: 30px; }
+        .candy7 { top: -85px; left: 15%; animation-duration: 19s; animation-delay: 10s; font-size: 32px; }
+        .candy8 { top: -55px; left: 50%; animation-duration: 13s; animation-delay: 7s; font-size: 40px; }
 
         @keyframes flyCandy {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
-                opacity: 1;
-            }
-
-            25% {
-                transform: translateY(28vh) translateX(60px) rotate(90deg) scale(1.2);
-                opacity: 0.9;
-            }
-
-            50% {
-                transform: translateY(55vh) translateX(-40px) rotate(200deg) scale(0.9);
-                opacity: 0.7;
-            }
-
-            75% {
-                transform: translateY(78vh) translateX(30px) rotate(310deg) scale(1.1);
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: translateY(105vh) translateX(-20px) rotate(400deg) scale(0.8);
-                opacity: 0.15;
-            }
+            0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 1; }
+            25% { transform: translateY(28vh) translateX(60px) rotate(90deg) scale(1.2); opacity: 0.9; }
+            50% { transform: translateY(55vh) translateX(-40px) rotate(200deg) scale(0.9); opacity: 0.7; }
+            75% { transform: translateY(78vh) translateX(30px) rotate(310deg) scale(1.1); opacity: 0.5; }
+            100% { transform: translateY(105vh) translateX(-20px) rotate(400deg) scale(0.8); opacity: 0.15; }
         }
 
         .sparkle {
@@ -266,59 +143,86 @@
             box-shadow: 0 0 6px 3px #ffe066, 0 0 12px 6px #ffcc00;
             animation: sparkleFloat 8s ease-in-out infinite;
         }
-
-        .sparkle1 {
-            top: 10%;
-            left: 10%;
-        }
-
-        .sparkle2 {
-            top: 25%;
-            left: 80%;
-            animation-delay: 2s;
-        }
-
-        .sparkle3 {
-            top: 40%;
-            left: 20%;
-            animation-delay: 4s;
-        }
-
-        .sparkle4 {
-            top: 55%;
-            left: 70%;
-            animation-delay: 1s;
-        }
-
-        .sparkle5 {
-            top: 70%;
-            left: 35%;
-            animation-delay: 5s;
-        }
-
-        .sparkle6 {
-            top: 15%;
-            left: 60%;
-            animation-delay: 3s;
-        }
+        .sparkle1 { top: 10%; left: 10%; }
+        .sparkle2 { top: 25%; left: 80%; animation-delay: 2s; }
+        .sparkle3 { top: 40%; left: 20%; animation-delay: 4s; }
+        .sparkle4 { top: 55%; left: 70%; animation-delay: 1s; }
+        .sparkle5 { top: 70%; left: 35%; animation-delay: 5s; }
+        .sparkle6 { top: 15%; left: 60%; animation-delay: 3s; }
 
         @keyframes sparkleFloat {
-            0%, 100% {
-                opacity: 0.2;
-                transform: scale(0.6) translateY(0);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.6) translateY(-25px);
-            }
+            0%, 100% { opacity: 0.2; transform: scale(0.6) translateY(0); }
+            50% { opacity: 1; transform: scale(1.6) translateY(-25px); }
         }
 
-        /* ---------- MAIN GAME ---------- */
+        /* ---------- HEADER / INFO SECTIONS ---------- */
+        .header-box {
+            max-width: 700px;
+            margin: 20px auto 10px;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            border: 3px solid #ffe0b2;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-box h1 {
+            font-size: 40px;
+            color: #e64980;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+        }
+
+        .header-box p {
+            font-size: 17px;
+            color: #444;
+            line-height: 1.6;
+            background: #fffef9;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border: 2px dashed #ffb8d4;
+            text-align: left;
+        }
+
+        .question-box {
+            max-width: 700px;
+            margin: 10px auto 5px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            border: 2px solid #ffe0b2;
+            position: relative;
+            z-index: 2;
+        }
+
+        .question-box h2 {
+            color: #ff8e53;
+            font-size: 26px;
+            margin: 0 0 4px;
+            text-shadow: 1px 1px 0 white;
+        }
+
+        .question-box p {
+            font-size: 18px;
+            color: #000000;
+            background: #fffef5;
+            padding: 8px 16px;
+            border-radius: 16px;
+            display: inline-block;
+            margin: 0;
+            border: 1px solid #f0e68c;
+        }
+
         #top-image {
             width: 70%;
             max-width: 500px;
-            margin: 25px auto 10px;
+            margin: 15px auto 10px;
             display: block;
             border-radius: 24px;
             box-shadow: var(--shadow);
@@ -328,9 +232,9 @@
             transition: transform 0.3s;
         }
 
-            #top-image:hover {
-                transform: scale(1.03);
-            }
+        #top-image:hover {
+            transform: scale(1.03);
+        }
 
         #image-bank {
             margin: 18px auto;
@@ -351,28 +255,28 @@
             transition: all 0.3s;
         }
 
-            #image-bank:hover {
-                border-color: #ff6b9d;
-                background: rgba(255, 255, 255, 0.9);
-            }
+        #image-bank:hover {
+            border-color: #ff6b9d;
+            background: rgba(255, 255, 255, 0.9);
+        }
 
-            #image-bank::before {
-                content: '🍬 Drag from here! 🍬';
-                position: absolute;
-                top: -22px;
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 15px;
-                font-weight: bold;
-                color: #e64980;
-                white-space: nowrap;
-                z-index: 3;
-                background: #fff9e6;
-                padding: 4px 16px;
-                border-radius: 20px;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-                letter-spacing: 0.5px;
-            }
+        #image-bank::before {
+            content: '🍬 Drag from here! 🍬';
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15px;
+            font-weight: bold;
+            color: #e64980;
+            white-space: nowrap;
+            z-index: 3;
+            background: #fff9e6;
+            padding: 4px 16px;
+            border-radius: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            letter-spacing: 0.5px;
+        }
 
         .draggable {
             width: 95px;
@@ -388,21 +292,20 @@
             padding: 4px;
         }
 
-            .draggable:hover {
-                transform: translateY(-6px) scale(1.08);
-                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-                border-color: #ffb8d4;
-                cursor: grab;
-            }
+        .draggable:hover {
+            transform: translateY(-6px) scale(1.08);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            border-color: #ffb8d4;
+            cursor: grab;
+        }
 
-            .draggable:active {
-                cursor: grabbing;
-                transform: scale(0.95);
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-                border-color: #ff6b9d;
-            }
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            border-color: #ff6b9d;
+        }
 
-        /* ---------- TEAMS & NO-WRAP SLOTS ---------- */
         #teams {
             display: flex;
             justify-content: center;
@@ -417,7 +320,7 @@
             background: linear-gradient(180deg, #ffffff 0%, #fff9f0 100%);
             padding: 20px 18px 22px;
             border-radius: 28px;
-            width: 540px; /* slightly wider to guarantee all 5 slots fit in one row */
+            width: 540px;
             max-width: 95vw;
             box-shadow: var(--shadow);
             border: 4px solid #ffe0b2;
@@ -425,18 +328,13 @@
             position: relative;
         }
 
-            .team:hover {
-                box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
-                border-color: #ffcc80;
-            }
-
-        #teamA {
-            border-top: 7px solid #ff6b9d;
+        .team:hover {
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15);
+            border-color: #ffcc80;
         }
 
-        #teamB {
-            border-top: 7px solid #4dabf7;
-        }
+        #teamA { border-top: 7px solid #ff6b9d; }
+        #teamB { border-top: 7px solid #4dabf7; }
 
         .team h3 {
             font-size: 26px;
@@ -445,19 +343,14 @@
             text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.06);
         }
 
-        #teamA h3 {
-            color: #e64980;
-        }
-
-        #teamB h3 {
-            color: #228be6;
-        }
+        #teamA h3 { color: #e64980; }
+        #teamB h3 { color: #228be6; }
 
         .slots {
             display: flex;
             gap: 10px;
             justify-content: center;
-            flex-wrap: nowrap; /* force all slots in a single horizontal row */
+            flex-wrap: nowrap;
         }
 
         .slot {
@@ -473,43 +366,31 @@
             position: relative;
             z-index: 2;
             box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.04);
-            flex-shrink: 0; /* prevent shrinking on small screens */
+            flex-shrink: 0;
         }
 
-            .slot:hover {
-                border-color: #ffb347;
-                background: #fffef5;
-                box-shadow: inset 0 3px 12px rgba(255, 179, 71, 0.15), 0 0 0 6px rgba(255, 179, 71, 0.08);
-                transform: translateY(-3px);
-            }
+        .slot:hover {
+            border-color: #ffb347;
+            background: #fffef5;
+            box-shadow: inset 0 3px 12px rgba(255, 179, 71, 0.15), 0 0 0 6px rgba(255, 179, 71, 0.08);
+            transform: translateY(-3px);
+        }
 
-            .slot img {
-                width: 90%;
-                height: 90%;
-                border-radius: 14px;
-                object-fit: contain;
-                animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
+        .slot img {
+            width: 90%;
+            height: 90%;
+            border-radius: 14px;
+            object-fit: contain;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
         @keyframes popIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-
-            70% {
-                transform: scale(1.12);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Kid‑friendly empty slot placeholder – a cute candy icon */
         .slot:empty::after {
             content: '🍬';
             font-size: 30px;
@@ -518,7 +399,6 @@
             transform: scale(0.9);
         }
 
-        /* ---------- SCOREBOARD ---------- */
         #scoreboard {
             margin-top: 25px;
             font-size: 18px;
@@ -533,23 +413,14 @@
             z-index: 2;
         }
 
-            #scoreboard span {
-                font-weight: bold;
-                color: #e64980;
-            }
-
-        #time {
-            color: #228be6 !important;
-            font-size: 22px;
+        #scoreboard span {
+            font-weight: bold;
+            color: #e64980;
         }
 
-        #clicks {
-            color: #f59f00 !important;
-            font-size: 22px;
-        }
+        #time { color: #228be6 !important; font-size: 22px; }
 
         button {
-            background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%);
             color: white;
             border: none;
             padding: 14px 32px;
@@ -558,61 +429,60 @@
             cursor: pointer;
             font-weight: bold;
             letter-spacing: 1px;
-            box-shadow: 0 8px 22px rgba(255, 107, 157, 0.35);
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
             font-family: inherit;
             position: relative;
             z-index: 3;
+            margin: 6px 8px;
         }
 
-            button:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 14px 30px rgba(255, 107, 157, 0.5);
-                background: linear-gradient(135deg, #ff7db5 0%, #ffa06e 100%);
-            }
+        button:hover { transform: translateY(-4px); }
+        button:active { transform: translateY(-1px) scale(0.97); }
+        button:disabled {
+            background: #ccc !important;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.6;
+            transform: none;
+        }
+        button:disabled:hover { transform: none; box-shadow: none; }
 
-            button:active {
-                transform: translateY(-1px) scale(0.97);
-                box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
-            }
+        #finishBtn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8e53 100%);
+            box-shadow: 0 8px 22px rgba(255, 107, 157, 0.35);
+        }
+        #finishBtn:hover {
+            box-shadow: 0 14px 30px rgba(255, 107, 157, 0.5);
+            background: linear-gradient(135deg, #ff7db5 0%, #ffa06e 100%);
+        }
+        #finishBtn:active { box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4); }
 
-            button:disabled {
-                background: #ccc;
-                cursor: not-allowed;
-                box-shadow: none;
-                opacity: 0.6;
-                transform: none;
-            }
+        #giveUpBtn {
+            background: linear-gradient(135deg, #ffa94d 0%, #ff6b3d 100%);
+            box-shadow: 0 8px 22px rgba(255, 169, 77, 0.35);
+        }
+        #giveUpBtn:hover {
+            box-shadow: 0 14px 30px rgba(255, 169, 77, 0.5);
+            background: linear-gradient(135deg, #ffbe6b 0%, #ff8555 100%);
+        }
+        #giveUpBtn:active { box-shadow: 0 4px 12px rgba(255, 169, 77, 0.4); }
 
-                button:disabled:hover {
-                    transform: none;
-                    box-shadow: none;
-                    background: #ccc;
-                }
+        #resetBtn {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c5cfc 100%);
+            box-shadow: 0 8px 22px rgba(167, 139, 250, 0.35);
+        }
+        #resetBtn:hover {
+            box-shadow: 0 14px 30px rgba(167, 139, 250, 0.5);
+            background: linear-gradient(135deg, #bca3fb 0%, #9478fd 100%);
+        }
+        #resetBtn:active { box-shadow: 0 4px 12px rgba(167, 139, 250, 0.4); }
 
         #result {
-            margin-top: 16px;
-            background: #fffef9;
-            padding: 16px 22px;
-            border-radius: 20px;
-            display: inline-block;
-            text-align: left;
-            line-height: 1.7;
-            font-size: 16px;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 2px solid #ffe0b2;
-            max-width: 500px;
+            display: none; /* completely hidden, no scores shown to student */
         }
 
-            #result b {
-                color: #e64980;
-                font-size: 20px;
-            }
-
-        .button-wrapper {
-            position: relative;
-            display: inline-block;
-        }
+        .button-wrapper { position: relative; display: inline-block; }
 
         #placement-warning {
             display: none;
@@ -624,54 +494,27 @@
         }
 
         @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-6px);
-            }
-
-            75% {
-                transform: translateX(6px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
         }
 
-        /* ---------- RESPONSIVE ADJUSTMENTS ---------- */
         @media (max-width: 850px) {
-            .team {
-                width: 95vw;
-                padding: 15px 10px;
-            }
-
-            .slot {
-                width: 58px;
-                height: 58px;
-                border-radius: 14px;
-            }
-
-                .slot:empty::after {
-                    font-size: 22px;
-                }
-
-            .draggable {
-                width: 70px;
-            }
-
-            #top-image {
-                width: 90%;
-            }
-
-            .slots {
-                gap: 6px;
-            }
+            .team { width: 95vw; padding: 15px 10px; }
+            .slot { width: 58px; height: 58px; border-radius: 14px; }
+            .slot:empty::after { font-size: 22px; }
+            .draggable { width: 70px; }
+            #top-image { width: 90%; }
+            .slots { gap: 6px; }
+            button { padding: 10px 20px; font-size: 16px; margin: 4px; }
+            .header-box h1 { font-size: 32px; }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Background Decorations (same as before) -->
+    <!-- Background Decorations -->
     <div class="cloud cloud1"></div>
     <div class="cloud cloud2"></div>
     <div class="cloud cloud3"></div>
@@ -700,20 +543,35 @@
     <div class="sparkle sparkle5"></div>
     <div class="sparkle sparkle6"></div>
 
-    <!-- Game Elements -->
-    <img id="top-image" src="main.PNG" alt="Main Image">
+    <!-- Header / Title & Description -->
+    <div class="header-box">
+        <h1>🍭 Tug Of War 🍭</h1>
+        <p>
+            Beaver School is having a tug-of-war competition. In order to have a fair competition, the school
+            divides the beavers into teams based on their weight. The goal is to have the weight difference
+            between these two teams as close as possible.<br>
+            <em>In this example, the weight difference between the two teams is only 1 kg.</em>
+        </p>
+        <img id="top-image" src="main.PNG" alt="Main Image">
+    </div>
 
-    <div id="image-bank">
-        <img src="1kg.png" class="draggable" draggable="true" data-weight="1" alt="1kg">
-        <img src="4kg.png" class="draggable" draggable="true" data-weight="4" alt="4kg">
-        <img src="4kg2.png" class="draggable" draggable="true" data-weight="4" alt="4kg-2">
-        <img src="5kg.png" class="draggable" draggable="true" data-weight="5" alt="5kg">
-        <img src="9kg.png" class="draggable" draggable="true" data-weight="9" alt="9kg">
+    <!-- Question Section (between the first and second image) -->
+    <div class="question-box">
+        <h2> Question:</h2>
+        <p>Today five beavers sign up for the competition. Drag the beavers into the Team A and Team B rectangles so that the weight difference between the two teams is as close as possible.</p><br>
+        <!-- Image Bank (the draggable beaver weights) --><br>
+        <div id="image-bank">
+            <img src="1kg.png" class="draggable" draggable="true" data-weight="1" alt="1kg">
+            <img src="4kg.png" class="draggable" draggable="true" data-weight="4" alt="4kg">
+            <img src="4kg2.png" class="draggable" draggable="true" data-weight="4" alt="4kg-2">
+            <img src="5kg.png" class="draggable" draggable="true" data-weight="5" alt="5kg">
+            <img src="9kg.png" class="draggable" draggable="true" data-weight="9" alt="9kg">
+        </div>
     </div>
 
     <div id="teams">
         <div class="team" id="teamA">
-            <h3>🩷 Team A 🩷</h3>
+            <h3>💖 Team A 💖</h3>
             <div class="slots">
                 <div class="slot"></div>
                 <div class="slot"></div>
@@ -736,14 +594,13 @@
     </div>
 
     <div id="scoreboard">
-        ⏱ Time: <span id="time">0</span>s &nbsp;|&nbsp;
-        👆 Clicks: <span id="clicks">0</span>
+        ⏱ Time: <span id="time">0</span>s
         <br><br>
-        <div class="button-wrapper">
-            <button id="finishBtn" onclick="calculateScore()">🎯 Finish & Score! 🏆</button>
-        </div>
+        <button id="finishBtn" onclick="calculateScore()">🎯 Finish  🏆</button>
+        <button id="giveUpBtn" onclick="giveUp()">🏳️ Give Up</button>
+        <button id="resetBtn" onclick="resetSlots()">🔄 Reset</button>
         <div id="placement-warning">⚠️ Please place ALL images in the team slots first!</div>
-        <h3 id="result"></h3>
+        <!-- result hidden permanently -->
     </div>
 
     <script>
@@ -751,35 +608,44 @@
         let imageBank = document.getElementById("image-bank");
         let clicks = 0;
         let time = 0;
+        let resetCount = 0;
+        let giveUpFlag = 0;
+        let gameEnded = false;
+        let timerInterval;
 
-        // timer
-        setInterval(() => {
-            time++;
-            document.getElementById("time").innerText = time;
+        // Start the timer
+        timerInterval = setInterval(() => {
+            if (!gameEnded) {
+                time++;
+                document.getElementById("time").innerText = time;
+            }
         }, 1000);
 
-        // drag start
+        // Drag start
         document.querySelectorAll(".draggable").forEach(img => {
             img.addEventListener("dragstart", () => {
+                if (gameEnded) return;
                 draggedItem = img;
                 clicks++;
-                document.getElementById("clicks").innerText = clicks;
+                // clicks are still counted but not displayed
             });
 
-            // double click returns image to bank
+            // Double-click returns image to bank
             img.addEventListener("dblclick", () => {
+                if (gameEnded) return;
                 imageBank.appendChild(img);
             });
         });
 
-        // drop logic
+        // Drop logic
         document.querySelectorAll(".slot").forEach(slot => {
             slot.addEventListener("dragover", e => e.preventDefault());
 
             slot.addEventListener("drop", () => {
+                if (gameEnded) return;
                 if (!draggedItem) return;
 
-                // if slot already has an image, send it back to bank
+                // If slot already has an image, send it back to bank
                 if (slot.firstChild && slot.firstChild.tagName === 'IMG') {
                     imageBank.appendChild(slot.firstChild);
                 }
@@ -803,7 +669,65 @@
             return placedImages >= totalDraggable;
         }
 
+        function endGame() {
+            gameEnded = true;
+            clearInterval(timerInterval);
+            // Disable all buttons
+            document.getElementById("finishBtn").disabled = true;
+            document.getElementById("giveUpBtn").disabled = true;
+            document.getElementById("resetBtn").disabled = true;
+            // Make draggables no longer draggable
+            document.querySelectorAll(".draggable").forEach(img => {
+                img.draggable = false;
+                img.style.cursor = "default";
+                img.style.opacity = "0.7";
+            });
+        }
+
+        function resetSlots() {
+            if (gameEnded) return;
+            resetCount++;
+            // resets are counted but not displayed
+            // Move all images from slots back to the image bank
+            document.querySelectorAll(".slot img").forEach(img => {
+                imageBank.appendChild(img);
+            });
+        }
+
+        function giveUp() {
+            if (gameEnded) return;
+            giveUpFlag = 1;
+            document.getElementById("placement-warning").style.display = "none";
+
+            let left = getTeamWeight("teamA");
+            let right = getTeamWeight("teamB");
+            let diff = Math.abs(left - right);
+
+            // Error score: |diff - 3|
+            let errorScore = Math.abs(diff - 3);
+            let timeScore = time;
+            let clickScore = clicks;
+            let correctness = 0; // gave up
+
+            endGame();
+
+            // No result displayed to student; only data sent to platform
+            window.__kb?.finish?.({
+                errorScore: errorScore,
+                timeScore: timeScore,
+                clickScore: clickScore,
+                correctness: correctness,
+                giveUpFlag: giveUpFlag,
+                resetCount: resetCount,
+                leftKg: left,
+                rightKg: right,
+                diffKg: diff
+            });
+        }
+
         function calculateScore() {
+            if (gameEnded) return;
+
             if (!allImagesPlaced()) {
                 const warning = document.getElementById("placement-warning");
                 warning.style.display = "block";
@@ -816,32 +740,22 @@
             let right = getTeamWeight("teamB");
             let diff = Math.abs(left - right);
 
-            let errorScore = 10 - Math.abs(diff - 3) * 0.5;
-            if (errorScore < 0) errorScore = 0;
+            // Error score: |diff - 3|
+            let errorScore = Math.abs(diff - 3);
+            let timeScore = time;
+            let clickScore = clicks;
+            let correctness = (diff === 3 && giveUpFlag === 0) ? 1 : 0;
 
-            let timeScore = 10;
-            if (time > 60) timeScore -= Math.floor((time - 60) / 20) + 1;
-            if (timeScore < 0) timeScore = 0;
+            endGame();
 
-            let clickScore = 10;
-            if (clicks > 20) clickScore -= Math.floor((clicks - 20) / 5) + 1;
-            if (clickScore < 0) clickScore = 0;
-
-            let finalScore = errorScore * 0.6 + timeScore * 0.3 + clickScore * 0.1;
-
-            document.getElementById("result").innerHTML =
-                `📊 <b>Left Team:</b> ${left} kg &nbsp;|&nbsp; <b>Right Team:</b> ${right} kg<br>
-                     🔍 <b>Difference:</b> ${diff} kg<br><br>
-                     🎯 <b>Error Score:</b> ${errorScore.toFixed(2)}<br>
-                     ⏱ <b>Time Score:</b> ${timeScore}<br>
-                     👆 <b>Click Score:</b> ${clickScore}<br><br>
-                     🌟 <b>Final Score: ${finalScore.toFixed(2)} / 10</b> 🌟`;
-
+            // No result displayed to student; only data sent to platform
             window.__kb?.finish?.({
-                finalScore: Number(finalScore.toFixed(2)),
-                errorScore: Number(errorScore.toFixed(2)),
-                timeScore: Number(timeScore),
-                clickScore: Number(clickScore),
+                errorScore: errorScore,
+                timeScore: timeScore,
+                clickScore: clickScore,
+                correctness: correctness,
+                giveUpFlag: giveUpFlag,
+                resetCount: resetCount,
                 leftKg: left,
                 rightKg: right,
                 diffKg: diff
@@ -850,8 +764,10 @@
     </script>
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('tug-of-war-2');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 

@@ -39,7 +39,7 @@
             border-radius: 60px;
             backdrop-filter: blur(8px);
             display: flex;
-            gap: 30px;
+            gap: 20px;
             align-items: center;
             z-index: 20;
             pointer-events: auto;
@@ -144,39 +144,36 @@
                 color: #ffd966;
             }
 
-        #final-score-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: gold;
-            padding: 30px 50px;
-            border-radius: 60px;
-            font-size: 2.2rem;
-            border: 3px solid #ffaa00;
-            z-index: 30;
+        .error-score-line, .correct-rounds-line {
             display: none;
-            text-align: center;
-            backdrop-filter: blur(12px);
-            pointer-events: none;
+        }
+
+        #final-score-message {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div id="info">🚀 STICK SORTER · Match the color order (bottom → top)</div>
+    <div id="info">
+        Pick Up Sticks <br>
+                Ruan drops some sticks on a table and then sorts them following these rules:<br>
+                🚀 Pick up one stick at a time and place it on the right <br>
+                🚀 Only pick up a stick if no other stick is covering it<br>
+                🚀 Ruan swaps the sticks and places them from right to left.<br>
+                🚀 Click 1 stick then another to swap their places</div>
     <div id="round-badge">ROUND <span id="round-num">1</span>/3</div>
     <div id="score-panel">
-        <div>⭐ ERROR SCORE: <span id="error-score">10.0</span></div>
-        <div>⏱️ TIME SCORE: <span id="time-score">10</span></div>
-        <div>🖱️ CLICK SCORE: <span id="click-score">10</span></div>
-        <div style="margin-top:8px; border-top:1px solid #5f9ea0;">🏆 FINAL: <span id="final-score-display">—</span></div>
+        <div class="correct-rounds-line">🎯 CORRECT ROUNDS: <span id="correct-rounds">0</span></div>
+        <div class="error-score-line">⭐ ERROR SCORE: <span id="error-score">0.0</span></div>
+        <div>⏱️ TIMER: <span id="time-score">0.0</span> sec</div>
+        <div>🖱️ CLICKS: <span id="click-score">0</span></div>
+        <div>🔄 SWITCHES: <span id="switch-count">0</span></div>
     </div>
     <div id="instruction">🖱️ Click a stick on the right → click another to swap · Match left stack</div>
     <div id="controls">
         <span id="message">✨ Sort the right sticks</span>
-        <button id="checkBtn">✅ CHECK</button>
-        <button id="nextRoundBtn" disabled>▶ NEXT ROUND</button>
+        <button id="nextRoundBtn">▶ NEXT ROUND</button>
+        <button id="giveUpBtn">🏳️ GIVE UP</button>
     </div>
     <div id="final-score-message"></div>
 
@@ -188,7 +185,7 @@
             // SCENE SETUP
             // =====================
             const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x050510); // deep space
+            scene.background = new THREE.Color(0x050510);
 
             const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(2.5, 15.5, 15);
@@ -201,24 +198,18 @@
             document.body.appendChild(renderer.domElement);
 
             // --- SPACE BACKGROUND EFFECTS ---
-
-            // 1. Starfield particle system
             const starsGeometry = new THREE.BufferGeometry();
             const starsCount = 3000;
             const starPositions = new Float32Array(starsCount * 3);
             const starColors = new Float32Array(starsCount * 3);
 
             for (let i = 0; i < starsCount * 3; i += 3) {
-                // Spread stars in a large sphere
                 const r = 80 + Math.random() * 120;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos((Math.random() * 2) - 1);
-
                 starPositions[i] = Math.sin(phi) * Math.cos(theta) * r;
                 starPositions[i + 1] = Math.sin(phi) * Math.sin(theta) * r;
                 starPositions[i + 2] = Math.cos(phi) * r;
-
-                // Colors: white, light blue, occasional yellow
                 const colorChoice = Math.random();
                 if (colorChoice < 0.6) {
                     starColors[i] = 1; starColors[i + 1] = 1; starColors[i + 2] = 1;
@@ -228,59 +219,36 @@
                     starColors[i] = 1; starColors[i + 1] = 0.9; starColors[i + 2] = 0.7;
                 }
             }
-
             starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
             starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-
-            const starsMaterial = new THREE.PointsMaterial({
-                size: 0.25,
-                vertexColors: true,
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            });
+            const starsMaterial = new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending });
             const stars = new THREE.Points(starsGeometry, starsMaterial);
             scene.add(stars);
 
-            // 2. Nebula glow (a few semi-transparent spheres)
-            const nebulaMat = new THREE.MeshPhongMaterial({
-                color: 0x335588,
-                emissive: new THREE.Color(0x224466),
-                transparent: true,
-                opacity: 0.08,
-                side: THREE.BackSide
-            });
+            const nebulaMat = new THREE.MeshPhongMaterial({ color: 0x335588, emissive: new THREE.Color(0x224466), transparent: true, opacity: 0.08, side: THREE.BackSide });
             const nebula1 = new THREE.Mesh(new THREE.SphereGeometry(45, 32, 16), nebulaMat);
             nebula1.position.set(-10, 5, -30);
             scene.add(nebula1);
-
             const nebula2 = new THREE.Mesh(new THREE.SphereGeometry(60, 32, 16),
                 new THREE.MeshPhongMaterial({ color: 0x774466, emissive: new THREE.Color(0x553344), transparent: true, opacity: 0.06, side: THREE.BackSide }));
             nebula2.position.set(20, -10, -50);
             scene.add(nebula2);
 
-            // 3. Animated rocketships (decorative)
             const rockets = [];
-
             function createRocket(color = 0xff5533) {
                 const group = new THREE.Group();
-
-                // Body
                 const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 2.0, 8);
                 const bodyMat = new THREE.MeshStandardMaterial({ color: color, emissive: new THREE.Color(0x331100), emissiveIntensity: 0.3 });
                 const body = new THREE.Mesh(bodyGeo, bodyMat);
                 body.rotation.x = Math.PI / 2;
                 body.position.y = 0;
                 group.add(body);
-
-                // Nose cone
                 const noseGeo = new THREE.ConeGeometry(0.45, 0.8, 8);
                 const noseMat = new THREE.MeshStandardMaterial({ color: 0xccccdd, emissive: new THREE.Color(0x224466), emissiveIntensity: 0.2 });
                 const nose = new THREE.Mesh(noseGeo, noseMat);
                 nose.position.y = 1.2;
                 nose.rotation.x = Math.PI / 2;
                 group.add(nose);
-
-                // Fins
                 const finGeo = new THREE.BoxGeometry(0.1, 0.6, 0.8);
                 const finMat = new THREE.MeshStandardMaterial({ color: 0xaa5533 });
                 const fin1 = new THREE.Mesh(finGeo, finMat);
@@ -300,54 +268,44 @@
                 fin4.position.set(0, 0, -0.35);
                 fin4.rotation.x = -0.2;
                 group.add(fin4);
-
-                // Flame
                 const flameGeo = new THREE.ConeGeometry(0.25, 0.7, 6);
                 const flameMat = new THREE.MeshStandardMaterial({ color: 0xff8800, emissive: new THREE.Color(0xff4400), emissiveIntensity: 1.0 });
                 const flame = new THREE.Mesh(flameGeo, flameMat);
                 flame.position.y = -1.2;
                 flame.rotation.x = Math.PI / 2;
                 group.add(flame);
-
                 return group;
             }
 
-            // Create a few rockets with different colors and trajectories
             const rocket1 = createRocket(0xff5533);
             rocket1.position.set(-8, 6, -15);
             rocket1.scale.set(0.8, 0.8, 0.8);
             scene.add(rocket1);
             rockets.push({ mesh: rocket1, speed: 0.005, radius: 12, angle: 0, heightAmp: 2, centerY: 5 });
-
             const rocket2 = createRocket(0x33aaff);
             rocket2.position.set(10, 4, -20);
             rocket2.scale.set(0.7, 0.7, 0.7);
             scene.add(rocket2);
             rockets.push({ mesh: rocket2, speed: 0.008, radius: 15, angle: 2.5, heightAmp: 1.5, centerY: 4 });
-
             const rocket3 = createRocket(0x88dd88);
             rocket3.position.set(-5, 7, -25);
             rocket3.scale.set(0.6, 0.6, 0.6);
             scene.add(rocket3);
             rockets.push({ mesh: rocket3, speed: 0.006, radius: 18, angle: 4.0, heightAmp: 2.5, centerY: 6 });
-
-            // Small distant satellites (just cubes)
             const satGeo = new THREE.BoxGeometry(0.3, 0.1, 0.5);
             const satMat = new THREE.MeshStandardMaterial({ color: 0xaaccff, emissive: new THREE.Color(0x224466) });
             const sat1 = new THREE.Mesh(satGeo, satMat);
             sat1.position.set(15, 8, -30);
             scene.add(sat1);
             rockets.push({ mesh: sat1, speed: 0.003, radius: 25, angle: 1.2, heightAmp: 1, centerY: 8 });
-
             const sat2 = sat1.clone();
             sat2.position.set(-18, 6, -35);
             scene.add(sat2);
             rockets.push({ mesh: sat2, speed: 0.004, radius: 22, angle: 3.8, heightAmp: 1.2, centerY: 7 });
 
-            // --- LIGHTING (enhanced for space) ---
+            // --- LIGHTING ---
             const ambient = new THREE.AmbientLight(0x404c66, 0.6);
             scene.add(ambient);
-
             const mainLight = new THREE.DirectionalLight(0xfff5e6, 1.3);
             mainLight.position.set(5, 14, 8);
             mainLight.castShadow = true;
@@ -363,29 +321,23 @@
             mainLight.shadow.camera.far = 30;
             mainLight.shadow.bias = -0.0008;
             scene.add(mainLight);
-
             const fillLight1 = new THREE.PointLight(0x5c8ab3, 0.9);
             fillLight1.position.set(-4, 5, 6);
             scene.add(fillLight1);
-
             const fillLight2 = new THREE.PointLight(0xb39d7c, 0.5);
             fillLight2.position.set(3, 3, -5);
             scene.add(fillLight2);
-
             const backRim = new THREE.PointLight(0x6a9ec0, 0.6);
             backRim.position.set(-2, 5, -10);
             scene.add(backRim);
-
-            // Add a subtle blueish fill from below for space ambiance
             const spaceFill = new THREE.PointLight(0x335577, 0.4);
             spaceFill.position.set(0, -2, 5);
             scene.add(spaceFill);
 
-            // --- GROUND & DECOR (keep original but adjusted for space) ---
+            // --- GROUND & DECOR ---
             const gridHelper = new THREE.GridHelper(20, 24, 0x88aacc, 0x224466);
             gridHelper.position.y = 0.02;
             scene.add(gridHelper);
-
             const planeMat = new THREE.MeshStandardMaterial({ color: 0x142433, roughness: 0.9, metalness: 0.2, transparent: true, opacity: 0.3 });
             const plane = new THREE.Mesh(new THREE.PlaneGeometry(18, 10), planeMat);
             plane.rotation.x = -Math.PI / 2;
@@ -394,19 +346,11 @@
             scene.add(plane);
 
             // =====================
-            // VIBRANT COLOR PALETTE (unchanged)
+            // VIBRANT COLOR PALETTE
             // =====================
             const colorPalette = [
-                0xff6b6b, // coral red
-                0xffb347, // orange
-                0x9b59b6, // purple
-                0xe84393, // hot pink / magenta
-                0xf4d03f, // yellow
-                0xe67e22, // deep orange
-                0x2ecc71, // emerald green
-                0x1abc9c, // turquoise (teal)
-                0x3498db, // bright blue (distinct)
-                0xe74c3c  // vibrant red
+                0xff6b6b, 0xffb347, 0x9b59b6, 0xe84393, 0xf4d03f,
+                0xe67e22, 0x2ecc71, 0x1abc9c, 0x3498db, 0xe74c3c
             ];
 
             function createMaterialFromColor(colorHex) {
@@ -422,115 +366,91 @@
             }
 
             // =====================
-            // GAME STATE (unchanged)
+            // GAME STATE
             // =====================
             const rounds = [3, 5, 6];
             let roundIndex = 0;
             let currentCount = 0;
-
             let leftSticks = [];
             let leftData = [];
-
             let rightSticks = [];
             let rightDataOrder = [];
             let slotPositions = [];
-
             let selectedStick = null;
             let isGameActive = true;
-            let roundCompleted = false;
+            let giveUpFlag = 0;
 
-            // ----- SCORING (unchanged) -----
-            let errorScore = 10.0;
-            let timeScore = 10;
-            let clickScore = 10;
+            // Scoring variables (all hidden except timer/clicks/switches)
+            let errorScore = 0.0;
             let totalClicks = 0;
+            let switchCount = 0;
+            let correctRounds = 0;               // hidden, tracked internally
             const startTime = Date.now();
             let gameFinished = false;
 
             // UI elements
             const messageEl = document.getElementById('message');
-            const checkBtn = document.getElementById('checkBtn');
             const nextBtn = document.getElementById('nextRoundBtn');
+            const giveUpBtn = document.getElementById('giveUpBtn');
             const roundSpan = document.getElementById('round-num');
+            const correctRoundsEl = document.getElementById('correct-rounds');
             const errorScoreEl = document.getElementById('error-score');
             const timeScoreEl = document.getElementById('time-score');
             const clickScoreEl = document.getElementById('click-score');
-            const finalScoreDisplay = document.getElementById('final-score-display');
-            const finalScoreMessage = document.getElementById('final-score-message');
+            const switchCountEl = document.getElementById('switch-count');
 
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-            // Update score displays
-            function updateScoreUI() {
-                errorScoreEl.textContent = errorScore.toFixed(1);
-                timeScoreEl.textContent = timeScore;
-                clickScoreEl.textContent = clickScore;
-                if (gameFinished) {
-                    const final = (errorScore * 0.6) + (timeScore * 0.3) + (clickScore * 0.1);
-                    finalScoreDisplay.textContent = final.toFixed(2);
-                } else {
-                    finalScoreDisplay.textContent = '—';
-                }
-            }
-
-            function computeClickPenalty() {
-                if (totalClicks <= 20) return 0;
-                return 1 + Math.floor((totalClicks - 21) / 5);
-            }
-
-            function updateClickScore() {
-                const penalty = computeClickPenalty();
-                clickScore = Math.max(0, 10 - penalty);
-                updateScoreUI();
-            }
-
-            function computeTimePenalty(elapsedSec) {
-                if (elapsedSec <= 60) return 0;
-                return 1 + Math.floor((elapsedSec - 60) / 20);
-            }
-
-            function updateTimeScore() {
+            // UI updates (only visible ones)
+            function updateTimerDisplay() {
                 const elapsed = (Date.now() - startTime) / 1000;
-                const penalty = computeTimePenalty(elapsed);
-                timeScore = Math.max(0, 10 - penalty);
-                updateScoreUI();
+                timeScoreEl.textContent = elapsed.toFixed(1);
+            }
+            function updateClickDisplay() {
+                clickScoreEl.textContent = totalClicks;
+            }
+            function updateSwitchDisplay() {
+                switchCountEl.textContent = switchCount;
+            }
+            // Hidden updates (kept for data logging)
+            function updateHiddenCorrectRounds() {
+                if (correctRoundsEl) correctRoundsEl.textContent = correctRounds;
+            }
+            function updateHiddenErrorScore() {
+                if (errorScoreEl) errorScoreEl.textContent = errorScore.toFixed(1);
             }
 
             function applySwapErrorPenalty(idxA, idxB) {
-                const stickA = rightSticks[idxA];
-                const stickB = rightSticks[idxB];
-
-                const colorA = stickA.userData.color;
-                const colorB = stickB.userData.color;
-
-                const targetColorA = leftData[idxA].color;
-                const targetColorB = leftData[idxB].color;
-
-                const aIsCorrect = (colorA === targetColorA);
-                const bIsCorrect = (colorB === targetColorB);
-
-                if (!aIsCorrect && !bIsCorrect) {
-                    errorScore = Math.max(0, errorScore - 0.5);
-                    updateScoreUI();
+                const colorA = rightSticks[idxA].userData.color;
+                const colorB = rightSticks[idxB].userData.color;
+                const targetA = leftData[idxA].color;
+                const targetB = leftData[idxB].color;
+                if (colorA !== targetA && colorB !== targetB) {
+                    errorScore += 0.5;
+                    updateHiddenErrorScore();
                 }
             }
 
-            function checkGameCompletion() {
-                if (roundIndex === rounds.length && roundCompleted) {
-                    gameFinished = true;
-                    const final = (errorScore * 0.6) + (timeScore * 0.3) + (clickScore * 0.1);
-                    finalScoreDisplay.textContent = final.toFixed(2);
-                    finalScoreMessage.style.display = 'block';
-                    finalScoreMessage.innerHTML = `🏆 FINAL SCORE: ${final.toFixed(2)}<br><span style="font-size:0.9rem; color:#ccc;">Error: ${errorScore.toFixed(1)} | Time: ${timeScore} | Clicks: ${clickScore}</span>`;
-                    messageEl.textContent = "🎉 All rounds complete! Great job!";
-
-                    window.__kb?.finish?.({ finalScore: Number(final.toFixed(2)), errorScore, timeScore, clickScore });
-                }
+            function finishGame() {
+                if (gameFinished) return;
+                gameFinished = true;
+                const elapsed = (Date.now() - startTime) / 1000;
+                window.__kb?.finish?.({
+                    errorScore,
+                    timeElapsed: elapsed,
+                    totalClicks,
+                    switchCount,
+                    correctRounds,
+                    giveUp: giveUpFlag
+                });
+                nextBtn.disabled = true;
+                giveUpBtn.disabled = true;
+                messageEl.textContent = "🏁 Session complete.";
             }
 
             // =====================
-            // CLEAR & CREATE ROUND (unchanged game logic)
+            // CLEAR & CREATE ROUND
             // =====================
             function clearSticks() {
                 leftSticks.forEach(s => scene.remove(s));
@@ -546,9 +466,8 @@
             function createRound(count) {
                 clearSticks();
                 currentCount = count;
-                roundCompleted = false;
                 isGameActive = true;
-                nextBtn.disabled = true;
+                giveUpFlag = 0;
                 messageEl.textContent = `🎨 Sort the ${count} sticks by color (bottom → top)`;
                 updateRoundDisplay();
 
@@ -564,23 +483,18 @@
 
                 const leftBaseX = -4.8;
                 const leftBaseZ = 0.8;
-
                 for (let i = 0; i < count; i++) {
                     const geom = new THREE.CylinderGeometry(0.28, 0.28, 4.4, 14);
                     const material = createMaterialFromColor(leftData[i].color);
                     const stick = new THREE.Mesh(geom, material);
-
                     stick.rotation.z = Math.PI / 2;
                     stick.rotation.y = Math.random() * Math.PI * 2;
-
                     stick.position.y = 1.1 + i * 1.0;
                     stick.position.x = leftBaseX + (Math.random() * 0.2 - 0.1);
                     stick.position.z = leftBaseZ + (Math.random() * 0.3 - 0.15);
-
                     stick.castShadow = true;
                     stick.receiveShadow = true;
                     stick.userData = { ...leftData[i], index: i };
-
                     scene.add(stick);
                     leftSticks.push(stick);
                 }
@@ -595,21 +509,17 @@
                 const startX = 1.5;
                 const endX = 7.5;
                 const step = (count > 1) ? (endX - startX) / (count - 1) : 0;
-
                 for (let i = 0; i < count; i++) {
                     const xPos = startX + i * step;
                     slotPositions.push(xPos);
-
                     const geom = new THREE.CylinderGeometry(0.3, 0.3, 5.0, 16);
                     const data = rightDataOrder[i];
                     const material = createMaterialFromColor(data.color);
                     const stick = new THREE.Mesh(geom, material);
-
                     stick.position.set(xPos, 2.7, -0.3);
                     stick.castShadow = true;
                     stick.receiveShadow = true;
                     stick.userData = { ...data, slotIndex: i, isRight: true };
-
                     scene.add(stick);
                     rightSticks.push(stick);
 
@@ -623,50 +533,31 @@
                 }
             }
 
-            function checkOrder() {
-                if (!isGameActive || roundCompleted) return false;
-                let correct = true;
+            // Silent verification – no UI feedback, returns boolean
+            function isOrderCorrect() {
                 for (let i = 0; i < currentCount; i++) {
                     if (rightSticks[i].userData.color !== leftData[i].color) {
-                        correct = false;
-                        break;
+                        return false;
                     }
                 }
-                if (correct) {
-                    roundCompleted = true;
-                    isGameActive = false;
-                    messageEl.textContent = "✅ PERFECT! Ready for next round!";
-                    nextBtn.disabled = false;
-                    rightSticks.forEach(s => {
-                        s.material.emissive.setHex(0xaaccff);
-                        s.material.emissiveIntensity = 0.45;
-                    });
-                    if (roundIndex === rounds.length - 1) {
-                        messageEl.textContent = "🎉 CONGRATULATIONS! All rounds complete!";
-                        checkGameCompletion();
-                    }
-                } else {
-                    messageEl.textContent = "❌ Not yet... Keep swapping!";
-                }
-                return correct;
+                return true;
             }
 
             function swapRightSticks(idxA, idxB) {
-                if (idxA === idxB) return;
+                if (idxA === idxB || !isGameActive || giveUpFlag) return;
                 const stickA = rightSticks[idxA];
                 const stickB = rightSticks[idxB];
-
                 const tempData = { ...stickA.userData };
                 stickA.userData = { ...stickB.userData, slotIndex: idxA };
                 stickB.userData = { ...tempData, slotIndex: idxB };
-
                 stickA.material = createMaterialFromColor(stickA.userData.color);
                 stickB.material = createMaterialFromColor(stickB.userData.color);
-
                 [rightDataOrder[idxA], rightDataOrder[idxB]] = [rightDataOrder[idxB], rightDataOrder[idxA]];
 
+                switchCount++;
+                updateSwitchDisplay();
                 applySwapErrorPenalty(idxA, idxB);
-                checkOrder();
+                // No automatic correctness check – student decides when to move on
             }
 
             function clearHighlight() {
@@ -685,24 +576,21 @@
             }
 
             function onMouseClick(event) {
-                if (!isGameActive || roundCompleted) return;
-
+                if (!isGameActive || giveUpFlag) return;
                 mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                 mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
-
                 const intersects = raycaster.intersectObjects(rightSticks);
                 if (intersects.length === 0) {
                     clearHighlight();
                     return;
                 }
-
                 const hitStick = intersects[0].object;
                 const hitIndex = rightSticks.indexOf(hitStick);
                 if (hitIndex === -1) return;
 
                 totalClicks++;
-                updateClickScore();
+                updateClickDisplay();
 
                 if (selectedStick === null) {
                     setHighlight(hitStick);
@@ -720,19 +608,21 @@
             }
 
             function advanceRound() {
-                if (!roundCompleted && roundIndex > 0) {
-                    messageEl.textContent = "⚠️ Complete current round first!";
-                    return;
+                if (gameFinished) return;
+                // Silently check if current round was correct, increment hidden counter
+                if (isOrderCorrect()) {
+                    correctRounds++;
+                    updateHiddenCorrectRounds();
                 }
+                // Proceed to next round (or finish)
                 if (roundIndex < rounds.length) {
                     createRound(rounds[roundIndex]);
                     roundIndex++;
                     updateRoundDisplay();
-                    nextBtn.disabled = true;
                     clearHighlight();
                 } else {
-                    messageEl.textContent = "🏆 You've mastered all rounds!";
-                    checkGameCompletion();
+                    messageEl.textContent = "🏆 All rounds attempted.";
+                    finishGame();
                 }
             }
 
@@ -740,20 +630,22 @@
                 roundSpan.textContent = `${roundIndex + 1}/${rounds.length}`;
             }
 
-            function startGame() {
-                roundIndex = 0;
-                createRound(rounds[0]);
-                roundIndex = 1;
-                updateRoundDisplay();
-                updateScoreUI();
+            function giveUp() {
+                if (!isGameActive || giveUpFlag || gameFinished) return;
+                giveUpFlag = 1;
+                isGameActive = false;
+                messageEl.textContent = "🏳️ You gave up. Game over.";
+                clearHighlight();
+                nextBtn.disabled = true;
+                finishGame();
             }
 
-            // Periodic time score update
+            // Timer updates every 100ms
             setInterval(() => {
                 if (!gameFinished) {
-                    updateTimeScore();
+                    updateTimerDisplay();
                 }
-            }, 1000);
+            }, 100);
 
             // Event listeners
             window.addEventListener('resize', () => {
@@ -763,44 +655,47 @@
             });
 
             renderer.domElement.addEventListener('click', onMouseClick);
-
-            checkBtn.addEventListener('click', () => {
-                if (!isGameActive || roundCompleted) return;
-                checkOrder();
-            });
-
             nextBtn.addEventListener('click', advanceRound);
+            giveUpBtn.addEventListener('click', giveUp);
 
             window.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && !nextBtn.disabled) {
+                if (e.code === 'Space' && !nextBtn.disabled && !gameFinished) {
                     e.preventDefault();
                     advanceRound();
                 }
             });
 
             // =====================
-            // ANIMATION LOOP (with rocket movement)
+            // ANIMATION LOOP
             // =====================
             function animate() {
                 requestAnimationFrame(animate);
-
-                // Animate rockets (circular motion)
                 rockets.forEach(item => {
                     item.angle += item.speed;
                     const x = Math.cos(item.angle) * item.radius;
-                    const z = Math.sin(item.angle) * item.radius * 0.5 - 20; // keep behind scene
+                    const z = Math.sin(item.angle) * item.radius * 0.5 - 20;
                     const y = item.centerY + Math.sin(item.angle * 1.5) * item.heightAmp;
                     item.mesh.position.set(x, y, z);
-                    // Rotate rocket to face direction
                     item.mesh.rotation.y = item.angle + Math.PI / 2;
                     item.mesh.rotation.z = Math.sin(item.angle) * 0.1;
                 });
-
-                // Slowly rotate stars for subtle motion
                 stars.rotation.y += 0.0001;
-
                 camera.lookAt(1.5, 2.8, 0);
                 renderer.render(scene, camera);
+            }
+
+            function startGame() {
+                roundIndex = 0;
+                createRound(rounds[0]);
+                roundIndex = 1;
+                updateRoundDisplay();
+                nextBtn.disabled = false;
+                giveUpBtn.disabled = false;
+                updateTimerDisplay();
+                updateClickDisplay();
+                updateSwitchDisplay();
+                updateHiddenCorrectRounds();
+                updateHiddenErrorScore();
             }
 
             startGame();
@@ -810,8 +705,10 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
+        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('pick-up-sticks-3');
         window.__kb = kb;
+        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

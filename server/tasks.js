@@ -8,7 +8,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.7, time: 0.3, click: 0, drag: 0 }
     }
   },
   {
@@ -20,7 +21,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.7, time: 0.3, click: 0, drag: 0 }
     }
   },
   {
@@ -32,19 +34,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
-    }
-  },
-  {
-    id: 'sorting-branches-3',
-    title: 'Sorting Branches',
-    category: 'A',
-    type: 'generic',
-    url: '/tasks/ALevelGames/SortingBranches3.html',
-    maxScore: 100,
-    scoring: {
-      timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {
@@ -56,7 +47,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.2, click: 0.1, drag: 0.1 }
     }
   },
   {
@@ -67,23 +59,10 @@ export const TASKS = [
     url: '/tasks/BLevelGames/cubegame1.html',
     maxScore: 100,
     scoring: {
-      // decays are used if we don't get a summary payload
       timeDecayPerSecond: 0.05,
       dragDecayPerSecond: 0.1,
       clickDecayPerClick: 0.2,
-      weights: { error: 0.5, drag: 0.2, time: 0.2, click: 0.1 }
-    }
-  },
-  {
-    id: 'robot-rug',
-    title: 'Robot Rug',
-    category: 'B',
-    type: 'generic',
-    url: '/tasks/BLevelGames/Robot%20Rug.html',
-    maxScore: 100,
-    scoring: {
-      timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      weights: { error: 0.4, time: 0.2, click: 0.2, drag: 0.2 }
     }
   },
   {
@@ -95,7 +74,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {
@@ -107,7 +87,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {
@@ -119,7 +100,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 1, time: 0, click: 0, drag: 0 }
     }
   },
   {
@@ -131,7 +113,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.2, click: 0.1, drag: 0.1 }
     }
   },
   {
@@ -143,7 +126,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {
@@ -155,7 +139,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {
@@ -167,8 +152,8 @@ export const TASKS = [
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
-      clickDecayPerClick: 0.2
+      clickDecayPerClick: 0.2,
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   }
 ];
-
