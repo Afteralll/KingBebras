@@ -328,7 +328,7 @@
         
         <div class="sub">
             <h3>🧴 Beaver Bea has painted a picture using five different paint colours. She started with five full bottles of paint. When Bea finished, the bottles contained this much paint.</h3>
-            <img src="D:\Study\Bachelor Thesis\Coloring Page\cans.png" alt="Paint bottles" class="bottle-img">
+            <img src="cans.PNG" alt="Paint bottles" class="bottle-img">
         </div>
         <h3><strong>Task:</strong><br>Bea used more paint for the large areas of colour in the picture than for small areas. Using the colors below, color the image like Bea did.</h3>
 
@@ -740,14 +740,29 @@
                 }
             }
 
+            function sendFinishToHost() {
+                const elapsedSec = startTime ? (Date.now() - startTime) / 1000 : 0;
+                const payload = {
+                    errorScore: errorScore,
+                    timeScore: parseFloat(elapsedSec.toFixed(1)),
+                    clickScore: clickCount,
+                    correctnessCounter: correctnessFlag,
+                    giveUpFlag: giveUpFlag,
+                    resetCounter: resetCount
+                };
+                const tryFinish = (attempt = 0) => {
+                    if (window.__kb && typeof window.__kb.finish === 'function') {
+                        window.__kb.finish(payload);
+                    } else if (attempt < 20) {
+                        setTimeout(() => tryFinish(attempt + 1), 100);
+                    }
+                };
+                tryFinish();
+            }
+
             function finishGame() {
-                if (!gameActive || gameFinished) {
-                    document.getElementById('messageDisplay').textContent = '✨ Already finished. Use RESET COLORS to start again.';
-                    return;
-                }
-                const allPainted = regions.every(r => r.playerColor !== null);
-                if (!allPainted) {
-                    document.getElementById('messageDisplay').textContent = '❓ Paint every part first!';
+                if (gameFinished) {
+                    sendFinishToHost();
                     return;
                 }
 
@@ -771,11 +786,17 @@
                     feedback = `📊 Finished with ${wrongCount} error(s). Check the used cans for hints.`;
                 }
                 document.getElementById('messageDisplay').textContent = feedback;
+
+                document.getElementById('finishBtn').disabled = true;
+                document.getElementById('giveUpBtn').disabled = true;
+                document.getElementById('resetBtn').disabled = true;
+
+                sendFinishToHost();
             }
 
             function giveUp() {
-                if (!gameActive || gameFinished) {
-                    document.getElementById('messageDisplay').textContent = '🏁 Already ended.';
+                if (gameFinished) {
+                    sendFinishToHost();
                     return;
                 }
                 giveUpFlag = 1;
@@ -786,7 +807,13 @@
                 gameFinished = true;
                 stopTimer();
                 updateAllMetrics();
-                document.getElementById('messageDisplay').textContent = '🏳️ You gave up. Press RESET COLORS to try again.';
+                document.getElementById('messageDisplay').textContent = '🏳️ You gave up.';
+
+                document.getElementById('finishBtn').disabled = true;
+                document.getElementById('giveUpBtn').disabled = true;
+                document.getElementById('resetBtn').disabled = true;
+
+                sendFinishToHost();
             }
 
             function resetColors() {

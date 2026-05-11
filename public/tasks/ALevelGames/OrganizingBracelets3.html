@@ -273,8 +273,8 @@
 
         // ================= GAME STATE =================
         let round = 0;
-        let totalErrors = 0;
-        let correctCount = 0;          // tracked internally, never shown to student
+        let totalErrors = 0;          // now calculated according to new rules
+        let correctCount = 0;
         let clickScore = 0;
         let startTime = Date.now();
         let gameActive = true;
@@ -289,7 +289,6 @@
             const elapsed = (Date.now() - startTime) / 1000;
             timeSpan.textContent = elapsed.toFixed(1);
             clickScoreSpan.textContent = clickScore;
-            // correctCount is not displayed
             roundSpan.textContent = `${round + 1}/${rounds.length}`;
         }
         setInterval(updateUI, 100);
@@ -507,6 +506,15 @@
         // ================= MATCH HELPERS =================
         function equal(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
 
+        // Count the number of positions where two patterns differ
+        function countDifferences(patternA, patternB) {
+            let diff = 0;
+            for (let i = 0; i < patternA.length; i++) {
+                if (patternA[i] !== patternB[i]) diff++;
+            }
+            return diff;
+        }
+
         // ================= DRAG SYSTEM =================
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -570,7 +578,7 @@
             }
         });
 
-        // ================= DROP LOGIC (no correctness feedback) =================
+        // ================= DROP LOGIC WITH NEW ERROR SCORES =================
         function handleDrop() {
             if (!gameActive) return;
 
@@ -593,24 +601,36 @@
             const hasMatch = trays.some(t => equal(t.pattern, currentPattern));
 
             if (matchedTray) {
-                // Tray drop: silently evaluate correctness
+                // Dropped on a specific tray
                 if (equal(currentPattern, matchedTray.pattern)) {
                     correctCount++;
                 } else {
-                    totalErrors++;
+                    // Wrong tray
+                    if (!hasMatch) {
+                        // No correct tray exists, so any tray is +1 error
+                        totalErrors += 1;
+                    } else {
+                        // A correct tray exists, penalty based on number of differing colors
+                        const diff = countDifferences(currentPattern, matchedTray.pattern);
+                        if (diff >= 2) {
+                            totalErrors += 2;
+                        } else { // diff == 1 (0 not possible because not equal)
+                            totalErrors += 1;
+                        }
+                    }
                 }
-                nextRound();   // always advance, no message
+                nextRound();
                 return;
             }
 
             if (noMatchHit.length) {
-                // No‑match zone drop
+                // Dropped on "NO MATCH" zone
                 if (hasMatch) {
-                    totalErrors++;
+                    totalErrors += 2;  // should have placed on a tray
                 } else {
-                    correctCount++;
+                    correctCount++;    // correctly identified no match
                 }
-                nextRound();   // always advance, no message
+                nextRound();
                 return;
             }
 
@@ -644,16 +664,15 @@
             gameActive = false;
             const time = (Date.now() - startTime) / 1000;
 
-            // Final message shows only time and clicks (no correct count)
             messageDiv.innerHTML = `🎯 Game Complete! &nbsp; | &nbsp; Time: ${time.toFixed(1)}s &nbsp; | &nbsp; Clicks: ${clickScore}`;
             messageDiv.style.background = '#2a2a4a';
 
             window.__kb?.finish?.({
-                totalErrors,
-                time,
-                totalClicks: clickScore,
-                correctCount,      // still sent to backend
-                giveUp: giveUp ? 1 : 0
+                errorScore: totalErrors,
+                timeScore: parseFloat(time.toFixed(1)),
+                clickScore: clickScore,
+                correctnessCounter: correctCount,
+                giveUpFlag: giveUp ? 1 : 0
             });
         }
 
@@ -720,10 +739,8 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
-        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('organizing-bracelets-3');
         window.__kb = kb;
-        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

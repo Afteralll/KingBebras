@@ -234,7 +234,7 @@
 
         <div class="buttons">
             <button class="btn" id="finishBtn">🔥 FINISH</button>
-            <button class="btn reset-btn" id="resetBtn">🔄 NEW SKEWERS</button>
+            <button class="btn reset-btn" id="resetBtn">🔄 reset</button>
             <button class="btn give-up-btn" id="giveUpBtn">😔 GIVE UP</button>
         </div>
         <div class="hint-text" style="text-align:center; margin-top: 12px; font-size:1rem;">
@@ -477,6 +477,28 @@
                        (assignments[3] === 0 ? 1 : 0);
             }
 
+            // NEW: error score according to updated rules
+            function computeErrorScore() {
+                let err = 0;
+                // D (index 3) to skewer #2, #3, #4 (indices 1,2,3) -> 0.5 error
+                if (assignments[3] === 1 || assignments[3] === 2 || assignments[3] === 3) {
+                    err += 0.5;
+                }
+                // C (index 2) to skewer #1, #2, #3 (indices 0,1,2) -> 0.5 error
+                if (assignments[2] === 0 || assignments[2] === 1 || assignments[2] === 2) {
+                    err += 0.5;
+                }
+                // B (index 1) to skewer #3 or #4 (indices 2,3) -> 1 error
+                if (assignments[1] === 2 || assignments[1] === 3) {
+                    err += 1;
+                }
+                // A (index 0) to skewer #4 (index 3) -> 1 error
+                if (assignments[0] === 3) {
+                    err += 1;
+                }
+                return err;
+            }
+
             function finishGame() {
                 if (gameFinished) return;
                 if (!allAssigned()) {
@@ -495,12 +517,13 @@
                 resetBtn.disabled = true;
 
                 window.__kb?.finish?.({
-                    timeScore,
+                    errorScore: computeErrorScore(),          // updated error score
+                    timeScore: parseFloat(timeScore.toFixed(1)),
                     clickScore,
-                    connectionScore,
+                    connectionsAmount: connectionScore,
                     correctnessCounter,
-                    resetCount,
-                    giveUp: giveUp ? 1 : 0
+                    giveUpFlag: giveUp ? 1 : 0,
+                    resetCounter: resetCount
                 });
             }
 
@@ -519,12 +542,13 @@
                 resetBtn.disabled = true;
 
                 window.__kb?.finish?.({
-                    timeScore,
+                    errorScore: computeErrorScore(),          // updated error score
+                    timeScore: parseFloat(timeScore.toFixed(1)),
                     clickScore,
-                    connectionScore,
+                    connectionsAmount: connectionScore,
                     correctnessCounter,
-                    resetCount,
-                    giveUp: 1
+                    giveUpFlag: 1,
+                    resetCounter: resetCount
                 });
             }
 
@@ -853,4 +877,4 @@
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>
-</html> 
+</html>

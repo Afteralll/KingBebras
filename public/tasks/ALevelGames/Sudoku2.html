@@ -335,10 +335,12 @@
             }
         ];
 
+        // Internal tracking (never shown to the student)
         let currentRoundIdx = 0;
-        let correctCount = 0;          // silently increments on correct picks
-        let errorScore = 0;            // counts incorrect picks (monitoring)
-        let giveUpFlag = 0;            // turns to 1 when Give Up is pressed
+        let correctCount = 0;        // increments only on correct picks
+        let errorScore = 0;          // hidden error score, see scoring rules below
+        let giveUpFlag = 0;          // 1 if student presses Give Up
+
         let startTime = Date.now();
         let timerInterval = null;
         let waitingForNext = false;
@@ -359,6 +361,27 @@
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(updateTimerDisplay, 1000);
+        }
+
+        // Count how many Sudoku rules a shape would break at (row,col)
+        function countViolations(puzzle, row, col, shape) {
+            const size = puzzle.size;
+            const grid = puzzle.grid;
+            let rowViolation = false;
+            let colViolation = false;
+            for (let c = 0; c < size; c++) {
+                if (c !== col && grid[row][c] === shape) {
+                    rowViolation = true;
+                    break;
+                }
+            }
+            for (let r = 0; r < size; r++) {
+                if (r !== row && grid[r][col] === shape) {
+                    colViolation = true;
+                    break;
+                }
+            }
+            return (rowViolation ? 1 : 0) + (colViolation ? 1 : 0);
         }
 
         function renderGrid(puzzle) {
@@ -395,35 +418,35 @@
                 btn.className = 'shape-btn';
                 btn.innerText = shape;
                 btn.addEventListener('click', () => {
-                    if (!roundActive || waitingForNext) return; // ignore during transitions
+                    if (!roundActive || waitingForNext) return;
 
                     const missingRow = puzzle.missingRow;
                     const missingCol = puzzle.missingCol;
+                    const isCorrect = (shape === puzzle.answer);
 
-                    // Track correctness silently
-                    if (shape === puzzle.answer) {
+                    // Update silent correctness counter
+                    if (isCorrect) {
                         correctCount++;
                     } else {
-                        errorScore++;
+                        // ⚡ Internal error scoring (never shown to student)
+                        let violations = countViolations(puzzle, missingRow, missingCol, shape);
+                        // If the wrong shape breaks at least one rule, use that number;
+                        // otherwise it's still a mistake -> at least 1 error.
+                        errorScore += (violations > 0 ? violations : 1);
                     }
 
-                    // Lock interface immediately
+                    // Lock interface and advance automatically (no feedback)
                     roundActive = false;
                     waitingForNext = true;
-
-                    // Disable all palette buttons
                     document.querySelectorAll('.shape-btn').forEach(b => b.classList.add('disabled'));
 
-                    // Show the chosen shape in the grid (no feedback)
+                    // Show the chosen shape in the grid
                     const updatedPuzzle = { ...puzzle };
                     updatedPuzzle.grid = puzzle.grid.map(row => [...row]);
                     updatedPuzzle.grid[missingRow][missingCol] = shape;
                     renderGrid(updatedPuzzle);
-
-                    // Remove any message that might hint at correctness
                     messageBox.innerHTML = '';
 
-                    // Move to next round after a short delay
                     setTimeout(() => {
                         goToNextRound();
                     }, 800);
@@ -445,7 +468,6 @@
             roundNumSpan.innerText = (roundIdx + 1);
             messageBox.innerHTML = `🔮 Round ${roundIdx + 1} / 3 — Pick the missing shape!`;
 
-            // Re-enable Give Up button if it was disabled
             const giveUpBtn = document.getElementById('giveUpBtn');
             if (giveUpBtn) giveUpBtn.disabled = false;
         }
@@ -464,38 +486,33 @@
             roundActive = false;
             waitingForNext = true;
 
-            // Disable palette
             document.querySelectorAll('.shape-btn').forEach(btn => {
                 btn.classList.add('disabled');
             });
 
-            // Disable Give Up button permanently
             const giveUpBtn = document.getElementById('giveUpBtn');
             if (giveUpBtn) giveUpBtn.disabled = true;
 
             const totalTime = (Date.now() - startTime) / 1000;
 
-            // Set appropriate end message (no correctness revelation)
             if (isGiveUp) {
                 messageBox.innerHTML = `🏳️ You gave up. Puzzle adventure ends here.`;
             } else {
                 messageBox.innerHTML = `🎉 All boxes filled! ⏱️ Total time: ${totalTime.toFixed(0)}s`;
             }
 
-            // Send data to backend (including correctness counter and give-up flag)
+            // Send all internal metrics to the backend
             window.__kb?.finish?.({
-                totalTime: totalTime.toFixed(0),
                 errorScore: errorScore,
-                correctCount: correctCount,
-                giveUp: giveUpFlag,
-                roundsPlayed: currentRoundIdx,      // how many rounds were started (0‑based, so add 1 for count)
-                totalRounds: PUZZLES.length
+                timeScore: parseFloat(totalTime.toFixed(1)),
+                correctnessCounter: correctCount,
+                giveUpFlag: giveUpFlag
             });
         }
 
         // Give Up button handler
         document.getElementById('giveUpBtn').addEventListener('click', () => {
-            if (!roundActive || waitingForNext) return; // already ended or transitioning
+            if (!roundActive || waitingForNext) return;
             giveUpFlag = 1;
             endGame(true);
         });
@@ -576,10 +593,8 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
-        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('sudoku-2');
         window.__kb = kb;
-        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>

@@ -144,13 +144,11 @@
             margin-bottom: 1.5rem;
             font-family: monospace;
             font-weight: bold;
-            flex-wrap: wrap;
         }
 
         .stat-item {
             color: #b85c00;
             font-size: 1rem;
-            margin: 0.2rem 0;
         }
 
         .stat-value {
@@ -300,31 +298,35 @@
             color: #d45a0a;
             font-size: 1rem;
             margin: 0.5rem 0;
-        }
-
-        /* ----- Give Up Button Styling ----- */
-        .give-up-btn {
-            background: #ffb347;
-            border: 3px solid #ffaa66;
-            border-radius: 50px;
-            padding: 10px 30px;
-            font-size: 1.1rem;
             font-family: 'Comic Neue', cursive;
             font-weight: bold;
+        }
+
+        .give-up-btn {
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 0.3rem 1rem;
+            border: none;
+            background: #dddddd;
             color: #5a2e0e;
             cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            text-transform: uppercase;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+            box-shadow: 0 3px 0 #aaaaaa;
+            transition: 0.1s linear;
             letter-spacing: 1px;
-            transition: background 0.2s;
         }
+
         .give-up-btn:hover {
-            background: #ff9900;
+            background: #cccccc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 0 #aaaaaa;
         }
-        .give-up-btn:disabled {
-            opacity: 0.6;
-            cursor: default;
+
+        .give-up-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #aaaaaa;
         }
 
         footer {
@@ -354,8 +356,6 @@
 
         <div class="stats-row">
             <div class="stat-item">🎯 ROUND: <span id="roundDisplay" class="stat-value">1</span></div>
-            <div class="stat-item" id="errorStatItem">📊 CANDY SCORE: <span id="errorScoreDisplay" class="stat-value">10.0</span></div>
-            <div class="stat-item">✅ CORRECT: <span id="correctCountDisplay" class="stat-value">0</span></div>
             <div class="stat-item">⏱️ TIME: <span id="timeDisplay" class="stat-value">0s</span></div>
         </div>
 
@@ -372,7 +372,7 @@
         <div class="info-panel">
             <div id="result" class="result-text">⚡ Round 1 / 3 - Choose the right door</div>
             <div id="scoreInfo" class="score-text"></div>
-            <button id="giveUpButton" class="give-up-btn">🏳️ GIVE UP 🏳️</button>
+            <button id="giveUpBtn" class="give-up-btn">🏳️ Give Up</button>
         </div>
         <footer>🌈 floating candies | rainbow magic | trust your intuition 🍬</footer>
     </div>
@@ -389,25 +389,20 @@
         let choices = [];
         let currentRound = 1;
         const maxRounds = 3;
-        let errorScore = 0;
-        let totalErrors = 0;
-        let correctCount = 0;               // ✅ number of completely correct doors chosen
-        let giveUp = false;                 // 🏳️ flag that becomes true if student gives up
+        let totalErrors = 0;         // sum of attribute mismatches across all rounds
+        let correctCount = 0;        // number of rounds the student chose the fully valid door
+        let giveUpFlag = 0;          // 0 = finished, 1 = gave up
         let startTime = Date.now();
         let gameActive = true;
         let timerInterval = null;
-        let selectTimeout = null;           // to cancel pending round transition if give up
 
         const prevDoorDiv = document.getElementById("prevDoor");
         const choicesContainer = document.getElementById("choices");
         const resultDiv = document.getElementById("result");
         const scoreInfoSpan = document.getElementById("scoreInfo");
         const roundDisplaySpan = document.getElementById("roundDisplay");
-        const errorScoreSpan = document.getElementById("errorScoreDisplay");
         const timeDisplaySpan = document.getElementById("timeDisplay");
-        const correctCountDisplay = document.getElementById("correctCountDisplay");
-        const giveUpButton = document.getElementById("giveUpButton");
-        const errorStatItem = document.getElementById("errorStatItem");
+        const giveUpBtn = document.getElementById("giveUpBtn");
 
         function rand(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
@@ -524,10 +519,6 @@
             timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function updateCorrectDisplay() {
-            correctCountDisplay.innerText = correctCount;
-        }
-
         function renderGame() {
             prevDoorDiv.innerHTML = "";
             if (previousDoor) {
@@ -538,8 +529,6 @@
                 choicesContainer.appendChild(createDoorElement(door, i, true));
             });
             roundDisplaySpan.innerText = currentRound + " / " + maxRounds;
-            errorStatItem.style.display = 'none';
-            updateCorrectDisplay();
         }
 
         let isWaiting = false;
@@ -550,19 +539,18 @@
             const chosen = choices[selectedIdx];
             const errors = countErrors(previousDoor, chosen);
 
-            if (errors === 0) {
-                correctCount++;
-                updateCorrectDisplay();
-            } else {
-                errorScore += errors ;
+            // Track errors
+            if (errors > 0) {
                 totalErrors += errors;
+            } else {
+                // Perfect round – no attribute shared with previous door
+                correctCount++;
             }
 
             resultDiv.innerHTML = "🔹 Door selected. Loading next round...";
 
             gameActive = false;
-            // Store the timeout ID so we can cancel it on give up
-            selectTimeout = setTimeout(() => {
+            setTimeout(() => {
                 isWaiting = false;
                 if (currentRound === maxRounds) {
                     endGame();
@@ -574,13 +562,17 @@
                     gameActive = true;
                     resultDiv.innerHTML = `🔮 Round ${currentRound} / ${maxRounds} - Find the magic door!`;
                 }
-                selectTimeout = null;
             }, 800);
+        }
+
+        function giveUp() {
+            if (!gameActive) return;
+            giveUpFlag = 1;
+            endGame();
         }
 
         function endGame() {
             if (timerInterval) clearInterval(timerInterval);
-            if (selectTimeout) clearTimeout(selectTimeout);   // prevent duplicate end
             gameActive = false;
 
             const totalTime = (Date.now() - startTime) / 1000;
@@ -588,66 +580,47 @@
             choicesContainer.innerHTML = "";
             prevDoorDiv.innerHTML = "";
 
-            if (giveUp) {
-                resultDiv.innerHTML = "🏳️ GAME OVER – You gave up! 🌈";
+            if (giveUpFlag) {
+                resultDiv.innerHTML = "🏳️ You gave up!";
             } else {
                 resultDiv.innerHTML = "✨ GAME COMPLETE ✨";
             }
 
-            scoreInfoSpan.innerHTML = `✅ Correct doors: ${correctCount} | ❌ Errors: ${totalErrors} | 🍬 Candy score: ${errorScore.toFixed(1)}`;
-
-            errorStatItem.style.display = 'none';
+            // Show results: total errors, correct picks, time
+            scoreInfoSpan.innerHTML = `❌ Total errors: ${totalErrors} &nbsp;|&nbsp; ✅ Correct picks: ${correctCount}`;
             timeDisplaySpan.innerText = totalTime.toFixed(1) + "s";
-            roundDisplaySpan.innerText = maxRounds + " / " + maxRounds;
+            roundDisplaySpan.innerText = (giveUpFlag ? currentRound : maxRounds) + " / " + maxRounds;
 
-            // Disable the give-up button after game ends
-            giveUpButton.disabled = true;
+            // Disable give up button
+            giveUpBtn.disabled = true;
+            giveUpBtn.style.opacity = "0.5";
+            giveUpBtn.innerText = "🏁 Finished";
 
-            // Send final stats to the task SDK, including giveUp flag
-            window.__kb?.finish?.({
-                totalTime,
-                totalErrors,
-                errorScore,
-                correctCount,
-                giveUp: giveUp ? 1 : 0
-            });
+            // Report to teacher dashboard (no visible score)
+            window.__kb?.finish?.({ totalTime, totalErrors, correctCount, giveUpFlag });
         }
 
-        // ----- GIVE UP HANDLER -----
-        giveUpButton.addEventListener('click', () => {
-            if (!gameActive) return;
-            giveUp = true;
-            // Abort any pending transition
-            if (selectTimeout) {
-                clearTimeout(selectTimeout);
-                selectTimeout = null;
-            }
-            endGame();
-        });
+        // Give Up button handler
+        giveUpBtn.addEventListener('click', giveUp);
 
         function initGame() {
-            errorScore = 0;
             totalErrors = 0;
             correctCount = 0;
-            giveUp = false;
+            giveUpFlag = 0;
             currentRound = 1;
             startTime = Date.now();
             gameActive = true;
             isWaiting = false;
-            selectTimeout = null;
             previousDoor = generateDoor();
             choices = generateChoices(previousDoor);
-
-            // Re-enable give-up button and reset display
-            giveUpButton.disabled = false;
-            updateCorrectDisplay();
-
             renderGame();
             startTimer();
 
-            errorStatItem.style.display = 'none';
             scoreInfoSpan.innerHTML = "";
             resultDiv.innerHTML = "🔮 Round 1 / 3 - Choose the correct door";
+            giveUpBtn.disabled = false;
+            giveUpBtn.style.opacity = "1";
+            giveUpBtn.innerText = "🏳️ Give Up";
         }
 
         initGame();
@@ -725,10 +698,8 @@
 
     <script type="module">
         import { createKbTask } from '/task-sdk.js';
-        import { applyGameI18n } from '/game-i18n.js';
         const kb = createKbTask('magic-house-3');
         window.__kb = kb;
-        applyGameI18n({ taskId: kb.taskId }).catch(() => {});
         document.addEventListener('click', () => kb.click(), true);
     </script>
 </body>
