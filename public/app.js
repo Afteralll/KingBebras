@@ -562,21 +562,30 @@ async function startExam() {
 async function finishTask(gamePayload = null) {
   if (!state.activeTask || !state.attemptId) return;
   const taskId = state.activeTask.id;
-  const res = await api('/api/tasks/finish', {
-    method: 'POST',
-    body: JSON.stringify({
-      attemptId: state.attemptId,
-      taskId,
-      finalAnswer: null,
-      gamePayload: gamePayload ?? null
-    })
-  });
-  state.resultsByTaskId[taskId] = {
-    finished: true
-  };
+  const attemptId = state.attemptId;
+
+  // Close the iframe and update the UI immediately so a single Finish/Give-Up
+  // press is enough even when the server is slow (e.g. cold-starting free tier).
+  state.resultsByTaskId[taskId] = { finished: true };
   renderTasks();
   setAlert($('#taskMsg'), 'ok', uiT('game_finished'));
   closeTaskFrame();
+
+  // Persist scores in the background; network hiccups won't block the UX.
+  try {
+    await api('/api/tasks/finish', {
+      method: 'POST',
+      body: JSON.stringify({
+        attemptId,
+        taskId,
+        finalAnswer: null,
+        gamePayload: gamePayload ?? null
+      })
+    });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('finishTask save failed', err);
+  }
 }
 
 async function endChallenge(auto = false) {
