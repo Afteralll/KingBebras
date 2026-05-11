@@ -26,15 +26,23 @@
         }
 
         @keyframes rainbowShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .candy-bg {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
             z-index: 0;
         }
@@ -44,29 +52,82 @@
             font-size: 2.5rem;
             opacity: 0.35;
             animation: floatCandy 14s infinite ease-in-out;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
             user-select: none;
         }
 
         @keyframes floatCandy {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(8deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-30px) rotate(8deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
         }
-        .c1 { top: 12%; left: 5%; animation-duration: 16s; font-size: 3.2rem; }
-        .c2 { top: 70%; left: 90%; animation-duration: 19s; font-size: 2.8rem; }
-        .c3 { top: 30%; left: 85%; animation-duration: 13s; font-size: 2.4rem; }
-        .c4 { top: 80%; left: 15%; animation-duration: 22s; font-size: 3rem; }
-        .c5 { top: 50%; left: 40%; animation-duration: 17s; font-size: 2.2rem; opacity: 0.25; }
-        .c6 { top: 18%; left: 75%; animation-duration: 15s; font-size: 2.6rem; }
-        .c7 { top: 88%; left: 55%; animation-duration: 20s; font-size: 2rem; }
-        .c8 { top: 45%; left: 8%; animation-duration: 12s; font-size: 3.5rem; }
+        .c1 {
+            top: 12%;
+            left: 5%;
+            animation-duration: 16s;
+            font-size: 3.2rem;
+        }
+        .c2 {
+            top: 70%;
+            left: 90%;
+            animation-duration: 19s;
+            font-size: 2.8rem;
+        }
+        .c3 {
+            top: 30%;
+            left: 85%;
+            animation-duration: 13s;
+            font-size: 2.4rem;
+        }
+        .c4 {
+            top: 80%;
+            left: 15%;
+            animation-duration: 22s;
+            font-size: 3rem;
+        }
+        .c5 {
+            top: 50%;
+            left: 40%;
+            animation-duration: 17s;
+            font-size: 2.2rem;
+            opacity: 0.25;
+        }
+        .c6 {
+            top: 18%;
+            left: 75%;
+            animation-duration: 15s;
+            font-size: 2.6rem;
+        }
+        .c7 {
+            top: 88%;
+            left: 55%;
+            animation-duration: 20s;
+            font-size: 2rem;
+        }
+        .c8 {
+            top: 45%;
+            left: 8%;
+            animation-duration: 12s;
+            font-size: 3.5rem;
+        }
 
         .candy-stripe {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(45deg, rgba(255,215,215,0.08) 0px, rgba(255,215,215,0.08) 20px, rgba(230,250,230,0.08) 20px, rgba(230,250,230,0.08) 40px);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg,
+                    rgba(255, 215, 215, 0.08) 0px,
+                    rgba(255, 215, 215, 0.08) 20px,
+                    rgba(230, 250, 230, 0.08) 20px,
+                    rgba(230, 250, 230, 0.08) 40px);
             pointer-events: none;
             z-index: 0;
         }
@@ -77,7 +138,7 @@
             background: #efe2cf;
             border-radius: 56px;
             padding: 24px 30px 32px;
-            box-shadow: 0 20px 0 #3b5a3b, 0 30px 40px rgba(0,0,0,0.35);
+            box-shadow: 0 20px 0 #3b5a3b, 0 30px 40px rgba(0, 0, 0, 0.35);
             border: 3px solid #cbb99a;
             position: relative;
             z-index: 10;
@@ -96,21 +157,27 @@
             justify-content: center;
             gap: 15px;
         }
-        h1 span { font-size: 2.8rem; }
+        h1 span {
+            font-size: 2.8rem;
+        }
 
         .sub {
             text-align: left;
-            margin: 0 0 18px 0;
+            margin: 0 auto 18px auto;
             font-weight: 600;
             color: #2b5e2b;
             background: #f3ebd5;
-            display: inline-block;
-            padding: 6px 28px;
+            display: block;
+            padding: 10px 28px;
             border-radius: 40px;
-            margin-left: auto;
-            margin-right: auto;
             width: fit-content;
             border: 2px dashed #6f8f6f;
+            max-width: 100%;
+        }
+        .sub h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .bottle-img {
@@ -121,8 +188,27 @@
             border-radius: 24px;
             background: #f7eedb;
             padding: 12px;
-            box-shadow: 0 10px 0 #8b7a5e, 0 15px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 0 #8b7a5e, 0 15px 25px rgba(0, 0, 0, 0.3);
             border: 3px solid #cbb99a;
+        }
+
+        .task-heading {
+            text-align: center;
+            margin: 8px 0 14px 0;
+            font-weight: 700;
+            color: #1e3d2c;
+            font-size: 1rem;
+            line-height: 1.5;
+            background: #f9f3e3;
+            padding: 10px 18px;
+            border-radius: 24px;
+            border: 2px solid #cbb99a;
+        }
+        .task-heading strong {
+            display: block;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+            color: #3b5a3b;
         }
 
         .play-area {
@@ -160,7 +246,6 @@
             gap: 18px;
         }
 
-        /* Timer‑only panel styling */
         .metrics-panel {
             background: #a7b89e;
             border-radius: 30px;
@@ -178,7 +263,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 1rem;
-            background: rgba(255,248,235,0.45);
+            background: rgba(255, 248, 235, 0.45);
             padding: 4px 12px;
             border-radius: 20px;
         }
@@ -251,6 +336,7 @@
             font-size: 0.8rem;
             margin-top: 5px;
             color: #1e3a1e;
+            text-transform: capitalize;
         }
 
         .selected-info {
@@ -287,21 +373,34 @@
             transform: translateY(4px);
             box-shadow: inset 0 -1px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 2px 0 #7a6430;
         }
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: translateY(3px);
+            box-shadow: inset 0 -1px 0 #b9993e, inset 0 0 0 2px #fff1b0, 0 2px 0 #7a6430;
+        }
 
         .message {
             text-align: center;
-            font-weight: 600;
-            min-height: 2.4rem;
+            font-weight: 700;
+            min-height: 2.6rem;
             color: #1d4a1d;
             font-size: 1.1rem;
             margin-top: 5px;
+            padding: 6px 12px;
+            background: rgba(255, 248, 235, 0.5);
+            border-radius: 20px;
+            transition: all 0.3s;
         }
-
-        .footnote {
-            font-size: 0.9rem;
-            color: #2e5e2e;
-            text-align: center;
-            margin-top: 10px;
+        .message.finished {
+            background: #d4e8c2;
+            color: #1d4a1d;
+            border: 2px solid #7cb342;
+        }
+        .message.gaveup {
+            background: #f5e0d0;
+            color: #6b3a2a;
+            border: 2px solid #c9885c;
         }
 
         /* hide all metric rows except the time */
@@ -324,13 +423,17 @@
     <div class="candy-stripe"></div>
 
     <div class="game-box">
-        <h1> COLORING PAGE  </h1>
-        
+        <h1> COLORING PAGE </h1>
+
         <div class="sub">
             <h3>🧴 Beaver Bea has painted a picture using five different paint colours. She started with five full bottles of paint. When Bea finished, the bottles contained this much paint.</h3>
-            <img src="cans.PNG" alt="Paint bottles" class="bottle-img">
+            <img src="cans.PNG" alt="Paint bottles showing leftover amounts" class="bottle-img">
         </div>
-        <h3><strong>Task:</strong><br>Bea used more paint for the large areas of colour in the picture than for small areas. Using the colors below, color the image like Bea did.</h3>
+
+        <div class="task-heading">
+            <strong>Task:</strong>
+            Bea used more paint for the large areas of colour in the picture than for small areas. Using the colors below, color the image like Bea did.
+        </div>
 
         <div class="play-area">
             <div class="canvas-wrapper">
@@ -360,7 +463,9 @@
                     <button id="giveUpBtn">🏳️ GIVE UP</button>
                     <button id="finishBtn">✨ FINISH</button>
                 </div>
-                
+                <div class="message" id="messageDisplay">🌱 Pick a color can, then click a region to paint.</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -370,26 +475,28 @@
             const COLORS = [
                 { name: 'brown', code: '#8B5A2B', light: '#b07c4a' },
                 { name: 'yellow', code: '#F4D03F', light: '#f7dc6f' },
-                { name: 'pink', code: '#F8BBD0', light: '#fcd9e5' },
+                { name: 'pink', code: '#FF69B4', light: '#FF9ED4' },   // "Hot Pink"
                 { name: 'green', code: '#7CB342', light: '#9ccc65' },
-                { name: 'lightblue', code: '#64B5F6', light: '#90caf9' }
+                { name: 'lightblue', code: '#64B5F6', light: '#90caf9' },
             ];
-
-            const LEFTOVER_PERCENT = {
-                'brown': 70,
-                'yellow': 90,
-                'pink': 80,
-                'green': 10,
-                'lightblue': 50
-            };
 
             const canvas = document.getElementById('sceneCanvas');
             const ctx = canvas.getContext('2d');
 
+            // ----- GAME STATE -----
+            const STATE = {
+                PLAYING: 'playing',
+                FINISHED: 'finished',
+                GAVE_UP: 'gave_up',
+            };
+
+            let gameState = STATE.PLAYING;
+            let gameActive = true;
+            let gameFinished = false;
+
             // ----- METRICS STATE -----
             let startTime = null;
             let timerInterval = null;
-            let gameActive = true;
             let clickCount = 0;
             let colorPickCount = 0;
             let resetCount = 0;
@@ -397,13 +504,16 @@
             let correctnessFlag = 0;
             let giveUpFlag = 0;
 
+            // ----- SNAPSHOT OF SCORES (frozen when game ends) -----
+            let finalScores = null;
+
             let regions = [];
             let selectedColorName = null;
-            let gameFinished = false;
 
             // ---------- WAVY HORIZON ----------
             function createWavyHorizon() {
-                const w = canvas.width, h = canvas.height;
+                const w = canvas.width,
+                    h = canvas.height;
                 const path = new Path2D();
                 path.moveTo(0, 160);
                 for (let x = 0; x <= w; x += 20) {
@@ -417,7 +527,8 @@
             }
 
             function buildRegions() {
-                const w = canvas.width, h = canvas.height;
+                const w = canvas.width,
+                    h = canvas.height;
                 const newRegions = [];
 
                 const skyPath = new Path2D();
@@ -439,9 +550,9 @@
                 newRegions.push({ path: grassPath, name: 'grass', correctColor: 'green', playerColor: null });
 
                 const starsPath = new Path2D();
-                drawStarToPath(starsPath, 350, 250, 5, 26, 14);
-                drawStarToPath(starsPath, 420, 290, 5, 26, 14);
-                drawStarToPath(starsPath, 300, 310, 5, 26, 14);
+                drawStarToPath(starsPath, 350, 250, 5, 21, 10);
+                drawStarToPath(starsPath, 420, 290, 5, 21, 10);
+                drawStarToPath(starsPath, 300, 310, 5, 21, 10);
                 newRegions.push({ path: starsPath, name: 'stars', correctColor: 'pink', playerColor: null });
 
                 const beaverPath = new Path2D();
@@ -470,7 +581,6 @@
                 path.closePath();
             }
 
-            // (beaver drawing function unchanged)
             function drawDetailedBeaver(ctx, cx, cy, colorName) {
                 let solidColor, darkShade;
                 if (colorName) {
@@ -573,7 +683,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // ---------- TIMER & DISPLAY ----------
+            // ---------- TIMER ----------
             function stopTimer() {
                 if (timerInterval) {
                     clearInterval(timerInterval);
@@ -588,31 +698,181 @@
                 timerInterval = setInterval(updateTimeDisplay, 150);
             }
 
+            function getElapsedSeconds() {
+                if (!startTime) return 0;
+                return (Date.now() - startTime) / 1000;
+            }
+
             function updateTimeDisplay() {
-                const elapsed = gameActive ? (Date.now() - startTime) / 1000 : (gameFinished ? (Date.now() - startTime) / 1000 : 0);
+                const elapsed = getElapsedSeconds();
                 document.getElementById('timeDisplay').textContent = elapsed.toFixed(1) + 's';
                 if (!gameActive && timerInterval) {
                     stopTimer();
                 }
             }
 
+            // ---------- UI UPDATES ----------
             function updateAllMetrics() {
-                // only update the hidden ones if needed – stays functional
                 document.getElementById('clickDisplay').textContent = clickCount;
                 document.getElementById('pickDisplay').textContent = colorPickCount;
                 document.getElementById('resetDisplay').textContent = resetCount;
-                document.getElementById('errorDisplay').textContent = gameFinished ? errorScore : '-';
-                document.getElementById('correctDisplay').textContent = gameFinished ? correctnessFlag : '-';
-                document.getElementById('giveUpDisplay').textContent = gameFinished ? giveUpFlag : '-';
+
+                if (gameState === STATE.PLAYING) {
+                    document.getElementById('errorDisplay').textContent = '-';
+                    document.getElementById('correctDisplay').textContent = '-';
+                    document.getElementById('giveUpDisplay').textContent = '-';
+                } else {
+                    document.getElementById('errorDisplay').textContent = errorScore;
+                    document.getElementById('correctDisplay').textContent = correctnessFlag;
+                    document.getElementById('giveUpDisplay').textContent = giveUpFlag;
+                }
                 updateTimeDisplay();
             }
 
+            function setMessage(text, cssClass) {
+                const el = document.getElementById('messageDisplay');
+                el.textContent = text;
+                el.className = 'message';
+                if (cssClass) {
+                    el.classList.add(cssClass);
+                }
+            }
+
+            function updateButtonStates() {
+                const finished = gameState !== STATE.PLAYING;
+                document.getElementById('finishBtn').disabled = finished;
+                document.getElementById('giveUpBtn').disabled = finished;
+                document.getElementById('resetBtn').disabled = false;
+            }
+
+            // ---------- BUILD FINAL SCORES SNAPSHOT ----------
+            function buildScoreSnapshot() {
+                return {
+                    errorScore: errorScore,
+                    timeScore: parseFloat(getElapsedSeconds().toFixed(1)),
+                    clickScore: clickCount,
+                    correctnessCounter: correctnessFlag,
+                    giveUpFlag: giveUpFlag,
+                    resetCounter: resetCount,
+                };
+            }
+
+            // ---------- SEND TO HOST ----------
+            function sendFinishToHost(payload) {
+                const tryFinish = (attempt = 0) => {
+                    if (window.__kb && typeof window.__kb.finish === 'function') {
+                        window.__kb.finish(payload);
+                    } else if (attempt < 30) {
+                        setTimeout(() => tryFinish(attempt + 1), 150);
+                    } else {
+                        console.warn('⚠️ Host SDK not available after 30 attempts. Scores:', payload);
+                    }
+                };
+                tryFinish();
+            }
+
+            // ---------- END GAME LOGIC ----------
+            function endGame(state, errorCount, correctFlag, gaveUpFlag) {
+                stopTimer();
+                gameState = state;
+                gameActive = false;
+                gameFinished = true;
+
+                errorScore = errorCount;
+                correctnessFlag = correctFlag;
+                giveUpFlag = gaveUpFlag;
+
+                finalScores = buildScoreSnapshot();
+                updateAllMetrics();
+                updateButtonStates();
+
+                sendFinishToHost(finalScores);
+            }
+
+            function finishGame() {
+                if (gameState === STATE.FINISHED) {
+                    // Already finished — re-send stored scores
+                    if (finalScores) sendFinishToHost(finalScores);
+                    return;
+                }
+                if (gameState === STATE.GAVE_UP) {
+                    // Already gave up — re-send stored scores
+                    if (finalScores) sendFinishToHost(finalScores);
+                    return;
+                }
+
+                // Calculate errors
+                let wrongCount = 0;
+                regions.forEach(r => {
+                    if (r.playerColor !== r.correctColor) wrongCount++;
+                });
+
+                const allCorrect = wrongCount === 0;
+                endGame(STATE.FINISHED, wrongCount, allCorrect ? 1 : 0, 0);
+
+                if (allCorrect) {
+                    setMessage('🎉 PERFECT! All correct! ✅', 'finished');
+                } else {
+                    setMessage(`📊 Finished with ${wrongCount} error(s). Check the used cans for hints.`, 'finished');
+                }
+            }
+
+            function giveUp() {
+                if (gameState === STATE.GAVE_UP) {
+                    if (finalScores) sendFinishToHost(finalScores);
+                    return;
+                }
+                if (gameState === STATE.FINISHED) {
+                    if (finalScores) sendFinishToHost(finalScores);
+                    return;
+                }
+
+                // Count current errors for the record
+                let wrongCount = 0;
+                regions.forEach(r => {
+                    if (r.playerColor !== r.correctColor) wrongCount++;
+                });
+
+                endGame(STATE.GAVE_UP, wrongCount, 0, 1);
+                setMessage('🏳️ You gave up. Press RESET COLORS to try again!', 'gaveup');
+            }
+
+            // ---------- RESET ----------
+            function resetColors() {
+                resetCount++;
+                regions.forEach(r => (r.playerColor = null));
+                drawCanvas();
+                updateAllMetrics();
+
+                // If game was finished/gave up, bring it back to playing
+                if (gameState !== STATE.PLAYING) {
+                    gameState = STATE.PLAYING;
+                    gameActive = true;
+                    gameFinished = false;
+                    finalScores = null;
+                    errorScore = 0;
+                    correctnessFlag = 0;
+                    giveUpFlag = 0;
+                    stopTimer();
+                    startTime = Date.now();
+                    startTimer();
+                    updateButtonStates();
+                    setMessage('🔄 Colors reset. Keep painting!');
+                } else {
+                    setMessage('🔄 Colors reset. Keep painting!');
+                }
+                updateAllMetrics();
+            }
+
+            // ---------- INITIALIZATION ----------
             function initGame() {
                 stopTimer();
                 regions = buildRegions();
                 selectedColorName = null;
-                gameFinished = false;
+                gameState = STATE.PLAYING;
                 gameActive = true;
+                gameFinished = false;
+                finalScores = null;
 
                 clickCount = 0;
                 colorPickCount = 0;
@@ -625,8 +885,9 @@
                 renderFreshCans();
                 drawCanvas();
                 updateAllMetrics();
+                updateButtonStates();
+                setMessage('🌱 Pick a color can, then click a region to paint.');
                 startTimer();
-                document.getElementById('messageDisplay').textContent = '🌱 Pick a color can, then click a region to paint.';
             }
 
             function renderFreshCans() {
@@ -642,7 +903,7 @@
                     `;
                     can.addEventListener('click', () => {
                         if (!gameActive || gameFinished) {
-                            document.getElementById('messageDisplay').textContent = '🏁 Game finished! Press RESET COLORS or refresh.';
+                            setMessage('🏁 Game finished! Press RESET COLORS to play again.');
                             return;
                         }
                         colorPickCount++;
@@ -650,7 +911,7 @@
                         updateSelectedDisplay();
                         renderFreshCans();
                         updateAllMetrics();
-                        document.getElementById('messageDisplay').textContent = `🎨 Selected ${color.name}. Click on the picture.`;
+                        setMessage(`🎨 Selected ${color.name}. Click on the picture.`);
                     });
                     container.appendChild(can);
                 });
@@ -679,13 +940,14 @@
                     ctx.stroke(region.path);
                 });
 
+                // Sun rays
                 ctx.beginPath();
                 ctx.strokeStyle = '#b38b40';
                 ctx.lineWidth = 3;
                 for (let i = 0; i < 8; i++) {
-                    let angle = i * Math.PI / 4;
-                    let dx = Math.cos(angle) * 50;
-                    let dy = Math.sin(angle) * 50;
+                    const angle = i * Math.PI / 4;
+                    const dx = Math.cos(angle) * 50;
+                    const dy = Math.sin(angle) * 50;
                     ctx.moveTo(380 + dx * 0.5, 70 + dy * 0.5);
                     ctx.lineTo(380 + dx, 70 + dy);
                 }
@@ -696,9 +958,10 @@
                 drawDetailedBeaver(ctx, 170, 290, beaverColor);
             }
 
+            // ---------- CANVAS INTERACTION ----------
             function handleCanvasClick(e) {
                 if (!gameActive || gameFinished) {
-                    document.getElementById('messageDisplay').textContent = '🎯 Press RESET COLORS to continue or refresh.';
+                    setMessage('🎯 Press RESET COLORS to continue or refresh.');
                     return;
                 }
 
@@ -706,7 +969,7 @@
                 updateAllMetrics();
 
                 if (!selectedColorName) {
-                    document.getElementById('messageDisplay').textContent = '⚠️ Pick a spray can first!';
+                    setMessage('⚠️ Pick a spray can first!');
                     return;
                 }
 
@@ -725,7 +988,7 @@
                 }
 
                 if (!clickedRegion) {
-                    document.getElementById('messageDisplay').textContent = '👆 Click inside a shape!';
+                    setMessage('👆 Click inside a shape!');
                     return;
                 }
 
@@ -734,107 +997,16 @@
 
                 const allPainted = regions.every(r => r.playerColor !== null);
                 if (allPainted) {
-                    document.getElementById('messageDisplay').textContent = '🎯 All parts painted! Press FINISH to see your score.';
+                    setMessage('🎯 All parts painted! Press FINISH to see your score.');
                 } else {
-                    document.getElementById('messageDisplay').textContent = `✔️ Painted ${clickedRegion.name} with ${selectedColorName}.`;
+                    setMessage(`✔️ Painted ${clickedRegion.name} with ${selectedColorName}.`);
                 }
             }
 
-            function sendFinishToHost() {
-                const elapsedSec = startTime ? (Date.now() - startTime) / 1000 : 0;
-                const payload = {
-                    errorScore: errorScore,
-                    timeScore: parseFloat(elapsedSec.toFixed(1)),
-                    clickScore: clickCount,
-                    correctnessCounter: correctnessFlag,
-                    giveUpFlag: giveUpFlag,
-                    resetCounter: resetCount
-                };
-                const tryFinish = (attempt = 0) => {
-                    if (window.__kb && typeof window.__kb.finish === 'function') {
-                        window.__kb.finish(payload);
-                    } else if (attempt < 20) {
-                        setTimeout(() => tryFinish(attempt + 1), 100);
-                    }
-                };
-                tryFinish();
-            }
-
-            function finishGame() {
-                if (gameFinished) {
-                    sendFinishToHost();
-                    return;
-                }
-
-                let wrongCount = 0;
-                regions.forEach(r => {
-                    if (r.playerColor !== r.correctColor) wrongCount++;
-                });
-                errorScore = wrongCount;
-                correctnessFlag = (wrongCount === 0) ? 1 : 0;
-                giveUpFlag = 0;
-
-                gameActive = false;
-                gameFinished = true;
-                stopTimer();
-                updateAllMetrics();
-
-                let feedback = '';
-                if (wrongCount === 0) {
-                    feedback = '🎉 PERFECT! All correct! ✅';
-                } else {
-                    feedback = `📊 Finished with ${wrongCount} error(s). Check the used cans for hints.`;
-                }
-                document.getElementById('messageDisplay').textContent = feedback;
-
-                document.getElementById('finishBtn').disabled = true;
-                document.getElementById('giveUpBtn').disabled = true;
-                document.getElementById('resetBtn').disabled = true;
-
-                sendFinishToHost();
-            }
-
-            function giveUp() {
-                if (gameFinished) {
-                    sendFinishToHost();
-                    return;
-                }
-                giveUpFlag = 1;
-                errorScore = 0;
-                correctnessFlag = 0;
-
-                gameActive = false;
-                gameFinished = true;
-                stopTimer();
-                updateAllMetrics();
-                document.getElementById('messageDisplay').textContent = '🏳️ You gave up.';
-
-                document.getElementById('finishBtn').disabled = true;
-                document.getElementById('giveUpBtn').disabled = true;
-                document.getElementById('resetBtn').disabled = true;
-
-                sendFinishToHost();
-            }
-
-            function resetColors() {
-                resetCount++;
-                regions.forEach(r => r.playerColor = null);
-                drawCanvas();
-                updateAllMetrics();
-
-                if (gameFinished) {
-                    gameActive = true;
-                    gameFinished = false;
-                    stopTimer();
-                    startTime = Date.now();
-                    startTimer();
-                }
-                document.getElementById('messageDisplay').textContent = '🔄 Colors reset. Keep painting!';
-            }
-
+            // ---------- EVENT LISTENERS ----------
             canvas.addEventListener('click', handleCanvasClick);
-            canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
-            canvas.addEventListener('touchend', (e) => {
+            canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+            canvas.addEventListener('touchend', e => {
                 e.preventDefault();
                 const touch = e.changedTouches[0];
                 handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY });
@@ -844,6 +1016,7 @@
             document.getElementById('giveUpBtn').addEventListener('click', giveUp);
             document.getElementById('resetBtn').addEventListener('click', resetColors);
 
+            // ---------- START ----------
             initGame();
         })();
     </script>
