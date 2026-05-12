@@ -5,11 +5,24 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import helmet from 'helmet';
 
-import { openDb } from './db.js';
+import {
+  initDatabase,
+  qGet,
+  qAll,
+  qRun,
+  USE_PG,
+  withPgTransaction,
+  getSqliteDb
+} from './database.js';
 import { TASKS } from './tasks.js';
 
 const app = express();
-const db = openDb();
+
+function asyncRoute(fn) {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
 
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(express.json({ limit: '1mb' }));
@@ -36,22 +49,21 @@ function addDays(date, days) {
   return d;
 }
 
-function getUserFromRequest(req) {
+async function getUserFromRequest(req) {
   const sid = req.cookies?.[SESSION_COOKIE];
   if (!sid) return null;
-  const row = db
-    .prepare(
-      `
+  const row = await qGet(
+    `
       SELECT s.id AS session_id, s.expires_at, u.id AS user_id, u.username, u.role, u.approved
       FROM sessions s
       JOIN users u ON u.id = s.user_id
       WHERE s.id = ?
-    `
-    )
-    .get(sid);
+    `,
+    [sid]
+  );
   if (!row) return null;
   if (new Date(row.expires_at).getTime() <= Date.now()) {
-    db.prepare(`DELETE FROM sessions WHERE id = ?`).run(sid);
+    await qRun(`DELETE FROM sessions WHERE id = ?`, [sid]);
     return null;
   }
   return {
@@ -63,12 +75,12 @@ function getUserFromRequest(req) {
   };
 }
 
-function requireAuth(req, res, next) {
-  const user = getUserFromRequest(req);
+const requireAuth = asyncRoute(async (req, res, next) => {
+  const user = await getUserFromRequest(req);
   if (!user) return res.status(401).json({ error: 'not_authenticated' });
   req.user = user;
   next();
-}
+});
 
 function requireTeacher(req, res, next) {
   if (req.user?.role !== 'teacher') return res.status(403).json({ error: 'teacher_only' });
@@ -664,7 +676,7 @@ function scoreFromMoves(taskDef, moves, gamePayload = null) {
   };
 }
 
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', asyncRoute(async (req, res) => {
   const { username, password, role } = req.body ?? {};
   if (typeof username !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'bad_request' });
@@ -680,24 +692,29 @@ app.post('/api/auth/register', (req, res) => {
 
   const passwordHash = sha256(`${cleanUsername}\n${password}`);
   try {
-    const info = db
-      .prepare(`INSERT INTO users (username, password_hash, role, approved) VALUES (?, ?, ?, ?)`)
-      .run(cleanUsername, passwordHash, cleanRole, 1);
+    const info = await qRun(
+      `INSERT INTO users (username, password_hash, role, approved) VALUES (?, ?, ?, ?) RETURNING id`,
+      [cleanUsername, passwordHash, cleanRole, 1]
+    );
     return res.json({ ok: true, userId: info.lastInsertRowid });
   } catch (e) {
-    return res.status(409).json({ error: 'username_taken' });
+    const code = /** @type {{ code?: string }} */ (e).code;
+    const msg = String(/** @type {Error} */ (e).message ?? '');
+    if (USE_PG && code === '23505') return res.status(409).json({ error: 'username_taken' });
+    if (!USE_PG && /UNIQUE constraint failed/i.test(msg)) return res.status(409).json({ error: 'username_taken' });
+    throw e;
   }
-});
+}));
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', asyncRoute(async (req, res) => {
   const { username, password } = req.body ?? {};
   if (typeof username !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'bad_request' });
   }
   const cleanUsername = username.trim();
-  const user = db
-    .prepare(`SELECT id, username, password_hash, role, approved FROM users WHERE username = ?`)
-    .get(cleanUsername);
+  const user = await qGet(`SELECT id, username, password_hash, role, approved FROM users WHERE username = ?`, [
+    cleanUsername
+  ]);
   if (!user) return res.status(401).json({ error: 'invalid_credentials' });
   const passwordHash = sha256(`${cleanUsername}\n${password}`);
   if (passwordHash !== user.password_hash) {
@@ -709,30 +726,28 @@ app.post('/api/auth/login', (req, res) => {
 
   const sessionId = randomId(24);
   const expiresAt = addDays(new Date(), SESSION_TTL_DAYS).toISOString();
-  db.prepare(`INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)`).run(
-    sessionId,
-    user.id,
-    expiresAt
-  );
+  await qRun(`INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)`, [sessionId, user.id, expiresAt]);
 
+  const cookieSecure = process.env.NODE_ENV === 'production';
   res.cookie(SESSION_COOKIE, sessionId, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: cookieSecure,
     expires: new Date(expiresAt)
   });
   return res.json({ ok: true });
-});
+}));
 
-app.post('/api/auth/logout', requireAuth, (req, res) => {
+app.post('/api/auth/logout', requireAuth, asyncRoute(async (req, res) => {
   const sid = req.cookies?.[SESSION_COOKIE];
-  if (sid) db.prepare(`DELETE FROM sessions WHERE id = ?`).run(sid);
-  res.clearCookie(SESSION_COOKIE);
+  if (sid) await qRun(`DELETE FROM sessions WHERE id = ?`, [sid]);
+  const cookieSecure = process.env.NODE_ENV === 'production';
+  res.clearCookie(SESSION_COOKIE, { httpOnly: true, sameSite: 'lax', secure: cookieSecure });
   return res.json({ ok: true });
-});
+}));
 
-app.get('/api/me', (req, res) => {
-  const user = getUserFromRequest(req);
+app.get('/api/me', asyncRoute(async (req, res) => {
+  const user = await getUserFromRequest(req);
   if (!user) return res.json({ authenticated: false });
   return res.json({
     authenticated: true,
@@ -741,76 +756,112 @@ app.get('/api/me', (req, res) => {
     role: user.role,
     approved: user.approved
   });
-});
+}));
 
 app.get('/api/tasks', requireAuth, requireStudent, (req, res) => {
   return res.json({ tasks: TASKS });
 });
 
-app.post('/api/teacher/students/upload', requireAuth, requireTeacher, (req, res) => {
+app.post('/api/teacher/students/upload', requireAuth, requireTeacher, asyncRoute(async (req, res) => {
   const { csvText } = req.body ?? {};
   if (typeof csvText !== 'string') return res.status(400).json({ error: 'bad_request' });
 
   const names = parseStudentNames(csvText);
   if (!names.length) return res.status(400).json({ error: 'no_students_found' });
 
-  const insert = db.prepare(
-    `INSERT INTO users (username, password_hash, role, approved, created_by_teacher_id, display_name)
-     VALUES (?, ?, 'student', 1, ?, ?)`
-  );
-  const upsertCredential = db.prepare(
-    `INSERT INTO student_credentials (student_user_id, teacher_user_id, password_plain)
-     VALUES (?, ?, ?)
-     ON CONFLICT(student_user_id) DO UPDATE SET
-       teacher_user_id = excluded.teacher_user_id,
-       password_plain = excluded.password_plain`
-  );
-  const exists = db.prepare(`SELECT 1 FROM users WHERE username = ?`);
-
   const created = [];
-  const tx = db.transaction((rows) => {
-    for (const name of rows) {
-      const base = usernameBaseFromName(name);
-      let usernameCandidate = '';
-      for (let tries = 0; tries < 20; tries++) {
-        const suffix = Math.floor(1000 + Math.random() * 9000);
-        const candidate = `st_${base}_${suffix}`;
-        if (!exists.get(candidate)) {
-          usernameCandidate = candidate;
-          break;
-        }
-      }
-      if (!usernameCandidate) throw new Error('username_generation_failed');
-      const password = generateReadablePassword();
-      const passwordHash = sha256(`${usernameCandidate}\n${password}`);
-      const info = insert.run(usernameCandidate, passwordHash, req.user.userId, name);
-      const studentUserId = Number(info.lastInsertRowid);
-      upsertCredential.run(studentUserId, req.user.userId, password);
-      created.push({ name, username: usernameCandidate, password, createdAt: nowIso() });
-    }
-  });
 
   try {
-    tx(names);
+    if (USE_PG) {
+      await withPgTransaction(async ({ run }) => {
+        for (const name of names) {
+          const base = usernameBaseFromName(name);
+          let usernameCandidate = '';
+          for (let tries = 0; tries < 20; tries++) {
+            const suffix = Math.floor(1000 + Math.random() * 9000);
+            const candidate = `st_${base}_${suffix}`;
+            const hit = (await run(`SELECT 1 AS x FROM users WHERE username = ?`, [candidate])).rows[0];
+            if (!hit) {
+              usernameCandidate = candidate;
+              break;
+            }
+          }
+          if (!usernameCandidate) throw new Error('username_generation_failed');
+          const password = generateReadablePassword();
+          const passwordHash = sha256(`${usernameCandidate}\n${password}`);
+          const ins = await run(
+            `INSERT INTO users (username, password_hash, role, approved, created_by_teacher_id, display_name)
+             VALUES (?, ?, 'student', 1, ?, ?) RETURNING id`,
+            [usernameCandidate, passwordHash, req.user.userId, name]
+          );
+          const studentUserId = Number(ins.rows[0].id);
+          await run(
+            `INSERT INTO student_credentials (student_user_id, teacher_user_id, password_plain)
+             VALUES (?, ?, ?)
+             ON CONFLICT (student_user_id) DO UPDATE SET
+               teacher_user_id = EXCLUDED.teacher_user_id,
+               password_plain = EXCLUDED.password_plain`,
+            [studentUserId, req.user.userId, password]
+          );
+          created.push({ name, username: usernameCandidate, password, createdAt: nowIso() });
+        }
+      });
+    } else {
+      const db = getSqliteDb();
+      const insert = db.prepare(
+        `INSERT INTO users (username, password_hash, role, approved, created_by_teacher_id, display_name)
+         VALUES (?, ?, 'student', 1, ?, ?)`
+      );
+      const upsertCredential = db.prepare(
+        `INSERT INTO student_credentials (student_user_id, teacher_user_id, password_plain)
+         VALUES (?, ?, ?)
+         ON CONFLICT (student_user_id) DO UPDATE SET
+           teacher_user_id = excluded.teacher_user_id,
+           password_plain = excluded.password_plain`
+      );
+      const exists = db.prepare(`SELECT 1 FROM users WHERE username = ?`);
+
+      const tx = db.transaction((rows) => {
+        for (const name of rows) {
+          const base = usernameBaseFromName(name);
+          let usernameCandidate = '';
+          for (let tries = 0; tries < 20; tries++) {
+            const suffix = Math.floor(1000 + Math.random() * 9000);
+            const candidate = `st_${base}_${suffix}`;
+            if (!exists.get(candidate)) {
+              usernameCandidate = candidate;
+              break;
+            }
+          }
+          if (!usernameCandidate) throw new Error('username_generation_failed');
+          const password = generateReadablePassword();
+          const passwordHash = sha256(`${usernameCandidate}\n${password}`);
+          const info = insert.run(usernameCandidate, passwordHash, req.user.userId, name);
+          const studentUserId = Number(info.lastInsertRowid);
+          upsertCredential.run(studentUserId, req.user.userId, password);
+          created.push({ name, username: usernameCandidate, password, createdAt: nowIso() });
+        }
+      });
+      tx(names);
+    }
   } catch {
     return res.status(500).json({ error: 'upload_failed' });
   }
 
   return res.json({ ok: true, count: created.length, credentials: created });
-});
+}));
 
-app.get('/api/teacher/students/credentials', requireAuth, requireTeacher, (req, res) => {
-  const rows = db
-    .prepare(
-      `
+app.get('/api/teacher/students/credentials', requireAuth, requireTeacher, asyncRoute(async (req, res) => {
+  const rows = await qAll(
+    `
       SELECT u.id, u.username, u.display_name, sc.password_plain, sc.created_at
       FROM users u
       JOIN student_credentials sc ON sc.student_user_id = u.id
       WHERE u.role = 'student' AND u.created_by_teacher_id = ?
       ORDER BY sc.created_at DESC, u.username ASC
-      `
-    )
-    .all(req.user.userId);
+      `,
+    [req.user.userId]
+  );
 
   return res.json({
     credentials: rows.map((r) => ({
@@ -821,7 +872,7 @@ app.get('/api/teacher/students/credentials', requireAuth, requireTeacher, (req, 
       createdAt: r.created_at
     }))
   });
-});
+}));
 
 function csvEscape(value) {
   const s = String(value ?? '');
@@ -829,40 +880,37 @@ function csvEscape(value) {
   return s;
 }
 
-app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res) => {
-  const students = db
-    .prepare(
-      `SELECT id, username, display_name
+app.get('/api/teacher/students/results', requireAuth, requireTeacher, asyncRoute(async (req, res) => {
+  const students = await qAll(
+    `SELECT id, username, display_name
        FROM users
        WHERE role = 'student' AND created_by_teacher_id = ?
-       ORDER BY display_name ASC, username ASC`
-    )
-    .all(req.user.userId);
+       ORDER BY display_name ASC, username ASC`,
+    [req.user.userId]
+  );
 
-  const attemptByUser = db
-    .prepare(
+  const out = [];
+  for (const s of students) {
+    const a = await qGet(
       `SELECT id, user_id, started_at, finished_at
        FROM attempts
-       WHERE user_id = ?`
+       WHERE user_id = ?
+       ORDER BY started_at ASC
+       LIMIT 1`,
+      [s.id]
     );
-
-  const tasksByAttempt = db
-    .prepare(
-      `SELECT task_id, started_at, finished_at, breakdown_json, game_payload_json
-       FROM attempt_tasks
-       WHERE attempt_id = ?`
-    );
-
-  const out = students.map((s) => {
-    const a = attemptByUser.get(s.id) ?? null;
     const taskMonitoring = {};
 
     if (a) {
-      const rows = tasksByAttempt.all(a.id);
+      const rows = await qAll(
+        `SELECT task_id, started_at, finished_at, breakdown_json, game_payload_json
+       FROM attempt_tasks
+       WHERE attempt_id = ?`,
+        [a.id]
+      );
       for (const r of rows) {
         const parsedBreakdown = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
         const parsedPayload = r.game_payload_json ? safeJsonParse(r.game_payload_json) : null;
-        // Prefer stored monitoring breakdown; if missing, derive from raw finish payload.
         const monitoring =
           parsedBreakdown && typeof parsedBreakdown === 'object' && (parsedBreakdown.normalized || parsedBreakdown.extra || parsedBreakdown.raw)
             ? parsedBreakdown
@@ -875,7 +923,7 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
       }
     }
 
-    return {
+    out.push({
       studentId: s.id,
       name: s.display_name ?? '',
       username: s.username,
@@ -883,8 +931,8 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
       startedAt: a?.started_at ?? null,
       finishedAt: a?.finished_at ?? null,
       taskMonitoring
-    };
-  });
+    });
+  }
 
   return res.json({
     students: out,
@@ -894,31 +942,16 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, (req, res)
       category: t.category
     }))
   });
-});
+}));
 
-app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, (req, res) => {
-  const students = db
-    .prepare(
-      `SELECT id, username, display_name
+app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, asyncRoute(async (req, res) => {
+  const students = await qAll(
+    `SELECT id, username, display_name
        FROM users
        WHERE role = 'student' AND created_by_teacher_id = ?
-       ORDER BY display_name ASC, username ASC`
-    )
-    .all(req.user.userId);
-
-  const attemptByUser = db
-    .prepare(
-      `SELECT id, started_at, finished_at
-       FROM attempts
-       WHERE user_id = ?`
-    );
-
-  const tasksByAttempt = db
-    .prepare(
-      `SELECT task_id, final_score, breakdown_json
-       FROM attempt_tasks
-       WHERE attempt_id = ?`
-    );
+       ORDER BY display_name ASC, username ASC`,
+    [req.user.userId]
+  );
 
   const taskIds = TASKS.map((t) => t.id);
   const header = [
@@ -946,12 +979,24 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, (req, 
   const catWeights = { A: 0.22, B: 0.33, C: 0.55 };
 
   for (const s of students) {
-    const a = attemptByUser.get(s.id) ?? null;
+    const a = await qGet(
+      `SELECT id, started_at, finished_at
+       FROM attempts
+       WHERE user_id = ?
+       ORDER BY started_at ASC
+       LIMIT 1`,
+      [s.id]
+    );
     const scoreMap = {};
     const breakdownMap = {};
     const cat = { A: { sum: 0, max: 0 }, B: { sum: 0, max: 0 }, C: { sum: 0, max: 0 } };
     if (a) {
-      const rows = tasksByAttempt.all(a.id);
+      const rows = await qAll(
+        `SELECT task_id, final_score, breakdown_json
+       FROM attempt_tasks
+       WHERE attempt_id = ?`,
+        [a.id]
+      );
       for (const r of rows) {
         scoreMap[r.task_id] = r.final_score;
         breakdownMap[r.task_id] = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
@@ -1003,13 +1048,13 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, (req, 
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="kingbebras-results.csv"');
   return res.send(csv);
-});
+}));
 
-app.post('/api/attempts/start', requireAuth, requireStudent, (req, res) => {
-  // One attempt per student (ever). If an attempt exists, reuse it.
-  const existing = db
-    .prepare(`SELECT id, started_at, finished_at FROM attempts WHERE user_id = ? ORDER BY started_at ASC LIMIT 1`)
-    .get(req.user.userId);
+app.post('/api/attempts/start', requireAuth, requireStudent, asyncRoute(async (req, res) => {
+  const existing = await qGet(
+    `SELECT id, started_at, finished_at FROM attempts WHERE user_id = ? ORDER BY started_at ASC LIMIT 1`,
+    [req.user.userId]
+  );
   if (existing) {
     if (existing.finished_at) {
       return res.status(409).json({
@@ -1030,49 +1075,55 @@ app.post('/api/attempts/start', requireAuth, requireStudent, (req, res) => {
 
   const attemptId = randomId(16);
   const seed = Math.floor(Math.random() * 1_000_000_000);
-  db.prepare(`INSERT INTO attempts (id, user_id, seed) VALUES (?, ?, ?)`).run(attemptId, req.user.userId, seed);
-  const created = db.prepare(`SELECT started_at FROM attempts WHERE id = ?`).get(attemptId);
+  await qRun(`INSERT INTO attempts (id, user_id, seed) VALUES (?, ?, ?)`, [attemptId, req.user.userId, seed]);
+  const created = await qGet(`SELECT started_at FROM attempts WHERE id = ?`, [attemptId]);
 
-  const insertTask = db.prepare(
-    `INSERT INTO attempt_tasks (attempt_id, task_id, task_index) VALUES (?, ?, ?)`
-  );
-  TASKS.forEach((t, idx) => insertTask.run(attemptId, t.id, idx));
+  for (let idx = 0; idx < TASKS.length; idx++) {
+    const t = TASKS[idx];
+    await qRun(`INSERT INTO attempt_tasks (attempt_id, task_id, task_index) VALUES (?, ?, ?)`, [
+      attemptId,
+      t.id,
+      idx
+    ]);
+  }
 
-  return res.json({ ok: true, attemptId, existing: false, startedAt: created?.started_at ?? nowIso(), finishedAt: null });
-});
+  return res.json({
+    ok: true,
+    attemptId,
+    existing: false,
+    startedAt: created?.started_at ?? nowIso(),
+    finishedAt: null
+  });
+}));
 
-app.get('/api/attempts/current', requireAuth, requireStudent, (req, res) => {
-  const row = db
-    .prepare(
-      `
+app.get('/api/attempts/current', requireAuth, requireStudent, asyncRoute(async (req, res) => {
+  const row = await qGet(
+    `
       SELECT id, started_at, finished_at, seed
       FROM attempts
       WHERE user_id = ?
       ORDER BY started_at DESC
       LIMIT 1
-    `
-    )
-    .get(req.user.userId);
+    `,
+    [req.user.userId]
+  );
   return res.json({ attempt: row ?? null });
-});
+}));
 
-app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, (req, res) => {
+app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, asyncRoute(async (req, res) => {
   const { attemptId } = req.params;
-  const owned = db
-    .prepare(`SELECT 1 FROM attempts WHERE id = ? AND user_id = ?`)
-    .get(attemptId, req.user.userId);
+  const owned = await qGet(`SELECT 1 FROM attempts WHERE id = ? AND user_id = ?`, [attemptId, req.user.userId]);
   if (!owned) return res.status(403).json({ error: 'not_allowed' });
 
-  const rows = db
-    .prepare(
-      `
+  const rows = await qAll(
+    `
       SELECT task_id, task_index, started_at, finished_at, breakdown_json, game_payload_json
       FROM attempt_tasks
       WHERE attempt_id = ?
       ORDER BY task_index ASC
-      `
-    )
-    .all(attemptId);
+      `,
+    [attemptId]
+  );
   return res.json({
     tasks: rows.map((r) => ({
       taskId: r.task_id,
@@ -1082,27 +1133,26 @@ app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, (req, res
       monitoringAvailable: Boolean(r.finished_at && (r.breakdown_json || r.game_payload_json))
     }))
   });
-});
+}));
 
-app.post('/api/attempts/end', requireAuth, requireStudent, (req, res) => {
+app.post('/api/attempts/end', requireAuth, requireStudent, asyncRoute(async (req, res) => {
   const { attemptId } = req.body ?? {};
   if (typeof attemptId !== 'string') {
     return res.status(400).json({ error: 'bad_request' });
   }
-  const info = db
-    .prepare(
-      `
+  const info = await qRun(
+    `
       UPDATE attempts
       SET finished_at = COALESCE(finished_at, ?)
       WHERE id = ? AND user_id = ?
-      `
-    )
-    .run(nowIso(), attemptId, req.user.userId);
+      `,
+    [nowIso(), attemptId, req.user.userId]
+  );
   if (info.changes === 0) return res.status(404).json({ error: 'attempt_not_found' });
   return res.json({ ok: true });
-});
+}));
 
-app.post('/api/moves', requireAuth, requireStudent, (req, res) => {
+app.post('/api/moves', requireAuth, requireStudent, asyncRoute(async (req, res) => {
   const { attemptId, taskId, moveType, payload, penalty } = req.body ?? {};
   if (
     typeof attemptId !== 'string' ||
@@ -1114,29 +1164,33 @@ app.post('/api/moves', requireAuth, requireStudent, (req, res) => {
   const pen = Number.isFinite(penalty) ? Number(penalty) : 0;
   const payloadJson = JSON.stringify(payload ?? {});
 
-  const taskRow = db
-    .prepare(
-      `SELECT 1 FROM attempt_tasks at
+  const taskRow = await qGet(
+    `SELECT 1 FROM attempt_tasks at
        JOIN attempts a ON a.id = at.attempt_id
-       WHERE at.attempt_id = ? AND at.task_id = ? AND a.user_id = ? AND a.finished_at IS NULL`
-    )
-    .get(attemptId, taskId, req.user.userId);
+       WHERE at.attempt_id = ? AND at.task_id = ? AND a.user_id = ? AND a.finished_at IS NULL`,
+    [attemptId, taskId, req.user.userId]
+  );
   if (!taskRow) return res.status(403).json({ error: 'not_allowed' });
 
-  db.prepare(
+  await qRun(
     `UPDATE attempt_tasks
      SET started_at = COALESCE(started_at, ?)
-     WHERE attempt_id = ? AND task_id = ?`
-  ).run(nowIso(), attemptId, taskId);
+     WHERE attempt_id = ? AND task_id = ?`,
+    [nowIso(), attemptId, taskId]
+  );
 
-  db.prepare(
-    `INSERT INTO moves (attempt_id, task_id, move_type, payload_json, penalty) VALUES (?, ?, ?, ?, ?)`
-  ).run(attemptId, taskId, moveType, payloadJson, pen);
+  await qRun(`INSERT INTO moves (attempt_id, task_id, move_type, payload_json, penalty) VALUES (?, ?, ?, ?, ?)`, [
+    attemptId,
+    taskId,
+    moveType,
+    payloadJson,
+    pen
+  ]);
 
   return res.json({ ok: true });
-});
+}));
 
-app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
+app.post('/api/tasks/finish', requireAuth, requireStudent, asyncRoute(async (req, res) => {
   const { attemptId, taskId, finalAnswer, gamePayload } = req.body ?? {};
   if (typeof attemptId !== 'string' || typeof taskId !== 'string') {
     return res.status(400).json({ error: 'bad_request' });
@@ -1145,35 +1199,33 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
   const taskDef = TASKS.find((t) => t.id === taskId);
   if (!taskDef) return res.status(404).json({ error: 'task_not_found' });
 
-  const allowed = db
-    .prepare(
-      `SELECT 1
+  const allowed = await qGet(
+    `SELECT 1
        FROM attempt_tasks at
        JOIN attempts a ON a.id = at.attempt_id
-       WHERE at.attempt_id = ? AND at.task_id = ? AND a.user_id = ? AND a.finished_at IS NULL`
-    )
-    .get(attemptId, taskId, req.user.userId);
+       WHERE at.attempt_id = ? AND at.task_id = ? AND a.user_id = ? AND a.finished_at IS NULL`,
+    [attemptId, taskId, req.user.userId]
+  );
   if (!allowed) return res.status(403).json({ error: 'not_allowed' });
 
   const monitoring = normalizeMonitoringFromFinishPayload(gamePayload);
 
-  const info = db
-    .prepare(
-      `
+  const info = await qRun(
+    `
       UPDATE attempt_tasks
       SET finished_at = COALESCE(finished_at, ?),
           breakdown_json = COALESCE(breakdown_json, ?),
           game_payload_json = COALESCE(game_payload_json, ?)
       WHERE attempt_id = ? AND task_id = ?
-    `
-    )
-    .run(
+    `,
+    [
       nowIso(),
       JSON.stringify(monitoring),
       gamePayload ? JSON.stringify(gamePayload) : null,
       attemptId,
       taskId
-    );
+    ]
+  );
 
   if (info.changes === 0) return res.status(404).json({ error: 'attempt_task_not_found' });
   return res.json({
@@ -1181,13 +1233,27 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, (req, res) => {
     monitoring,
     finalAnswer: finalAnswer ?? null
   });
-});
+}));
 
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
-app.listen(port, () => {
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+(async () => {
+  await initDatabase();
+  app.listen(port, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `KingBebras running on http://localhost:${port}${USE_PG ? ' (PostgreSQL)' : ' (SQLite)'}`
+    );
+  });
+})().catch((err) => {
   // eslint-disable-next-line no-console
-  console.log(`KingBebras running on http://localhost:${port}`);
+  console.error(err);
+  process.exit(1);
 });
 

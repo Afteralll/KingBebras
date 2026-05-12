@@ -1,7 +1,7 @@
 # Render Blueprint: https://render.com/docs/blueprint-spec
 # Custom domain: Dashboard → Settings → Custom Domain (CNAME to onrender.com).
-# Free web services may lose SQLite on redeploy; for durable data use a paid instance +
-# Persistent Disk and set env KB_DB_PATH=/mnt/your-disk/data.sqlite (see Render Disks docs).
+# For durable data on the free web tier, set DATABASE_URL to a Neon Postgres connection string
+# (Dashboard → Environment → DATABASE_URL). Local/dev can omit it to use server/data.sqlite.
 services:
   - type: web
     name: kingbebras
