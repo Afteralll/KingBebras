@@ -40,7 +40,18 @@ export const TEACHER_I18N = {
     csv_task_time10: 'time10',
     csv_task_click10: 'click10',
     csv_task_drag10: 'drag10',
-    csv_task_weights: 'weights'
+    csv_task_weights: 'weights',
+    copy_all: 'Copy all',
+    copy_row: 'Copy',
+    copied: 'Copied!',
+    no_credentials: 'No student credentials yet. Upload a CSV to create accounts.',
+    no_marks: 'No students yet, or nobody has started a task.',
+    accounts: 'accounts',
+    students_label: 'students',
+    col_password: 'Password',
+    show_password: 'Show',
+    hide_password: 'Hide',
+    no_task_activity: 'No task activity yet'
   },
   ar: {
     created: 'أُنشئ',
@@ -82,7 +93,18 @@ export const TEACHER_I18N = {
     csv_task_time10: 'زمن10',
     csv_task_click10: 'نقرة10',
     csv_task_drag10: 'سحب10',
-    csv_task_weights: 'أوزان'
+    csv_task_weights: 'أوزان',
+    copy_all: 'نسخ الكل',
+    copy_row: 'نسخ',
+    copied: 'تم النسخ!',
+    no_credentials: 'لا توجد بيانات دخول بعد. ارفع ملف CSV لإنشاء الحسابات.',
+    no_marks: 'لا يوجد طلاب بعد، أو لم يبدأ أحد مهمة.',
+    accounts: 'حسابات',
+    students_label: 'طلاب',
+    col_password: 'كلمة المرور',
+    show_password: 'إظهار',
+    hide_password: 'إخفاء',
+    no_task_activity: 'لا نشاط للمهام بعد'
   },
   fr: {
     created: 'créé',
@@ -166,7 +188,18 @@ export const TEACHER_I18N = {
     csv_task_time10: 'zeit10',
     csv_task_click10: 'klick10',
     csv_task_drag10: 'ziehen10',
-    csv_task_weights: 'gewichtung'
+    csv_task_weights: 'gewichtung',
+    copy_all: 'Alle kopieren',
+    copy_row: 'Kopieren',
+    copied: 'Kopiert!',
+    no_credentials: 'Noch keine Zugangsdaten. CSV hochladen, um Konten zu erstellen.',
+    no_marks: 'Noch keine Schüler oder niemand hat eine Aufgabe gestartet.',
+    accounts: 'Konten',
+    students_label: 'Schüler',
+    col_password: 'Passwort',
+    show_password: 'Anzeigen',
+    hide_password: 'Verbergen',
+    no_task_activity: 'Noch keine Aufgabenaktivität'
   },
   es: {
     created: 'creado',

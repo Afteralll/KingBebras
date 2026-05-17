@@ -11,7 +11,6 @@ const state = {
   resultsByTaskId: {},
   examEndsAt: null,
   generatedCredentials: [],
-  teacherResultsPreview: '',
   teacherResultsPayload: null,
   teacherCredentialsLoaded: false
 };
@@ -213,16 +212,62 @@ function renderMe() {
   renderExamControls();
 }
 
-function renderGeneratedCredentials() {
-  const output = $('#generatedCredentials');
-  if (!output) return;
-  if (!state.generatedCredentials.length) {
-    output.value = '';
-    return;
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    return true;
   }
-  const lang = currentTeacherLang();
+}
+
+function flashCopied(btn, lang) {
+  const prev = btn.textContent;
+  btn.textContent = teacherT(lang, 'copied');
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = prev;
+    btn.disabled = false;
+  }, 1200);
+}
+
+function formatTeacherDate(iso) {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+  } catch {
+    return iso;
+  }
+}
+
+function getRawMetricPairs(raw) {
+  if (!raw || typeof raw !== 'object') return [];
+  return Object.keys(raw)
+    .sort((a, b) => a.localeCompare(b))
+    .filter((k) => {
+      if (k === 'totalScore' && Object.prototype.hasOwnProperty.call(raw, 'errorScore')) return false;
+      return true;
+    })
+    .map((k) => {
+      const v = raw[k];
+      const valueStr =
+        v == null ? '' : typeof v === 'string' ? v : typeof v === 'number' || typeof v === 'boolean' ? String(v) : JSON.stringify(v);
+      return { key: k, value: valueStr };
+    })
+    .filter((p) => p.value !== '');
+}
+
+function credentialsPlainText(rows, lang) {
   const t = (k) => teacherT(lang, k);
-  output.value = state.generatedCredentials
+  return rows
     .map((r, idx) => {
       const createdAt = r.createdAt ? ` | ${t('created')}: ${r.createdAt}` : '';
       return `${idx + 1}. ${r.name} | ${r.username} | ${r.password}${createdAt}`;
@@ -230,50 +275,239 @@ function renderGeneratedCredentials() {
     .join('\n');
 }
 
-function renderTeacherResultsPreview() {
-  const el = $('#teacherResults');
-  if (!el) return;
-  el.value = state.teacherResultsPreview ?? '';
+function applyTeacherStaticI18n() {
+  const lang = currentTeacherLang();
+  document.querySelectorAll('[data-teacher-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-teacher-i18n');
+    if (key) el.textContent = teacherT(lang, key);
+  });
 }
 
-function buildTeacherMarksPreview(res, lang) {
+function renderGeneratedCredentials() {
+  const container = $('#generatedCredentials');
+  const countEl = $('#credentialsCount');
+  if (!container) return;
+
+  const lang = currentTeacherLang();
   const t = (k) => teacherT(lang, k);
-  const lines = [];
-  lines.push(t('monitoringTitleLine'));
-  lines.push('='.repeat(90));
-  for (const s of res.students ?? []) {
+  const rows = state.generatedCredentials ?? [];
+
+  if (countEl) countEl.textContent = rows.length ? `${rows.length} ${t('accounts')}` : '';
+
+  container.innerHTML = '';
+  if (!rows.length) {
+    const empty = document.createElement('div');
+    empty.className = 'teacher-empty';
+    empty.textContent = t('no_credentials');
+    container.append(empty);
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.className = 'teacher-table';
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  for (const label of ['#', t('csv_name'), t('csv_username'), t('col_password'), t('created'), '']) {
+    const th = document.createElement('th');
+    th.textContent = label;
+    headRow.append(th);
+  }
+  thead.append(headRow);
+  table.append(thead);
+
+  const tbody = document.createElement('tbody');
+  rows.forEach((r, idx) => {
+    const tr = document.createElement('tr');
+
+    const num = document.createElement('td');
+    num.className = 'teacher-num';
+    num.textContent = String(idx + 1);
+    tr.append(num);
+
+    const nameTd = document.createElement('td');
+    nameTd.className = 'teacher-name';
+    nameTd.textContent = (r.name || '').trim() || t('noName');
+    tr.append(nameTd);
+
+    const userTd = document.createElement('td');
+    const userCode = document.createElement('code');
+    userCode.className = 'teacher-mono';
+    userCode.textContent = r.username ?? '';
+    userTd.append(userCode);
+    tr.append(userTd);
+
+    const passTd = document.createElement('td');
+    passTd.className = 'teacher-password-cell';
+    const passWrap = document.createElement('div');
+    passWrap.className = 'teacher-password-wrap';
+    const passCode = document.createElement('code');
+    passCode.className = 'teacher-mono teacher-password';
+    passCode.textContent = r.password ?? '';
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'btn btn-sm btn-icon';
+    toggleBtn.textContent = t('show_password');
+    let revealed = false;
+    toggleBtn.addEventListener('click', () => {
+      revealed = !revealed;
+      passCode.classList.toggle('is-hidden', !revealed);
+      toggleBtn.textContent = t(revealed ? 'hide_password' : 'show_password');
+      toggleBtn.setAttribute('aria-label', toggleBtn.textContent);
+    });
+    toggleBtn.setAttribute('aria-label', t('show_password'));
+    passCode.classList.add('is-hidden');
+    passWrap.append(passCode, toggleBtn);
+    passTd.append(passWrap);
+    tr.append(passTd);
+
+    const createdTd = document.createElement('td');
+    createdTd.className = 'teacher-date';
+    createdTd.textContent = formatTeacherDate(r.createdAt);
+    tr.append(createdTd);
+
+    const actionsTd = document.createElement('td');
+    actionsTd.className = 'teacher-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'btn btn-sm';
+    copyBtn.textContent = t('copy_row');
+    const line = `${(r.name || '').trim() || t('noName')}\t${r.username}\t${r.password}`;
+    copyBtn.addEventListener('click', async () => {
+      await copyText(line);
+      flashCopied(copyBtn, lang);
+    });
+    actionsTd.append(copyBtn);
+    tr.append(actionsTd);
+
+    tbody.append(tr);
+  });
+
+  table.append(tbody);
+  container.append(table);
+}
+
+function renderTeacherResultsPreview() {
+  const container = $('#teacherResults');
+  const countEl = $('#marksCount');
+  const subtitleEl = $('#marksSubtitle');
+  if (!container) return;
+
+  const lang = currentTeacherLang();
+  const t = (k) => teacherT(lang, k);
+  const res = state.teacherResultsPayload;
+  const students = res?.students ?? [];
+  const tasks = res?.tasks ?? [];
+
+  if (subtitleEl) subtitleEl.textContent = t('monitoringTitleLine');
+  if (countEl) countEl.textContent = students.length ? `${students.length} ${t('students_label')}` : '';
+
+  container.innerHTML = '';
+  if (!students.length) {
+    const empty = document.createElement('div');
+    empty.className = 'teacher-empty';
+    empty.textContent = t('no_marks');
+    container.append(empty);
+    return;
+  }
+
+  for (const s of students) {
     let statusKey = 'statusNotStarted';
     if (s.finishedAt) statusKey = 'statusFinished';
     else if (s.startedAt) statusKey = 'statusStarted';
-    const name = (s.name || '').trim() || t('noName');
-    lines.push(`${name} | ${s.username} | ${t(statusKey)} | ${t('attemptStartedAt')}: ${s.startedAt ?? '—'} | ${t('attemptFinishedAt')}: ${s.finishedAt ?? '—'}`);
-    for (const task of res.tasks ?? []) {
+
+    const card = document.createElement('article');
+    card.className = 'teacher-student-card';
+
+    const header = document.createElement('div');
+    header.className = 'teacher-student-header';
+
+    const identity = document.createElement('div');
+    identity.className = 'teacher-student-identity';
+    const nameEl = document.createElement('div');
+    nameEl.className = 'teacher-student-name';
+    nameEl.textContent = (s.name || '').trim() || t('noName');
+    const userEl = document.createElement('div');
+    userEl.className = 'teacher-student-user muted';
+    userEl.textContent = s.username ?? '';
+    identity.append(nameEl, userEl);
+
+    const status = document.createElement('span');
+    status.className = `teacher-status ${statusKey === 'statusFinished' ? 'is-finished' : statusKey === 'statusStarted' ? 'is-started' : 'is-idle'}`;
+    status.textContent = t(statusKey);
+    header.append(identity, status);
+    card.append(header);
+
+    const meta = document.createElement('div');
+    meta.className = 'teacher-student-meta';
+    const started = document.createElement('span');
+    const startedLbl = document.createElement('strong');
+    startedLbl.textContent = t('attemptStartedAt');
+    started.append(startedLbl, ' ', document.createTextNode(formatTeacherDate(s.startedAt)));
+    const finished = document.createElement('span');
+    const finishedLbl = document.createElement('strong');
+    finishedLbl.textContent = t('attemptFinishedAt');
+    finished.append(finishedLbl, ' ', document.createTextNode(formatTeacherDate(s.finishedAt)));
+    meta.append(started, finished);
+    card.append(meta);
+
+    const taskList = document.createElement('div');
+    taskList.className = 'teacher-task-list';
+    let hasActivity = false;
+
+    for (const task of tasks) {
       const tm = s.taskMonitoring?.[task.id] ?? null;
       if (!tm?.finishedAt && !tm?.startedAt) continue;
+      hasActivity = true;
+
+      const taskCard = document.createElement('div');
+      taskCard.className = 'teacher-task-card';
+
+      const taskHead = document.createElement('div');
+      taskHead.className = 'teacher-task-head';
+      const title = document.createElement('span');
+      title.className = 'teacher-task-title';
+      title.textContent = task.title;
+      const cat = document.createElement('span');
+      cat.className = `teacher-cat cat-${(task.category || '').toLowerCase()}`;
+      cat.textContent = task.category ?? '';
+      taskHead.append(title, cat);
+      taskCard.append(taskHead);
+
       const raw = tm?.monitoring?.raw ?? null;
-      const rawPairs = raw && typeof raw === 'object'
-        ? Object.keys(raw)
-            .sort((a, b) => a.localeCompare(b))
-            .filter((k) => {
-              // Hide redundant totals if errorScore is already present (e.g. Magic House uses errorScore as total).
-              if (k === 'totalScore' && Object.prototype.hasOwnProperty.call(raw, 'errorScore')) return false;
-              return true;
-            })
-            .map((k) => {
-              const v = raw[k];
-              const valueStr =
-                v == null ? '' : typeof v === 'string' ? v : typeof v === 'number' || typeof v === 'boolean' ? String(v) : JSON.stringify(v);
-              return `${k}=${valueStr}`;
-            })
-            .filter(Boolean)
-        : [];
-      lines.push(
-        `  - ${task.title} (${task.category})${rawPairs.length ? ` | ${rawPairs.join(' | ')}` : ''}`
-      );
+      const pairs = getRawMetricPairs(raw);
+      if (pairs.length) {
+        const metrics = document.createElement('div');
+        metrics.className = 'teacher-metrics';
+        for (const { key, value } of pairs) {
+          const chip = document.createElement('span');
+          chip.className = 'teacher-metric';
+          const k = document.createElement('span');
+          k.className = 'teacher-metric-key';
+          k.textContent = key;
+          const v = document.createElement('span');
+          v.className = 'teacher-metric-val';
+          v.textContent = value;
+          chip.append(k, v);
+          metrics.append(chip);
+        }
+        taskCard.append(metrics);
+      }
+
+      taskList.append(taskCard);
     }
-    lines.push('-'.repeat(90));
+
+    if (!hasActivity) {
+      const idle = document.createElement('p');
+      idle.className = 'teacher-no-activity muted';
+      idle.textContent = t('no_task_activity');
+      card.append(idle);
+    } else {
+      card.append(taskList);
+    }
+
+    container.append(card);
   }
-  return lines.join('\n');
 }
 
 function csvEscape(value) {
@@ -343,11 +577,9 @@ function buildTeacherCsv(res, lang) {
 
 function rerenderTeacherLocalized() {
   if (state.me?.role !== 'teacher') return;
+  applyTeacherStaticI18n();
   renderGeneratedCredentials();
-  if (state.teacherResultsPayload) {
-    state.teacherResultsPreview = buildTeacherMarksPreview(state.teacherResultsPayload, currentTeacherLang());
-    renderTeacherResultsPreview();
-  }
+  if (state.teacherResultsPayload) renderTeacherResultsPreview();
 }
 
 async function refreshTeacherCredentials() {
@@ -468,6 +700,7 @@ async function refreshMe() {
   renderMe();
   if (state.me?.authenticated) {
     if (state.me.role === 'teacher') {
+      applyTeacherStaticI18n();
       state.tasks = [];
       state.attemptId = null;
       state.examEndsAt = null;
@@ -758,8 +991,6 @@ $('#uploadStudentsBtn')?.addEventListener('click', async () => {
 async function refreshTeacherMarks() {
   const res = await api('/api/teacher/students/results');
   state.teacherResultsPayload = res;
-  const lang = currentTeacherLang();
-  state.teacherResultsPreview = buildTeacherMarksPreview(res, lang);
   renderTeacherResultsPreview();
 }
 
@@ -771,6 +1002,15 @@ $('#refreshResultsBtn')?.addEventListener('click', async () => {
   } catch (e) {
     setAlert($('#teacherMsg'), 'bad', uiT('could_not_load_marks', { err: e.json?.error ?? 'unknown' }));
   }
+});
+
+$('#copyAllCredentialsBtn')?.addEventListener('click', async () => {
+  const lang = currentTeacherLang();
+  const rows = state.generatedCredentials ?? [];
+  if (!rows.length) return;
+  const btn = $('#copyAllCredentialsBtn');
+  await copyText(credentialsPlainText(rows, lang));
+  if (btn) flashCopied(btn, lang);
 });
 
 $('#refreshCredentialsBtn')?.addEventListener('click', async () => {
@@ -789,7 +1029,6 @@ $('#downloadResultsBtn')?.addEventListener('click', async () => {
   try {
     const res = await api('/api/teacher/students/results');
     state.teacherResultsPayload = res;
-    state.teacherResultsPreview = buildTeacherMarksPreview(res, lang);
     renderTeacherResultsPreview();
     const csv = buildTeacherCsv(res, lang);
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });

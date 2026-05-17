@@ -70,9 +70,15 @@
                 <button id="uploadStudentsBtn" class="btn primary" data-i18n="upload_csv_generate">Upload CSV & Generate Credentials</button>
               </div>
               <div id="teacherMsg" class="alert" style="display: none"></div>
-              <div class="field">
-                <label for="generatedCredentials" data-i18n="all_student_credentials">All Student Credentials (always available)</label>
-                <textarea id="generatedCredentials" rows="16" readonly></textarea>
+              <div class="teacher-panel teacher-credentials-panel">
+                <div class="teacher-panel-head">
+                  <label data-i18n="all_student_credentials">All Student Credentials (always available)</label>
+                  <div class="teacher-panel-actions">
+                    <span id="credentialsCount" class="teacher-count muted" aria-live="polite"></span>
+                    <button type="button" id="copyAllCredentialsBtn" class="btn btn-sm" data-teacher-i18n="copy_all">Copy all</button>
+                  </div>
+                </div>
+                <div id="generatedCredentials" class="teacher-table-wrap" role="region" aria-label="Student credentials"></div>
               </div>
               <div class="row wrap" style="justify-content: space-between; margin-top: 10px">
                 <button id="refreshCredentialsBtn" class="btn" data-i18n="refresh_credentials">Refresh Credentials</button>
@@ -81,9 +87,13 @@
               </div>
             </div>
             <div class="teacher-right">
-              <div class="field teacher-results-field">
-                <label for="teacherResults" data-i18n="student_marks_preview">Student Marks (Detailed Preview)</label>
-                <textarea id="teacherResults" rows="28" readonly></textarea>
+              <div class="teacher-panel teacher-marks-panel">
+                <div class="teacher-panel-head">
+                  <label data-i18n="student_marks_preview">Student Marks (Detailed Preview)</label>
+                  <span id="marksCount" class="teacher-count muted" aria-live="polite"></span>
+                </div>
+                <p id="marksSubtitle" class="teacher-marks-subtitle muted"></p>
+                <div id="teacherResults" class="teacher-marks-list" role="region" aria-label="Student marks"></div>
               </div>
             </div>
           </div>
