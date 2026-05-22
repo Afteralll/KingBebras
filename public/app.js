@@ -138,23 +138,18 @@ function parseServerDate(value) {
   return NaN;
 }
 
+/**
+ * Apply exam timer from server fields only (never parse date strings here).
+ * Uses remainingMs so the countdown works on any device/timezone and tolerates
+ * moderate client/server clock differences.
+ */
 function applyExamTimingFromServer(payload) {
   if (!payload) {
     state.examEndsAt = null;
     return;
   }
-  const endsAtMs = parseServerDate(payload.examEndsAt);
-  if (Number.isFinite(endsAtMs)) {
-    state.examEndsAt = endsAtMs;
-    return;
-  }
   if (Number.isFinite(payload.remainingMs)) {
     state.examEndsAt = Date.now() + Math.max(0, payload.remainingMs);
-    return;
-  }
-  const startedAtMs = parseServerDate(payload.startedAt ?? payload.started_at);
-  if (Number.isFinite(startedAtMs)) {
-    state.examEndsAt = startedAtMs + EXAM_DURATION_MS;
     return;
   }
   state.examEndsAt = null;
@@ -781,9 +776,6 @@ async function refreshMe() {
     renderTimer();
     renderTasks();
     renderExamControls();
-    if (state.attemptId && state.examEndsAt && state.examEndsAt <= Date.now()) {
-      await endChallenge(true);
-    }
   }
 }
 
