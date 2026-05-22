@@ -43,6 +43,65 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+const EXAM_DURATION_MS = 45 * 60 * 1000;
+
+/** @param {unknown} value */
+function parseStoredTimestamp(value) {
+  if (value == null) return NaN;
+  if (value instanceof Date) return value.getTime();
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value !== 'string') return NaN;
+  const s = value.trim();
+  if (!s) return NaN;
+  // SQLite datetime('now'): UTC wall clock without offset
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(s)) {
+    return Date.parse(s.replace(' ', 'T') + 'Z');
+  }
+  // ISO without timezone: treat as UTC (avoid local-time mis-parse in browsers)
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(s)) {
+    return Date.parse(`${s}Z`);
+  }
+  return Date.parse(s);
+}
+
+/** @param {unknown} startedAt */
+function getExamTiming(startedAt) {
+  const startedAtMs = parseStoredTimestamp(startedAt);
+  if (!Number.isFinite(startedAtMs)) return null;
+  const examEndsAtMs = startedAtMs + EXAM_DURATION_MS;
+  return {
+    startedAtMs,
+    examEndsAtMs,
+    remainingMs: Math.max(0, examEndsAtMs - Date.now())
+  };
+}
+
+/** @param {Record<string, unknown> | null | undefined} row */
+function serializeAttempt(row) {
+  if (!row) return null;
+  const startedAtRaw = row.started_at ?? row.startedAt;
+  const finishedAtRaw = row.finished_at ?? row.finishedAt;
+  const timing = getExamTiming(startedAtRaw);
+  const finishedAtMs = parseStoredTimestamp(finishedAtRaw);
+  return {
+    id: row.id,
+    startedAt: timing
+      ? new Date(timing.startedAtMs).toISOString()
+      : startedAtRaw == null
+        ? null
+        : String(startedAtRaw),
+    finishedAt: Number.isFinite(finishedAtMs)
+      ? new Date(finishedAtMs).toISOString()
+      : finishedAtRaw == null
+        ? null
+        : String(finishedAtRaw),
+    seed: row.seed ?? null,
+    examEndsAt: timing ? new Date(timing.examEndsAtMs).toISOString() : null,
+    remainingMs: timing?.remainingMs ?? 0,
+    examExpired: Boolean(timing && timing.remainingMs <= 0 && finishedAtRaw == null)
+  };
+}
+
 function addDays(date, days) {
   const d = new Date(date);
   d.setDate(d.getDate() + days);
@@ -1052,31 +1111,50 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, asyncR
 
 app.post('/api/attempts/start', requireAuth, requireStudent, asyncRoute(async (req, res) => {
   const existing = await qGet(
-    `SELECT id, started_at, finished_at FROM attempts WHERE user_id = ? ORDER BY started_at ASC LIMIT 1`,
+    `SELECT id, started_at, finished_at, seed FROM attempts WHERE user_id = ? ORDER BY started_at ASC LIMIT 1`,
     [req.user.userId]
   );
   if (existing) {
     if (existing.finished_at) {
+      const serialized = serializeAttempt(existing);
       return res.status(409).json({
         error: 'attempt_already_completed',
         attemptId: existing.id,
-        startedAt: existing.started_at,
-        finishedAt: existing.finished_at
+        startedAt: serialized?.startedAt ?? null,
+        finishedAt: serialized?.finishedAt ?? null
       });
     }
+    let timerReset = false;
+    const timing = getExamTiming(existing.started_at);
+    if (timing && timing.remainingMs <= 0) {
+      const now = nowIso();
+      await qRun(
+        `UPDATE attempts SET started_at = ? WHERE id = ? AND user_id = ? AND finished_at IS NULL`,
+        [now, existing.id, req.user.userId]
+      );
+      existing.started_at = now;
+      timerReset = true;
+    }
+    const serialized = serializeAttempt(existing);
     return res.json({
       ok: true,
       attemptId: existing.id,
       existing: true,
-      startedAt: existing.started_at,
-      finishedAt: existing.finished_at
+      timerReset,
+      startedAt: serialized?.startedAt ?? null,
+      finishedAt: null,
+      examEndsAt: serialized?.examEndsAt ?? null,
+      remainingMs: serialized?.remainingMs ?? 0
     });
   }
 
   const attemptId = randomId(16);
   const seed = Math.floor(Math.random() * 1_000_000_000);
   await qRun(`INSERT INTO attempts (id, user_id, seed) VALUES (?, ?, ?)`, [attemptId, req.user.userId, seed]);
-  const created = await qGet(`SELECT started_at FROM attempts WHERE id = ?`, [attemptId]);
+  const created = await qGet(
+    `SELECT id, started_at, finished_at, seed FROM attempts WHERE id = ?`,
+    [attemptId]
+  );
 
   for (let idx = 0; idx < TASKS.length; idx++) {
     const t = TASKS[idx];
@@ -1087,12 +1165,16 @@ app.post('/api/attempts/start', requireAuth, requireStudent, asyncRoute(async (r
     ]);
   }
 
+  const serialized = serializeAttempt(created);
   return res.json({
     ok: true,
     attemptId,
     existing: false,
-    startedAt: created?.started_at ?? nowIso(),
-    finishedAt: null
+    timerReset: false,
+    startedAt: serialized?.startedAt ?? nowIso(),
+    finishedAt: null,
+    examEndsAt: serialized?.examEndsAt ?? null,
+    remainingMs: serialized?.remainingMs ?? EXAM_DURATION_MS
   });
 }));
 
@@ -1107,7 +1189,7 @@ app.get('/api/attempts/current', requireAuth, requireStudent, asyncRoute(async (
     `,
     [req.user.userId]
   );
-  return res.json({ attempt: row ?? null });
+  return res.json({ attempt: serializeAttempt(row) });
 }));
 
 app.get('/api/attempts/:attemptId/tasks', requireAuth, requireStudent, asyncRoute(async (req, res) => {

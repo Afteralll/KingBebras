@@ -117,16 +117,47 @@ function isExamRunning() {
 }
 
 function parseServerDate(value) {
-  if (!value) return NaN;
+  if (value == null) return NaN;
+  if (value instanceof Date) return value.getTime();
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
   if (typeof value !== 'string') return NaN;
-  // SQLite datetime('now') format: YYYY-MM-DD HH:MM:SS
-  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) {
-    const ts = Date.parse(value.replace(' ', 'T') + 'Z');
+  const s = value.trim();
+  if (!s) return NaN;
+  // SQLite datetime('now'): UTC wall clock without offset
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(s)) {
+    const ts = Date.parse(s.replace(' ', 'T') + 'Z');
     if (Number.isFinite(ts)) return ts;
   }
-  const ts = Date.parse(value);
+  // ISO without timezone: treat as UTC (browsers otherwise parse as local time)
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(s)) {
+    const ts = Date.parse(`${s}Z`);
+    if (Number.isFinite(ts)) return ts;
+  }
+  const ts = Date.parse(s);
   if (Number.isFinite(ts)) return ts;
   return NaN;
+}
+
+function applyExamTimingFromServer(payload) {
+  if (!payload) {
+    state.examEndsAt = null;
+    return;
+  }
+  const endsAtMs = parseServerDate(payload.examEndsAt);
+  if (Number.isFinite(endsAtMs)) {
+    state.examEndsAt = endsAtMs;
+    return;
+  }
+  if (Number.isFinite(payload.remainingMs)) {
+    state.examEndsAt = Date.now() + Math.max(0, payload.remainingMs);
+    return;
+  }
+  const startedAtMs = parseServerDate(payload.startedAt ?? payload.started_at);
+  if (Number.isFinite(startedAtMs)) {
+    state.examEndsAt = startedAtMs + EXAM_DURATION_MS;
+    return;
+  }
+  state.examEndsAt = null;
 }
 
 function formatRemaining(ms) {
@@ -733,12 +764,10 @@ async function refreshMe() {
     state.resultsByTaskId = {};
 
     if (state.attemptId) {
-      const startedAtMs = parseServerDate(current.attempt?.started_at);
-      const finishedAtMs = parseServerDate(current.attempt?.finished_at);
-      if (Number.isFinite(startedAtMs) && !Number.isFinite(finishedAtMs)) {
-        const endsAt = startedAtMs + EXAM_DURATION_MS;
-        state.examEndsAt = endsAt;
-        if (endsAt > Date.now()) {
+      const finishedAtMs = parseServerDate(current.attempt?.finishedAt ?? current.attempt?.finished_at);
+      if (!Number.isFinite(finishedAtMs)) {
+        applyExamTimingFromServer(current.attempt);
+        if (state.examEndsAt && state.examEndsAt > Date.now()) {
           startExamTimer();
           setAlert($('#sessionMsg'), 'ok', uiT('exam_resumed'));
         }
@@ -776,11 +805,8 @@ async function startExam() {
   }
   const startRes = await createAttempt();
   state.resultsByTaskId = {};
-  const startedAtMs = Number.isFinite(parseServerDate(startRes?.startedAt))
-    ? parseServerDate(startRes?.startedAt)
-    : Date.now();
-  state.examEndsAt = startedAtMs + EXAM_DURATION_MS;
-  if (state.examEndsAt <= Date.now()) {
+  applyExamTimingFromServer(startRes);
+  if (!state.examEndsAt || state.examEndsAt <= Date.now()) {
     await endChallenge(true);
     return;
   }
