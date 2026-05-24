@@ -620,6 +620,7 @@
             box-shadow: 0 6px 20px rgba(254, 202, 87, 0.2);
             animation: msgPop 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             min-width: 250px;
+            line-height: 1.6;
         }
 
         #message:empty {
@@ -676,28 +677,16 @@
 
     <!-- ==================== DECORATIVE BACKGROUND LAYER ==================== -->
     <div id="decorationsLayer">
-        <!-- Rainbow -->
         <div class="rainbow-wrapper">
             <div class="rainbow-arc"></div>
             <div class="rainbow-shine"></div>
         </div>
-
-        <!-- Clouds -->
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
         <div class="cloud cloud-3"></div>
-
-        <!-- Sparkles -->
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-        <span class="sparkle"></span>
-
-        <!-- Flying Candy -->
+        <span class="sparkle"></span><span class="sparkle"></span><span class="sparkle"></span>
+        <span class="sparkle"></span><span class="sparkle"></span><span class="sparkle"></span>
+        <span class="sparkle"></span><span class="sparkle"></span>
         <span class="candy candy-bob" style="top:8%;left:6%;font-size:32px;animation-duration:9s;animation-delay:0s;">🍬</span>
         <span class="candy candy-drift" style="top:14%;left:22%;font-size:26px;animation-duration:13s;animation-delay:1.5s;">🍭</span>
         <span class="candy candy-wiggle" style="top:6%;left:38%;font-size:30px;animation-duration:11s;animation-delay:3s;">🧁</span>
@@ -719,10 +708,7 @@
             <span class="title-stars">⭐</span>
         </h1>
 
-        
-
         <div id="stats">
-            <!-- Only time is visible -->
             <div class="stat-badge">
                 <span class="stat-icon">⏱️</span>
                 <span class="stat-label">Time</span>
@@ -731,13 +717,12 @@
         </div>
 
         <div id="mainImageBox">
-            <!-- Instruction text -->
-        <div class="instruction-box">
-            A group of 8 friends want to make sure that each one of them is wearing a different outfit to school.<br>
-            The friends have created unique outfits using a decision tree of different clothing and accessories.<br>
-            The first friend has arrived as shown below. According to the decision tree, they did <strong>not</strong> wear a shirt or scarf, but did wear earrings.<br>
-            <strong>QUESTION:</strong> Put the remaining pictures of the different outfits in the right place by dragging them to the question marks.
-        </div>
+            <div class="instruction-box">
+                A group of 8 friends want to make sure that each one of them is wearing a different outfit to school.<br>
+                The friends have created unique outfits using a decision tree of different clothing and accessories.<br>
+                The first friend has arrived as shown below. According to the decision tree, they did <strong>not</strong> wear a shirt or scarf, but did wear earrings.<br>
+                <strong>QUESTION:</strong> Put the remaining pictures of the different outfits in the right place by dragging them to the question marks.
+            </div>
             <img id="mainImage" src="Main.PNG" alt="Main Image">
             <div id="slots"></div>
         </div>
@@ -756,16 +741,12 @@
     <script>
         /* ===============================
          PUT THESE FILES IN SAME FOLDER:
-         main.png
-         1.png
-         2.png
-         3.png
-         4.png
-         5.png
-         6.png
-         7.png
-         8.png
+         main.png, 1.png, 2.png, 3.png, 4.png, 5.png, 6.png, 7.png, 8.png
         =============================== */
+
+        // ★★★ CORRECT ORDER – change these numbers to match the decision tree! ★★★
+        // slot index 0 → slot 1, index 1 → slot 2 … index 7 → slot 8
+        const correctOrder = [1, 2, 3, 4, 5, 6, 7, 8];   // default numeric order
 
         /* image 7 starts already sorted, so not in pool */
         let images = [
@@ -791,7 +772,7 @@
 
         let selected = null;
         let clicks = 0;
-        let totalErrors = 0;        // computed only at finish
+        let totalErrors = 0;
         let gameEnded = false;
         let seconds = 0;
         let resetCount = 0;
@@ -801,7 +782,6 @@
         const pool = document.getElementById("pool");
         const slots = document.getElementById("slots");
         const message = document.getElementById("message");
-
         const timeText = document.getElementById("timeScore");
 
         /* ================= TIMER ================= */
@@ -817,49 +797,30 @@
             timeText.textContent = String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
         }
 
-        /* ================= ERROR RULES (unchanged) ================= */
-        function getErrors(imgNum, slotNum) {
-            if (imgNum === slotNum) return 0;
+        /* ================= ERROR RULES (now based on correct answer) ================= */
+        function getErrors(placedImg, correctImg) {
+            // If the placed image is exactly the correct one, no error.
+            if (placedImg === correctImg) return 0;
 
-            /* paired switches */
+            // Paired swaps (images 1&2, 3&4, 5&6, 7&8) – 1 error point.
             if (
-                (imgNum === 1 && slotNum === 2) || (imgNum === 2 && slotNum === 1) ||
-                (imgNum === 3 && slotNum === 4) || (imgNum === 4 && slotNum === 3) ||
-                (imgNum === 5 && slotNum === 6) || (imgNum === 6 && slotNum === 5) ||
-                (imgNum === 7 && slotNum === 8) || (imgNum === 8 && slotNum === 7)
+                (placedImg === 1 && correctImg === 2) || (placedImg === 2 && correctImg === 1) ||
+                (placedImg === 3 && correctImg === 4) || (placedImg === 4 && correctImg === 3) ||
+                (placedImg === 5 && correctImg === 6) || (placedImg === 6 && correctImg === 5) ||
+                (placedImg === 7 && correctImg === 8) || (placedImg === 8 && correctImg === 7)
             ) {
                 return 1;
             }
 
-            /* 1,2 group */
-            if (imgNum <= 2) {
-                if (slotNum <= 2) return 1;
-                if (slotNum <= 4) return 2;
-                return 3;
-            }
+            /* Groups: 1-2, 3-4, 5-6, 7-8 */
+            // Helper to get group number (0 for 1-2, 1 for 3-4, 2 for 5-6, 3 for 7-8)
+            const groupOf = (img) => img <= 2 ? 0 : img <= 4 ? 1 : img <= 6 ? 2 : 3;
+            const gPlaced = groupOf(placedImg);
+            const gCorrect = groupOf(correctImg);
 
-            /* 3,4 group */
-            if (imgNum <= 4) {
-                if (slotNum <= 4 && slotNum >= 3) return 1;
-                if (slotNum <= 2) return 2;
-                return 3;
-            }
-
-            /* 5,6 group */
-            if (imgNum <= 6) {
-                if (slotNum >= 5 && slotNum <= 6) return 1;
-                if (slotNum >= 7) return 2;
-                return 3;
-            }
-
-            /* 7,8 group */
-            if (imgNum <= 8) {
-                if (slotNum >= 7) return 1;
-                if (slotNum >= 5) return 2;
-                return 3;
-            }
-
-            return 3;
+            if (gPlaced === gCorrect) return 1;                 // same group, not a simple swap
+            if (Math.abs(gPlaced - gCorrect) === 1) return 2;   // neighbouring group
+            return 3;                                           // far apart
         }
 
         /* ================= CREATE SLOTS ================= */
@@ -903,7 +864,7 @@
             slots.appendChild(slot);
         }
 
-        /* preset image 7 into slot 7 */
+        /* preset image 7 into slot 7 (slot index 6) */
         const slot7 = slots.children[6];
         slot7.innerHTML = `<img src="7.PNG">`;
         slot7.dataset.filled = "7";
@@ -979,50 +940,65 @@
             gameEnded = true;
             clearInterval(timerInterval);
 
-            // Compute final error score based on final arrangement
+            // Compute final error score based on correctOrder
             let finalErrors = 0;
+            let allFilled = true;
+            let allCorrect = true;
             const allSlots = document.querySelectorAll('#slots .slot');
             allSlots.forEach((slot, idx) => {
                 const filledName = slot.dataset.filled;
-                if (filledName) {
-                    const imgNum = parseInt(filledName);
-                    finalErrors += getErrors(imgNum, idx + 1);
+                if (!filledName) {
+                    allFilled = false;
+                    allCorrect = false;
+                } else {
+                    const placedImg = parseInt(filledName);
+                    const expectedImg = correctOrder[idx];
+                    const err = getErrors(placedImg, expectedImg);
+                    finalErrors += err;
+                    if (placedImg !== expectedImg) allCorrect = false;
                 }
             });
             totalErrors = finalErrors;
 
-            // Check correctness
-            let allFilled = true;
-            let allCorrect = true;
-            allSlots.forEach((slot, idx) => {
-                const filled = slot.dataset.filled;
-                if (!filled) {
-                    allFilled = false;
-                    allCorrect = false;
-                } else if (parseInt(filled) !== idx + 1) {
-                    allCorrect = false;
-                }
-            });
             const correctness = (allFilled && allCorrect) ? 1 : 0;
 
             if (giveUp) {
                 giveUpFlag = 1;
-                message.innerHTML = "😔 You gave up. Better luck next time!";
-            } else {
-                message.innerHTML = correctness
-                    ? "🎉 Perfect! All pictures in correct order! 🎉"
-                    : "🏁 Game Finished! ❌ Not all pictures are in the right place.";
             }
 
-            // Send data to the platform
-            window.__kb?.finish?.({
+            // Build the result message
+            let msg = '';
+            if (giveUp) {
+                msg = '😔 You gave up. Better luck next time!<br>';
+            } else if (correctness === 1) {
+                msg = '🎉 Perfect! All pictures in correct order!<br>';
+            } else {
+                msg = '🏁 Game Finished! ❌ Not all pictures are in the right place.<br>';
+            }
+
+            msg += `✅ Correctness: ${correctness} &nbsp;|&nbsp; ❌ Errors: ${totalErrors}<br>`;
+            msg += `⏱️ Time: ${timeText.textContent} &nbsp;|&nbsp; 🔄 Resets: ${resetCount}`;
+
+            message.innerHTML = msg;
+
+            const payload = {
                 correctness,
-                giveUpFlag,
+                giveUpFlag: giveUp ? 1 : 0,
                 resetCount,
                 totalErrors,
                 seconds,
                 clicks
-            });
+            };
+            const sendToTeacher = (attempt = 0) => {
+                if (window.__kb && typeof window.__kb.finish === 'function') {
+                    window.__kb.finish(payload);
+                    return;
+                }
+                if (attempt < 40) {
+                    setTimeout(() => sendToTeacher(attempt + 1), 100);
+                }
+            };
+            sendToTeacher();
         }
 
         /* ================= FINISH BUTTON ================= */

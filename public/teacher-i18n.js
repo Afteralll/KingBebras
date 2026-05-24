@@ -515,6 +515,11 @@ export function translateWeightsLine(line, lang) {
 }
 
 export function currentTeacherLang() {
-  const el = document.querySelector('#translateLang');
-  return el?.value ?? 'en';
+  try {
+    const saved = localStorage.getItem('kb_lang');
+    if (saved === 'de' || saved === 'ar') return saved;
+  } catch {
+    // ignore
+  }
+  return 'en';
 }

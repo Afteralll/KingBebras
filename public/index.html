@@ -20,16 +20,9 @@
         <div class="row wrap">
           <span id="me" class="pill" data-i18n="not_logged_in">Not logged in</span>
           <span id="examTimer" class="pill" style="display: none">45:00</span>
-          <select id="translateLang" class="btn" aria-label="Select language">
-            <option value="en">English</option>
-            <option value="ar">Arabic</option>
-            <option value="de">German</option>
-          </select>
-          <button id="translateBtn" class="btn">Translate</button>
           <button id="logoutBtn" class="btn danger" style="display: none" data-i18n="logout">Logout</button>
         </div>
       </div>
-      <div id="google_translate_element" style="display: none"></div>
 
       <div class="grid">
         <div class="card" id="authCard">
@@ -42,19 +35,13 @@
             <label for="password" data-i18n="password">Password</label>
             <input id="password" type="password" autocomplete="current-password" />
           </div>
-          <div class="field">
-            <label for="registerRole" data-i18n="role">Role</label>
-            <select id="registerRole">
-              <option value="teacher" data-i18n="teacher">Teacher</option>
-            </select>
-          </div>
           <div class="row wrap">
             <button id="loginBtn" class="btn primary" data-i18n="login">Login</button>
-            <button id="registerBtn" class="btn" data-i18n="register">Register</button>
+            <button id="registerBtn" class="btn" data-i18n="teacher_register">Teacher register</button>
           </div>
           <div id="authMsg" class="alert" style="display: none"></div>
           <p class="muted" data-i18n="students_cannot_register">
-            Students cannot register. Teachers create student accounts and distribute logins.
+            Register to create a teacher account. Student logins are created by teachers.
           </p>
         </div>
 
@@ -140,7 +127,7 @@
       </div>
     </div>
 
-    <script type="module" src="/app.js?v=3"></script>
+    <script type="module" src="/app.js?v=5"></script>
   </body>
 </html>
 

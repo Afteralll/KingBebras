@@ -10,7 +10,9 @@ const UI_I18N = {
     role: 'Role',
     teacher: 'Teacher',
     register: 'Register',
-    students_cannot_register: 'Students cannot register. Teachers create student accounts and distribute logins.',
+    teacher_register: 'Teacher register',
+    students_cannot_register:
+      'Register to create a teacher account. Student logins are created by teachers.',
     teacher_coordinator: 'Teacher Coordinator',
     paste_csv: 'Paste CSV (one student name per line, or first column = name)',
     upload_csv_generate: 'Upload CSV & Generate Credentials',
@@ -66,8 +68,9 @@ const UI_I18N = {
     role: 'Rolle',
     teacher: 'Lehrer',
     register: 'Registrieren',
+    teacher_register: 'Lehrer registrieren',
     students_cannot_register:
-      'Schüler können sich nicht registrieren. Lehrkräfte erstellen Schülerkonten und verteilen die Logins.',
+      'Registrieren erstellt ein Lehrkraft-Konto. Schüler-Logins werden von Lehrkräften angelegt.',
     teacher_coordinator: 'Lehrerbereich',
     paste_csv: 'CSV einfügen (ein Name pro Zeile oder erste Spalte = Name)',
     upload_csv_generate: 'CSV hochladen & Zugangsdaten erstellen',
@@ -122,7 +125,9 @@ const UI_I18N = {
     role: 'الدور',
     teacher: 'معلّم',
     register: 'تسجيل',
-    students_cannot_register: 'لا يمكن للطلاب التسجيل. يقوم المعلمون بإنشاء حسابات الطلاب وتوزيع بيانات الدخول.',
+    teacher_register: 'تسجيل معلم',
+    students_cannot_register:
+      'التسجيل ينشئ حساب معلم. حسابات الطلاب ينشئها المعلمون.',
     teacher_coordinator: 'لوحة المعلم',
     paste_csv: 'الصق CSV (اسم طالب في كل سطر، أو العمود الأول = الاسم)',
     upload_csv_generate: 'رفع CSV وإنشاء بيانات الدخول',
@@ -169,9 +174,13 @@ const UI_I18N = {
 };
 
 export function currentUiLang() {
-  const el = document.querySelector('#translateLang');
-  const lang = el?.value || 'en';
-  return lang === 'de' || lang === 'ar' ? lang : 'en';
+  try {
+    const saved = localStorage.getItem('kb_lang');
+    if (saved === 'de' || saved === 'ar') return saved;
+  } catch {
+    // ignore
+  }
+  return 'en';
 }
 
 export function uiT(key, vars = {}, lang = currentUiLang()) {

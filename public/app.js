@@ -18,77 +18,6 @@ const state = {
 let timerIntervalId = null;
 const EXAM_DURATION_MS = 45 * 60 * 1000;
 
-let translateScriptLoading = false;
-let translateReady = false;
-
-function wait(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function ensureGoogleTranslateLoaded() {
-  if (translateReady) return Promise.resolve();
-  if (window.google?.translate?.TranslateElement) {
-    if (!document.querySelector('#google_translate_element .goog-te-combo')) {
-      // eslint-disable-next-line no-new
-      new window.google.translate.TranslateElement(
-        { pageLanguage: 'en', autoDisplay: false },
-        'google_translate_element'
-      );
-    }
-    translateReady = true;
-    return Promise.resolve();
-  }
-  if (translateScriptLoading) {
-    return new Promise((resolve) => {
-      const check = () => {
-        if (translateReady) return resolve();
-        setTimeout(check, 100);
-      };
-      check();
-    });
-  }
-
-  translateScriptLoading = true;
-  return new Promise((resolve, reject) => {
-    window.googleTranslateElementInit = () => {
-      // eslint-disable-next-line no-new
-      new window.google.translate.TranslateElement(
-        { pageLanguage: 'en', autoDisplay: false },
-        'google_translate_element'
-      );
-      translateReady = true;
-      resolve();
-    };
-    const script = document.createElement('script');
-    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    script.async = true;
-    script.onerror = () => reject(new Error('translate_load_failed'));
-    document.body.appendChild(script);
-  });
-}
-
-function setGoogTransCookie(lang) {
-  // cookie format: /<source>/<target>
-  const target = lang === 'de' || lang === 'ar' ? lang : 'en';
-  const value = `/en/${target}`;
-  document.cookie = `googtrans=${encodeURIComponent(value)}; path=/`;
-}
-
-async function translatePageTo(lang) {
-  setGoogTransCookie(lang);
-  await ensureGoogleTranslateLoaded();
-  for (let i = 0; i < 40; i++) {
-    const combo = document.querySelector('.goog-te-combo');
-    if (combo) {
-      combo.value = lang;
-      combo.dispatchEvent(new Event('change'));
-      return true;
-    }
-    await wait(100);
-  }
-  return false;
-}
-
 async function api(path, opts = {}) {
   const res = await fetch(path, {
     credentials: 'include',
@@ -139,17 +68,28 @@ function parseServerDate(value) {
 }
 
 /**
- * Apply exam timer from server fields only (never parse date strings here).
- * Uses remainingMs so the countdown works on any device/timezone and tolerates
- * moderate client/server clock differences.
+ * Apply exam timer from server (UTC epoch + remainingMs only — never parse date strings).
+ * @param {Record<string, unknown> | null | undefined} payload
+ * @param {{ fullWindow?: boolean }} [opts] fullWindow = true when student clicks Start
  */
-function applyExamTimingFromServer(payload) {
+function applyExamTimingFromServer(payload, opts = {}) {
   if (!payload) {
     state.examEndsAt = null;
     return;
   }
-  if (Number.isFinite(payload.remainingMs)) {
-    state.examEndsAt = Date.now() + Math.max(0, payload.remainingMs);
+  if (opts.fullWindow) {
+    state.examEndsAt = Date.now() + EXAM_DURATION_MS;
+    return;
+  }
+  const examEndsAtMs = Number(payload.examEndsAtMs);
+  const serverNowMs = Number(payload.serverNowMs);
+  if (Number.isFinite(examEndsAtMs) && Number.isFinite(serverNowMs)) {
+    state.examEndsAt = examEndsAtMs + (Date.now() - serverNowMs);
+    return;
+  }
+  const remaining = Number(payload.remainingMs);
+  if (Number.isFinite(remaining) && remaining > 0) {
+    state.examEndsAt = Date.now() + remaining;
     return;
   }
   state.examEndsAt = null;
@@ -677,12 +617,7 @@ function openTask(task) {
   $('#taskTitle').textContent = task.title;
   $('#taskMeta').textContent = `Task id: ${task.id}${task.category ? ` • Difficulty ${task.category}` : ''} • Max score: ${task.maxScore ?? 100}`;
   const frame = $('#taskFrame');
-  const lang = $('#translateLang')?.value ?? 'en';
-  try {
-    localStorage.setItem('kb_lang', lang);
-  } catch {
-    // ignore
-  }
+  const lang = currentUiLang();
   const baseUrl = task.url ?? `/tasks/${task.id}/index.html`;
   frame.src = baseUrl.includes('?') ? `${baseUrl}&lang=${encodeURIComponent(lang)}` : `${baseUrl}?lang=${encodeURIComponent(lang)}`;
   show($('#taskCard'), true);
@@ -797,11 +732,8 @@ async function startExam() {
   }
   const startRes = await createAttempt();
   state.resultsByTaskId = {};
-  applyExamTimingFromServer(startRes);
-  if (!state.examEndsAt || state.examEndsAt <= Date.now()) {
-    await endChallenge(true);
-    return;
-  }
+  // Start click always grants a full 45-minute window (device clock / timezone independent).
+  applyExamTimingFromServer(startRes, { fullWindow: true });
   startExamTimer();
   closeTaskFrame();
   renderTimer();
@@ -905,6 +837,12 @@ window.addEventListener('message', async (e) => {
   if (!msg) return;
   if (msg.kind === 'kb_finish') {
     try {
+      if (msg.taskId && state.tasks?.length) {
+        const task = state.tasks.find((t) => t.id === msg.taskId);
+        if (task && (!state.activeTask || state.activeTask.id !== msg.taskId)) {
+          state.activeTask = task;
+        }
+      }
       await finishTask(msg.payload ?? null);
     } catch (err) {
       // non-fatal; keep UX smooth even if finish call hiccups
@@ -1062,38 +1000,6 @@ $('#downloadResultsBtn')?.addEventListener('click', async () => {
     setAlert($('#teacherMsg'), 'bad', uiT('could_not_download', { err: e.json?.error ?? 'unknown' }));
   }
 });
-
-$('#translateBtn')?.addEventListener('click', async () => {
-  const lang = $('#translateLang')?.value ?? 'en';
-  try {
-    // Keep AI/i18n work present but inactive; Google Translate handles visible strings.
-    await translatePageTo(lang);
-  } catch {
-    // ignore
-  }
-  rerenderTeacherLocalized(); // teacher textarea/local labels still need rerender
-});
-
-$('#translateLang')?.addEventListener('change', () => {
-  try {
-    localStorage.setItem('kb_lang', $('#translateLang')?.value ?? 'en');
-  } catch {
-    // ignore
-  }
-  // Keep our built-in i18n available (hidden), but do not force-apply it now.
-  // applyUiI18n(currentUiLang());
-  rerenderTeacherLocalized();
-});
-
-// Initial language setup.
-try {
-  const saved = localStorage.getItem('kb_lang');
-  if (saved && $('#translateLang')) $('#translateLang').value = saved;
-} catch {
-  // ignore
-}
-// Do not auto-apply our built-in UI i18n while using Google Translate.
-// applyUiI18n(currentUiLang());
 
 refreshMe().catch(() => {});
 

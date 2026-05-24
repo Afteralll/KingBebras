@@ -68,7 +68,7 @@ function parseStoredTimestamp(value) {
 async function refreshAttemptTimerIfExpired(row, userId) {
   if (!row || row.finished_at != null) return row;
   const timing = getExamTiming(row.started_at);
-  if (!timing || timing.remainingMs > 0) return row;
+  if (timing && timing.remainingMs > 0) return row;
   const now = nowIso();
   await qRun(
     `UPDATE attempts SET started_at = ? WHERE id = ? AND user_id = ? AND finished_at IS NULL`,
@@ -77,6 +77,18 @@ async function refreshAttemptTimerIfExpired(row, userId) {
   return qGet(
     `SELECT id, started_at, finished_at, seed FROM attempts WHERE id = ?`,
     [row.id]
+  );
+}
+
+async function bumpAttemptStartedAt(attemptId, userId) {
+  const now = nowIso();
+  await qRun(
+    `UPDATE attempts SET started_at = ? WHERE id = ? AND user_id = ? AND finished_at IS NULL`,
+    [now, attemptId, userId]
+  );
+  return qGet(
+    `SELECT id, started_at, finished_at, seed FROM attempts WHERE id = ?`,
+    [attemptId]
   );
 }
 
@@ -112,10 +124,12 @@ function serializeAttempt(row) {
         ? null
         : String(finishedAtRaw),
     seed: row.seed ?? null,
-    examEndsAt: timing ? new Date(timing.examEndsAtMs).toISOString() : null,
-    examEndsAtMs: timing?.examEndsAtMs ?? null,
-    startedAtMs: timing?.startedAtMs ?? null,
-    remainingMs: timing?.remainingMs ?? 0,
+    examEndsAt: timing
+      ? new Date(timing.examEndsAtMs).toISOString()
+      : new Date(Date.now() + EXAM_DURATION_MS).toISOString(),
+    examEndsAtMs: timing?.examEndsAtMs ?? Date.now() + EXAM_DURATION_MS,
+    startedAtMs: timing?.startedAtMs ?? Date.now(),
+    remainingMs: timing?.remainingMs ?? EXAM_DURATION_MS,
     serverNowMs: Date.now(),
     examExpired: Boolean(timing && timing.remainingMs <= 0 && finishedAtRaw == null)
   };
@@ -1143,30 +1157,45 @@ app.post('/api/attempts/start', requireAuth, requireStudent, asyncRoute(async (r
         finishedAt: serialized?.finishedAt ?? null
       });
     }
-    const timingBefore = getExamTiming(existing.started_at);
-    const refreshed = await refreshAttemptTimerIfExpired(existing, req.user.userId);
-    const serialized = serializeAttempt(refreshed);
+    for (let idx = 0; idx < TASKS.length; idx++) {
+      const t = TASKS[idx];
+      const hasTask = await qGet(
+        `SELECT 1 FROM attempt_tasks WHERE attempt_id = ? AND task_id = ?`,
+        [existing.id, t.id]
+      );
+      if (!hasTask) {
+        await qRun(`INSERT INTO attempt_tasks (attempt_id, task_id, task_index) VALUES (?, ?, ?)`, [
+          existing.id,
+          t.id,
+          idx
+        ]);
+      }
+    }
+    const bumped = await bumpAttemptStartedAt(existing.id, req.user.userId);
+    const serialized = serializeAttempt(bumped);
     return res.json({
       ok: true,
-      attemptId: refreshed?.id ?? existing.id,
+      attemptId: bumped?.id ?? existing.id,
       existing: true,
-      timerReset: Boolean(timingBefore && timingBefore.remainingMs <= 0),
+      timerReset: true,
       startedAt: serialized?.startedAt ?? null,
       finishedAt: null,
       examEndsAt: serialized?.examEndsAt ?? null,
       examEndsAtMs: serialized?.examEndsAtMs ?? null,
-      remainingMs: serialized?.remainingMs ?? 0,
+      remainingMs: serialized?.remainingMs ?? EXAM_DURATION_MS,
       serverNowMs: serialized?.serverNowMs ?? Date.now()
     });
   }
 
   const attemptId = randomId(16);
   const seed = Math.floor(Math.random() * 1_000_000_000);
-  await qRun(`INSERT INTO attempts (id, user_id, seed) VALUES (?, ?, ?)`, [attemptId, req.user.userId, seed]);
-  const created = await qGet(
-    `SELECT id, started_at, finished_at, seed FROM attempts WHERE id = ?`,
-    [attemptId]
-  );
+  const startedAt = nowIso();
+  await qRun(`INSERT INTO attempts (id, user_id, seed, started_at) VALUES (?, ?, ?, ?)`, [
+    attemptId,
+    req.user.userId,
+    seed,
+    startedAt
+  ]);
 
   for (let idx = 0; idx < TASKS.length; idx++) {
     const t = TASKS[idx];
@@ -1177,6 +1206,7 @@ app.post('/api/attempts/start', requireAuth, requireStudent, asyncRoute(async (r
     ]);
   }
 
+  const created = await bumpAttemptStartedAt(attemptId, req.user.userId);
   const serialized = serializeAttempt(created);
   return res.json({
     ok: true,
