@@ -25,10 +25,10 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe Print', 'Arial Rounded MT Bold', sans-serif;
+            font-family: cursive,'Comic Sans MS', 'Chalkboard SE', 'Segoe Print', 'Arial Rounded MT Bold', sans-serif;
             text-align: center;
-            background: linear-gradient(180deg, #b3e5fc 0%, #e1f5fe 30%, #fff9e6 70%, #fce4ec 100%);
-            background-attachment: fixed;
+            /* Candy background gradient from Sudoku */
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
@@ -36,137 +36,60 @@
             padding-bottom: 40px;
         }
 
-        .cloud {
+        /* ---------- CANDY BACKGROUND (from Sudoku) ---------- */
+        #candyCanvas {
             position: fixed;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
-            opacity: 0.8;
-            box-shadow: 60px -15px 0 10px white, 30px -30px 0 18px white, -20px -20px 0 22px white, -60px -8px 0 14px white, -90px 10px 0 8px white, 80px 10px 0 6px white;
-            width: 50px;
-            height: 50px;
+            pointer-events: none;
         }
 
-        .cloud::after {
-            content: '';
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            width: 70px;
-            height: 55px;
-            top: 5px;
-            left: -30px;
-            box-shadow: 40px -8px 0 8px white;
-        }
-
-        .cloud1 { top: 6%; left: 5%; animation: floatCloud 22s linear infinite; }
-        .cloud2 { top: 14%; left: 55%; animation: floatCloud 28s linear 5s infinite; transform: scale(0.7); }
-        .cloud3 { top: 22%; left: 30%; animation: floatCloud 24s linear 12s infinite; transform: scale(0.9); }
-        .cloud4 { top: 8%; left: 75%; animation: floatCloud 30s linear 18s infinite; transform: scale(0.55); }
-        .cloud5 { top: 18%; left: 15%; animation: floatCloud 26s linear 3s infinite; transform: scale(0.75); }
-
-        @keyframes floatCloud {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(120vw); }
-        }
-
-        .rainbow-container {
+        .candies-container {
             position: fixed;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
             pointer-events: none;
-            z-index: 0;
-            width: 700px;
-            height: 350px;
             overflow: hidden;
         }
 
-        .rainbow-arc {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 300px;
-            border-radius: 300px 300px 0 0;
-            background: conic-gradient(from 180deg at 50% 100%, #ff0000 0deg, #ff8800 10deg, #ffdd00 20deg, #33cc33 30deg, #3399ff 40deg, #8833ff 50deg, #ff0000 50.1deg, transparent 50.1deg);
-            opacity: 0.35;
-            animation: rainbowPulse 6s ease-in-out infinite;
-        }
-        .rainbow-arc:nth-child(2) {
-            width: 560px; height: 280px; border-radius: 280px 280px 0 0; opacity: 0.3; animation-delay: 0.3s;
-        }
-        .rainbow-arc:nth-child(3) {
-            width: 520px; height: 260px; border-radius: 260px 260px 0 0; opacity: 0.25; animation-delay: 0.6s;
-        }
-
-        @keyframes rainbowPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.5; }
-        }
-
         .candy {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
+            position: absolute;
             font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
             animation: flyCandy linear infinite;
-            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
         }
-        .candy1 { top: -60px; left: 8%; animation-duration: 14s; font-size: 38px; }
-        .candy2 { top: -80px; left: 25%; animation-duration: 18s; animation-delay: 3s; font-size: 28px; }
-        .candy3 { top: -70px; left: 42%; animation-duration: 16s; animation-delay: 6s; font-size: 34px; }
-        .candy4 { top: -90px; left: 58%; animation-duration: 20s; animation-delay: 1s; font-size: 26px; }
-        .candy5 { top: -65px; left: 72%; animation-duration: 15s; animation-delay: 8s; font-size: 36px; }
-        .candy6 { top: -75px; left: 88%; animation-duration: 17s; animation-delay: 4s; font-size: 30px; }
-        .candy7 { top: -85px; left: 15%; animation-duration: 19s; animation-delay: 10s; font-size: 32px; }
-        .candy8 { top: -55px; left: 50%; animation-duration: 13s; animation-delay: 7s; font-size: 40px; }
 
         @keyframes flyCandy {
-            0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 1; }
-            25% { transform: translateY(28vh) translateX(60px) rotate(90deg) scale(1.2); opacity: 0.9; }
-            50% { transform: translateY(55vh) translateX(-40px) rotate(200deg) scale(0.9); opacity: 0.7; }
-            75% { transform: translateY(78vh) translateX(30px) rotate(310deg) scale(1.1); opacity: 0.5; }
-            100% { transform: translateY(105vh) translateX(-20px) rotate(400deg) scale(0.8); opacity: 0.15; }
-        }
-
-        .sparkle {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            width: 8px;
-            height: 8px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 6px 3px #ffe066, 0 0 12px 6px #ffcc00;
-            animation: sparkleFloat 8s ease-in-out infinite;
-        }
-        .sparkle1 { top: 10%; left: 10%; }
-        .sparkle2 { top: 25%; left: 80%; animation-delay: 2s; }
-        .sparkle3 { top: 40%; left: 20%; animation-delay: 4s; }
-        .sparkle4 { top: 55%; left: 70%; animation-delay: 1s; }
-        .sparkle5 { top: 70%; left: 35%; animation-delay: 5s; }
-        .sparkle6 { top: 15%; left: 60%; animation-delay: 3s; }
-
-        @keyframes sparkleFloat {
-            0%, 100% { opacity: 0.2; transform: scale(0.6) translateY(0); }
-            50% { opacity: 1; transform: scale(1.6) translateY(-25px); }
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
         }
 
         /* ---------- HEADER / INFO SECTIONS ---------- */
         .header-box {
-            max-width: 700px;
-            margin: 20px auto 10px;
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
-            border-radius: 28px;
-            box-shadow: var(--shadow);
-            border: 3px solid #ffe0b2;
             position: relative;
-            z-index: 2;
+            z-index: 10;
+            max-width: 700px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
         }
 
         .header-box h1 {
@@ -178,27 +101,32 @@
         }
 
         .header-box p {
-            font-size: 17px;
-            color: #444;
-            line-height: 1.6;
-            background: #fffef9;
-            padding: 12px 16px;
-            border-radius: 18px;
-            border: 2px dashed #ffb8d4;
-            text-align: left;
+            background: #fffef5;
+            padding: 8px 16px;
+            border-radius: 16px;
+            display: inline-block;
+            margin: 0;
+            border: 1px solid #f0e68c;
+            text-align: center;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
         }
 
         .question-box {
-            max-width: 700px;
-            margin: 10px auto 5px;
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(4px);
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            border: 2px solid #ffe0b2;
             position: relative;
-            z-index: 2;
+            z-index: 10;
+            max-width: 700px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
         }
 
         .question-box h2 {
@@ -209,14 +137,18 @@
         }
 
         .question-box p {
-            font-size: 18px;
-            color: #000000;
             background: #fffef5;
             padding: 8px 16px;
             border-radius: 16px;
             display: inline-block;
             margin: 0;
             border: 1px solid #f0e68c;
+            text-align: center;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
         }
 
         #top-image {
@@ -514,38 +446,13 @@
 
 <body>
 
-    <!-- Background Decorations -->
-    <div class="cloud cloud1"></div>
-    <div class="cloud cloud2"></div>
-    <div class="cloud cloud3"></div>
-    <div class="cloud cloud4"></div>
-    <div class="cloud cloud5"></div>
-
-    <div class="rainbow-container">
-        <div class="rainbow-arc"></div>
-        <div class="rainbow-arc"></div>
-        <div class="rainbow-arc"></div>
-    </div>
-
-    <span class="candy candy1">🍬</span>
-    <span class="candy candy2">🍭</span>
-    <span class="candy candy3">🍫</span>
-    <span class="candy candy4">🧁</span>
-    <span class="candy candy5">🍩</span>
-    <span class="candy candy6">🍪</span>
-    <span class="candy candy7">🍡</span>
-    <span class="candy candy8">🍯</span>
-
-    <div class="sparkle sparkle1"></div>
-    <div class="sparkle sparkle2"></div>
-    <div class="sparkle sparkle3"></div>
-    <div class="sparkle sparkle4"></div>
-    <div class="sparkle sparkle5"></div>
-    <div class="sparkle sparkle6"></div>
+    <!-- ==================== CANDY BACKGROUND ELEMENTS (from Sudoku) ==================== -->
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
 
     <!-- Header / Title & Description -->
     <div class="header-box">
-        <h1>🍭 Tug Of War 🍭</h1>
+        <h1> Tug Of War </h1>
         <p>
             Beaver School is having a tug-of-war competition. In order to have a fair competition, the school
             divides the beavers into teams based on their weight. The goal is to have the weight difference
@@ -555,11 +462,11 @@
         <img id="top-image" src="main.PNG" alt="Main Image">
     </div>
 
-    <!-- Question Section (between the first and second image) -->
+    <!-- Question Section -->
     <div class="question-box">
         <h2> Question:</h2>
         <p>Today five beavers sign up for the competition. Drag the beavers into the Team A and Team B rectangles so that the weight difference between the two teams is as close as possible.</p><br>
-        <!-- Image Bank (the draggable beaver weights) --><br>
+        <!-- Image Bank -->
         <div id="image-bank">
             <img src="1kg.png" class="draggable" draggable="true" data-weight="1" alt="1kg">
             <img src="4kg.png" class="draggable" draggable="true" data-weight="4" alt="4kg">
@@ -597,12 +504,73 @@
         ⏱ Time: <span id="time">0</span>s
         <br><br>
         <button id="finishBtn" onclick="calculateScore()">🎯 Finish  🏆</button>
-        <button id="giveUpBtn" onclick="giveUp()">🏳️ Give Up</button>
         <button id="resetBtn" onclick="resetSlots()">🔄 Reset</button>
+        <button id="giveUpBtn" onclick="giveUp()">🏳️ Give Up</button>
         <div id="placement-warning">⚠️ Please place ALL images in the team slots first!</div>
-        <!-- result hidden permanently -->
     </div>
 
+    <!-- ==================== CANDY BACKGROUND SCRIPT (from Sudoku) ==================== -->
+    <script>
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
+    </script>
+
+    <!-- ==================== GAME LOGIC (unchanged) ==================== -->
     <script>
         let draggedItem = null;
         let imageBank = document.getElementById("image-bank");
@@ -627,7 +595,6 @@
                 if (gameEnded) return;
                 draggedItem = img;
                 clicks++;
-                // clicks are still counted but not displayed
             });
 
             // Double-click returns image to bank
@@ -672,11 +639,9 @@
         function endGame() {
             gameEnded = true;
             clearInterval(timerInterval);
-            // Disable all buttons
             document.getElementById("finishBtn").disabled = true;
             document.getElementById("giveUpBtn").disabled = true;
             document.getElementById("resetBtn").disabled = true;
-            // Make draggables no longer draggable
             document.querySelectorAll(".draggable").forEach(img => {
                 img.draggable = false;
                 img.style.cursor = "default";
@@ -687,8 +652,6 @@
         function resetSlots() {
             if (gameEnded) return;
             resetCount++;
-            // resets are counted but not displayed
-            // Move all images from slots back to the image bank
             document.querySelectorAll(".slot img").forEach(img => {
                 imageBank.appendChild(img);
             });
@@ -703,15 +666,13 @@
             let right = getTeamWeight("teamB");
             let diff = Math.abs(left - right);
 
-            // Error score: |diff - 3|
             let errorScore = Math.abs(diff - 3);
             let timeScore = time;
             let clickScore = clicks;
-            let correctness = 0; // gave up
+            let correctness = 0;
 
             endGame();
 
-            // No result displayed to student; only data sent to platform
             window.__kb?.finish?.({
                 errorScore: errorScore,
                 timeScore: timeScore,
@@ -740,7 +701,6 @@
             let right = getTeamWeight("teamB");
             let diff = Math.abs(left - right);
 
-            // Error score: |diff - 3|
             let errorScore = Math.abs(diff - 3);
             let timeScore = time;
             let clickScore = clicks;
@@ -748,7 +708,6 @@
 
             endGame();
 
-            // No result displayed to student; only data sent to platform
             window.__kb?.finish?.({
                 errorScore: errorScore,
                 timeScore: timeScore,

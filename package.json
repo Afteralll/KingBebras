@@ -8,7 +8,9 @@
   },
   "scripts": {
     "dev": "node server/index.js",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "seed:youssef": "node server/seed-youssef-demo.js",
+    "seed:youssef:sql": "node server/generate-youssef-neon-sql.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",

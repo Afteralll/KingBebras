@@ -31,92 +31,92 @@
         }
 
         body {
-            font-family: 'Nunito', 'Arial', sans-serif;
+            font-family: cursive,'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
             min-height: 100vh;
-            text-align: center;
-            padding: 12px 12px 15px;
-            background: linear-gradient(135deg, #ffe0ec, #ffe9c8, #fff9c0, #e0f7e9, #d4f0ff, #e8dcff, #ffe0f5, #ffdce8, #fff3cd, #d6f5f5);
-            background-size: 600% 600%;
-            animation: rainbowBgShift 18s ease infinite;
+            position: relative;
+            overflow-x: hidden;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 1rem;
         }
 
-        @keyframes rainbowBgShift {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 100%; }
-        }
-
-        body::before {
-            content: '';
+        /* Background canvas & candy styles from Sudoku */
+        #candyCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
             z-index: 0;
-            background: radial-gradient(2px 2px at 8% 12%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 22% 28%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 35% 8%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 48% 35%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 55% 18%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 68% 45%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 75% 12%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 82% 30%, #fff 70%, transparent),
-                        radial-gradient(2px 2px at 90% 20%, #fff 70%, transparent),
-                        radial-gradient(1.5px 1.5px at 15% 55%, #fff 80%, transparent),
-                        radial-gradient(1.5px 1.5px at 28% 70%, #fff 80%, transparent),
-                        radial-gradient(1.5px 1.5px at 42% 60%, #fff 80%, transparent),
-                        radial-gradient(1.5px 1.5px at 58% 72%, #fff 80%, transparent),
-                        radial-gradient(1.5px 1.5px at 72% 58%, #fff 80%, transparent),
-                        radial-gradient(1.5px 1.5px at 85% 65%, #fff 80%, transparent);
-            animation: sparkleTwinkle 3s ease-in-out infinite alternate;
+            pointer-events: none;
         }
 
-        @keyframes sparkleTwinkle {
-            0% { opacity: 0.4; }
-            100% { opacity: 0.9; }
-        }
-
-        body::after {
-            content: '🍬🍭🍡🧁';
+        .candies-container {
             position: fixed;
-            bottom: 5px;
-            right: 10px;
-            font-size: 24px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
             pointer-events: none;
-            z-index: 0;
-            opacity: 0.5;
-            letter-spacing: 8px;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
         }
 
         .main-wrapper {
             position: relative;
-            z-index: 1;
-            max-width: 650px;
-            width: 100%;
-            margin: 0 auto;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
         }
 
         .rules-card {
-            background: linear-gradient(135deg, #fffef9 0%, #fff0f7 50%, #fdf0ff 100%);
-            border: 2px solid #ffb3c6;
-            border-radius: 16px;
-            padding: 8px 14px;
-            margin: 0 auto 10px;
-            max-width: 550px;
-            box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.8);
-            text-align: left;
-            font-size: 0.8em;
+            position: relative;
+            z-index: 10;
+            max-width: 700px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
         }
 
         .rules-card h3 {
-            font-family: 'Fredoka One', cursive;
-            color: #e8577c;
-            font-size: 1.2em;
-            margin-bottom: 4px;
+            color: #ff66aa;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
         }
 
         .rules-card ol {
@@ -132,13 +132,16 @@
             font-size: 0.7em;
             padding: 4px 8px 4px 28px;
             margin: 2px 0;
-            background: rgba(255,180,200,0.2);
             border-radius: 20px;
-            border: 1.5px dashed #ffccd9;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
         }
 
         .rules-card ol li::before {
-            content: counter(rule-counter);
+            
             position: absolute;
             left: 5px;
             top: 50%;
@@ -154,7 +157,6 @@
             font-weight: 900;
         }
 
-        /* 🖼️ Bottle image styling */
         .bottle-img {
             display: block;
             margin: 8px auto 4px;
@@ -168,34 +170,25 @@
 
         .bottle-caption {
             text-align: center;
-            font-size: 0.9em;
-            font-weight: 700;
-            color: #7a4a60;
-            margin-top: 2px;
-            font-style: italic;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
         }
 
         h1 {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.8em;
-            margin-bottom: 4px;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff6b8a, #ff9a56, #ffcd56, #7ef5c8, #7ec8e3, #b57edc, #ff85c0);
-            background-size: 300% 300%;
+            font-size: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ff66aa, #ff66aa);
             -webkit-background-clip: text;
             background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbowText 5s ease infinite;
-            filter: drop-shadow(1px 2px 1px rgba(180,100,130,0.3));
+            color: transparent;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes rainbowText {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Only time remains visible */
         #stats {
             display: flex;
             justify-content: center;
@@ -327,6 +320,14 @@
             gap: 10px;
             margin-top: 6px;
         }
+        .h2{
+            text-align: center;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            line-height: 1.5;
+        }
 
         button {
             padding: 7px 18px;
@@ -388,21 +389,25 @@
 </head>
 <body>
 
+    <!-- Background elements from Sudoku -->
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
+
     <div class="main-wrapper">
-        <h1>🍔 Burger recipe </h1>
+        <h1> Burger recipe </h1>
         <div class="rules-card">
             <p class="bottle-caption">Mei is making burgers according to the rules below.</p>
-            <h3>📋 Rules</h3>
+            <h3> Rules:</h3>
             <ol>
-                <li><h2>The sauce should be right above the meat.</h2></li>
-                <li><h2>Meat and cheese should be below the pickles, lettuce and onions.</h2></li>
-                <li><h2>Onions should not be in contact with the buns.</h2></li>
+                <li><h2>🍬The sauce should be right above the meat.</h2></li>
+                <li><h2>🍬Meat and cheese should be below the pickles, lettuce and onions.</h2></li>
+                <li><h2>🍬Onions should not be in contact with the buns.</h2></li>
             </ol>
             <img src="IngredientsKM.png" alt="Burger ingredients reference" class="bottle-img">
             <p class="bottle-caption">Create the burger following the rules above.</p>
         </div>
 
-        <p class="bottle-caption">drag and drop the ingredients below to make the burger</p>
+        <p class="bottle-caption">drag and drop the ingredients below to make the burger<br>Double click to remove an ingredient.</p>
         <div id="pool"></div>
         <div id="burger"></div>
 
@@ -421,6 +426,7 @@
     </div>
 
     <script>
+        // ---------- Burger game logic (unchanged) ----------
         const ingredientsData = [
             { name: "Top Bun", img: "TopBun.PNG" },
             { name: "Bottom Bun", img: "BottomBun.PNG" },
@@ -456,11 +462,9 @@
         const message = document.getElementById("message");
 
         function updateUI() {
-            // Only update time
             document.getElementById("timeScore").textContent = timeScore.toFixed(1);
         }
 
-        // ⏱️ Live timer
         liveTimerInterval = setInterval(() => {
             if (gameEnded) {
                 clearInterval(liveTimerInterval);
@@ -498,7 +502,6 @@
         function recordClick() {
             clickCount++;
             clickScore = clickCount;
-            // No UI update because clicks are hidden
         }
 
         function placeIngredient(slot, item, index) {
@@ -554,7 +557,6 @@
             }
         }
 
-        // 📏 Rule evaluation (used only when Finish is pressed)
         function computeErrorScore(arr) {
             let violations = 0;
             const idx = {};
@@ -597,9 +599,8 @@
             gameEnded = true;
             clearInterval(liveTimerInterval);
 
-            // Final time
             timeScore = (Date.now() - startTime) / 1000;
-            updateUI(); // show final time
+            updateUI();
 
             if (giveUp) {
                 errorScore = 0;
@@ -613,10 +614,8 @@
                 correctnessFlag = (allFilled && errorScore === 0) ? 1 : 0;
             }
 
-            // Simple message – NO scores, NO feedback on correctness
             message.innerHTML = giveUp ? "🏳️ You gave up!" : "🏁 Game Finished!";
 
-            // All data still sent to the platform
             window.__kb?.finish?.({
                 errorScore,
                 timeScore: parseFloat(timeScore.toFixed(1)),
@@ -655,6 +654,67 @@
         renderPool();
         createSlots();
         updateUI();
+    </script>
+
+    <!-- Animated canvas & candy background script (from Sudoku) -->
+    <script>
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
     </script>
 
     <script type="module">

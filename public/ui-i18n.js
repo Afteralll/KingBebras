@@ -44,6 +44,8 @@ const UI_I18N = {
     already_completed_only_attempt: 'You already completed your only attempt.',
     could_not_start_exam: 'Could not start exam: {err}',
     game_finished: 'Game finished',
+    fullscreen_enabled: 'You are now in fullscreen mode.',
+    fullscreen_countdown: 'Game will open in fullscreen in {n}',
 
     login_failed: 'Login failed: {err}',
     registered_now_login: 'Registered. Now click Login.',
@@ -101,6 +103,8 @@ const UI_I18N = {
     already_completed_only_attempt: 'Du hast deinen einzigen Versuch bereits abgeschlossen.',
     could_not_start_exam: 'Prüfung konnte nicht gestartet werden: {err}',
     game_finished: 'Spiel beendet',
+    fullscreen_enabled: 'Du bist jetzt im Vollbildmodus.',
+    fullscreen_countdown: 'Das Spiel öffnet sich im Vollbildmodus in {n}',
 
     login_failed: 'Anmeldung fehlgeschlagen: {err}',
     registered_now_login: 'Registriert. Klicke jetzt auf „Anmelden“.',
@@ -158,6 +162,8 @@ const UI_I18N = {
     already_completed_only_attempt: 'لقد أكملت محاولتك الوحيدة بالفعل.',
     could_not_start_exam: 'تعذّر بدء الاختبار: {err}',
     game_finished: 'تم إنهاء اللعبة',
+    fullscreen_enabled: 'أنت الآن في وضع ملء الشاشة.',
+    fullscreen_countdown: 'ستفتح اللعبة في وضع ملء الشاشة خلال {n}',
 
     login_failed: 'فشل تسجيل الدخول: {err}',
     registered_now_login: 'تم التسجيل. الآن اضغط تسجيل الدخول.',

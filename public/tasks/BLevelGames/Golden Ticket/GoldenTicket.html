@@ -1,0 +1,755 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Ticket</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: cursive,'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            zoom: 70%;
+        }
+
+        #candyCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .candies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
+        }
+
+        .game-card {
+            position: relative;
+            z-index: 10;
+            max-width: 1300px;
+            width: 100%;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ff66aa, #ff66aa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .instruction-text {
+            color: #9b570e;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            line-height: 1.5;
+            font-size: 1.3rem;
+        }
+
+        .centered-image-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #top-image {
+            width: 40%;
+            max-width: 1200px;
+            height: auto;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 24px;
+            border: 4px solid white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .timer-box {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 242, 223, 0.85);
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            margin: 1rem 0;
+            font-weight: bold;
+            flex-wrap: wrap;
+            font-size:22px;
+            
+            border: 1px solid #ffcc88;
+            backdrop-filter: blur(4px);
+            background: white;
+            padding: 0.2rem 0.8rem;
+            
+            color: #b85c00;
+            box-shadow: inset 0 0 2px #ffaa66;
+        }
+
+        #game-area {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        #left-image {
+            width: 350px;
+            height: 500px;
+            background: white;
+            border: 4px solid #ffaa44;
+            border-radius: 24px;
+            padding: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        /* ---------- Vending Machine Styling ---------- */
+        #vending-machine {
+            width: 680px;
+            min-height: 500px;
+            background: linear-gradient(145deg, #4a4a4a, #2d2d2d);
+            border-radius: 30px 30px 15px 15px;
+            border: 6px solid #c49a6c;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.5);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            overflow: visible;
+        }
+
+            #vending-machine::before {
+               
+                position: absolute;
+                top: 10px;
+                left: 15px;
+                width: 200px;
+                height: 20px;
+                background: #ffb347;
+                border-radius: 20px;
+                box-shadow: 0 0 10px #ffb347;
+                opacity: 0.8;
+                z-index: 3;
+            }
+
+            #vending-machine::after {
+                
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: #ff6b9d;
+                color: white;
+                font-weight: bold;
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                box-shadow: 0 0 10px rgba(255,107,157,0.7);
+                z-index: 3;
+            }
+
+        #machine-left {
+            width: 65%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            z-index: 2;
+            background: #ff8000;
+            border-radius: 20px;
+            padding: 20px 10px 10px 10px;
+            margin-right: 15px;
+            box-shadow: inset 0 0 15px rgba(255, 119, 0, 0.8);
+        }
+
+        #machine-right {
+            width: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            background: #ff8000;
+            border-radius: 20px;
+            padding: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        #side-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 16px;
+            border: 2px solid #242424;
+        }
+
+        #word-display {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #222;
+            padding: 12px 20px;
+            border-radius: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.7);
+        }
+
+        .letter-box {
+            width: 55px;
+            height: 65px;
+            background: linear-gradient(180deg, #fffef0, #ffe3b5);
+            border: 3px solid #b3742e;
+            color: #4a2c0a;
+            font-size: 38px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 2px 0 rgba(255,255,255,0.5);
+            text-shadow: 1px 1px 0 white;
+        }
+
+        #keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .key {
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #ffecb3, #f3d37c);
+            color: #4a2c0a;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #c09f4a, 0 5px 10px rgba(0,0,0,0.15);
+            transition: all 0.07s;
+            text-shadow: 1px 1px 0 white;
+            font-family: 'Comic Neue', cursive;
+        }
+
+            .key:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 0 #c09f4a, 0 7px 12px rgba(0,0,0,0.2);
+                background: linear-gradient(180deg, #fff3c4, #ffe28a);
+            }
+
+            .key:active {
+                transform: translateY(3px);
+                box-shadow: 0 1px 0 #c09f4a, 0 3px 6px rgba(0,0,0,0.1);
+            }
+
+        .dispenser-tray {
+            width: 90%;
+            height: 50px;
+            background: #333;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: inset 0 0 12px black;
+        }
+
+        .tray-slot {
+            width: 70%;
+            height: 14px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 6px black;
+        }
+
+        .tray-label {
+            position: absolute;
+            bottom: -18px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.65rem;
+            color: #ccc;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .leg {
+            position: absolute;
+            width: 40px;
+            height: 35px;
+            background: #2a2a2a;
+            bottom: -35px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        .leg-left {
+            left: 30px;
+        }
+
+        .leg-right {
+            right: 30px;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            font-family: 'Comic Neue', cursive;
+        }
+
+            .action-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+            }
+
+            .action-btn:active {
+                transform: translateY(1px) scale(0.97);
+            }
+
+        .btn-finish {
+            background: linear-gradient(135deg, #ff6b9d, #ff8e53);
+        }
+
+        .btn-giveup {
+            background: linear-gradient(135deg, #ffa94d, #ff6b3d);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #a78bfa, #7c5cfc);
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            min-height: 35px;
+            color: #4a2c0a;
+        }
+
+        .correct {
+            color: #2e8b57 !important;
+            text-shadow: 0 0 10px #a5d6a5;
+        }
+
+        .wrong {
+            color: #e74c3c !important;
+            text-shadow: 0 0 10px #f5a3a3;
+        }
+
+        #results {
+            display: none;
+            margin-top: 20px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(8px);
+            color: #4a2c0a;
+            padding: 15px 25px;
+            border-radius: 30px;
+            border: 2px dashed #ffb347;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+            #results h3 {
+                margin-bottom: 10px;
+                color: #e64980;
+            }
+
+        @media (max-width: 900px) {
+            #game-area {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #vending-machine {
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #machine-left {
+                width: 100%;
+                margin-right: 0;
+            }
+
+            #machine-right {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .leg {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
+
+    <div class="game-card">
+        <h1> Golden Ticket</h1>
+        <p class="instruction-text">
+            Maria, the armadillo, has a golden ticket that is worth four pieces of corn. Together with Juan, the
+            capybara, they go to the vending machine to redeem it. On the way, they look at the ticket, but do
+            not understand the code on it.
+        </p>
+
+        <div class="centered-image-area">
+            <img id="top-image" src="GiftCard.PNG" alt="Top Image">
+
+        </div>
+        <p class="instruction-text">
+            When they see the code table on the vending machine, everything becomes clear: They will have
+            to figure out what four letters are encoded on their ticket.
+        </p>
+
+        <div id="game-area">
+            <img id="left-image" src="BigCodeTable.PNG" alt="Left Image">
+            
+            <div id="vending-machine">
+                <div id="machine-left">
+                    <br>
+                   
+                    <div id="word-display">
+
+                        <div class="letter-box"></div>
+                        <div class="letter-box"></div>
+                        <div class="letter-box"></div>
+                        <div class="letter-box"></div>
+                    </div>
+                    
+                    <div id="keyboard">
+                        <div class="keyboard-row">
+                            <button class="key">Q</button><button class="key">W</button><button class="key">E</button>
+                            <button class="key">R</button><button class="key">T</button><button class="key">Y</button>
+                            <button class="key">U</button><button class="key">I</button><button class="key">O</button>
+                            <button class="key">P</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">A</button><button class="key">S</button><button class="key">D</button>
+                            <button class="key">F</button><button class="key">G</button><button class="key">H</button>
+                            <button class="key">J</button><button class="key">K</button><button class="key">L</button>
+                        </div>
+                        <div class="keyboard-row">
+                            <button class="key">Z</button><button class="key">X</button><button class="key">C</button>
+                            <button class="key">V</button><button class="key">B</button><button class="key">N</button>
+                            <button class="key">M</button>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+
+                    <div class="dispenser-tray">
+                        <div class="tray-slot"></div>
+                        <div class="tray-label">COLLECT YOUR SNACK</div>
+                    </div>
+                </div>
+
+                <div id="machine-right">
+                    <img id="side-image" src="CodeTable.PNG" alt="Vertical Image" style="max-width:100%; max-height:100%; object-fit:contain;">
+                </div>
+
+                <div class="leg leg-left"></div>
+                <div class="leg leg-right"></div>
+            </div>
+        </div>
+        <br>
+
+        <div class="centered-image-area">
+
+            <div class="timer-box">⏱️ Time: <span id="timerDisplay">0</span>s</div>
+        </div>
+
+        <div class="action-row">
+            <button class="action-btn btn-finish" id="finish">🎉 FINISH</button>
+            <button class="action-btn btn-reset" id="reset-images">🔄 RESET</button>
+            <button class="action-btn btn-giveup" id="giveup">🏳️ GIVE UP</button>
+        </div>
+
+        <div id="message"></div>
+        <div id="results">
+            <h3>🍭 Game Results 🍭</h3>
+            <p>❌ Error Score: <span id="errorResult"></span></p>
+            <p>⏱️ Time: <span id="timeResult"></span></p>
+            <p>🖱️ Clicks: <span id="clickResult"></span></p>
+            <p>✅ Correctness: <span id="correctResult"></span></p>
+            <p>🏳️ Give Up: <span id="giveupResult"></span></p>
+            <p>🔄 Resets: <span id="resetResult"></span></p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
+    </script>
+
+    <script>
+        const answer = "RSTD";
+
+        let currentGuess = "";
+        let errorScore = 0;
+        let clickScore = 0;
+        let correctnessFlag = 0;
+        let giveUpFlag = 0;
+        let resetCounter = 0;
+        let gameFinished = false;
+        const startTime = Date.now();
+        let timeScore = 0;
+
+        const boxes = document.querySelectorAll(".letter-box");
+        const keys = document.querySelectorAll(".key");
+        const message = document.getElementById("message");
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.textContent = elapsed;
+        }, 200);
+
+        function updateBoxes() {
+            boxes.forEach((box, index) => {
+                box.textContent = currentGuess[index] || "";
+            });
+        }
+
+        function calculateErrors() {
+            errorScore = 0;
+            for (let i = 0; i < 4; i++) {
+                if ((currentGuess[i] || "") !== answer[i]) errorScore++;
+            }
+        }
+
+        function sendFinishPayload() {
+            if (gameFinished) return;
+            gameFinished = true;
+
+            timeScore = Math.floor((Date.now() - startTime) / 1000);
+
+            const payload = {
+                errorScore,
+                timeScore,
+                clickScore,
+                correctnessFlag,
+                giveUpFlag,
+                resetCounter
+            };
+
+            window.__kb?.finish?.(payload);
+
+            document.getElementById("finish").disabled = true;
+            document.getElementById("reset-images").disabled = true;
+            document.getElementById("giveup").disabled = true;
+        }
+
+        function showResults() {
+            timeScore = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById("results").style.display = "block";
+            document.getElementById("errorResult").textContent = errorScore;
+            document.getElementById("timeResult").textContent = timeScore + " sec";
+            document.getElementById("clickResult").textContent = clickScore;
+            document.getElementById("correctResult").textContent = correctnessFlag;
+            document.getElementById("giveupResult").textContent = giveUpFlag;
+            document.getElementById("resetResult").textContent = resetCounter;
+            sendFinishPayload();
+        }
+
+        keys.forEach(key => {
+            key.addEventListener("click", () => {
+                if (gameFinished) return;
+                clickScore++;
+                const letter = key.textContent;
+                if (currentGuess.length < 4) {
+                    currentGuess += letter;
+                    updateBoxes();
+                }
+            });
+        });
+
+        // Reset button: clear letters and increment reset counter
+        document.getElementById("reset-images").addEventListener("click", () => {
+            if (gameFinished) return;
+            resetCounter++;
+            currentGuess = "";
+            updateBoxes();
+        });
+
+        document.getElementById("giveup").addEventListener("click", () => {
+            if (gameFinished) return;
+            giveUpFlag = 1;
+            calculateErrors();
+            message.textContent = "You gave up.";
+            message.className = "wrong";
+            showResults();
+        });
+
+        document.getElementById("finish").addEventListener("click", () => {
+            if (gameFinished) return;
+            if (currentGuess.length < 4) {
+                message.textContent = "⚠️ Please enter all 4 characters.";
+                message.className = "wrong";
+                return;
+            }
+            calculateErrors();
+            if (currentGuess === answer) {
+                correctnessFlag = 1;
+                message.textContent = "✅ Correct Answer";
+                message.className = "correct";
+            } else {
+                correctnessFlag = 0;
+                message.textContent = "❌ Wrong Answer";
+                message.className = "wrong";
+            }
+            showResults();
+        });
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('golden-ticket');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

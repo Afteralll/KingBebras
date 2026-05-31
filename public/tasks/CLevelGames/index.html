@@ -15,46 +15,111 @@
         }
 
         body {
-            margin: 0;
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
             min-height: 100vh;
-            background: linear-gradient(145deg, #f6f9fc 0%, #e2ebf5 100%);
-            font-family: 'Quicksand', 'Segoe UI', Arial, sans-serif;
-            text-align: center;
-            padding: 1.5rem 1rem 2.5rem;
+            position: relative;
+            overflow-x: hidden;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            padding: 1rem;             /* allow vertical scrolling */
+        }
+
+        /* ---------- Candy Canvas Background ---------- */
+        #candyCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .candies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
+        }
+
+        /* ---------- Game Card ---------- */
+        .game-card {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            text-align: center;
             color: #1e2f4e;
+            margin: 1rem auto 2rem;
+            zoom: 0.72;
+            transform-origin: top center;
         }
 
         h1 {
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
             font-weight: 700;
             font-size: 2.5rem;
             letter-spacing: -0.5px;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(135deg, #ff66aa, #ff66aa);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 4px 4px 12px rgba(0, 20, 50, 0.08);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            
         }
 
         h2 {
-            font-weight: 500;
-            font-size: 1.1rem;
-            margin: 0.5rem 0 1.2rem;
-            color: #2c3e66;
-            opacity: 0.9;
+            margin-left: 30px;
             text-align: left;
+            color: #9b570e;
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+            display: block;
+            
         }
 
-        /* ----- LIVE TIMER BOX ----- */
+        /* ----- LIVE TIMER BOX (below reference image) ----- */
+        .timer-wrapper {
+            margin: 15px 0 20px;
+        }
+
         #timer-box {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(8px);
             border-radius: 40px;
             padding: 10px 32px;
-            margin-bottom: 25px;
             box-shadow: 0 8px 16px rgba(0, 20, 40, 0.08), 0 2px 0 0 #ffffff80 inset;
             font-size: 1.6rem;
             font-weight: 700;
@@ -64,6 +129,7 @@
             gap: 10px;
             border: 1px solid rgba(255,255,255,0.8);
             color: #1e3c72;
+            margin: 0 auto;
         }
 
         #timer-display {
@@ -73,13 +139,14 @@
         }
 
         #reference {
+            display: block;
             width: 650px;
             max-width: 95%;
+            margin: 0 auto 30px;
             border: none;
             border-radius: 28px;
             box-shadow: 0 20px 30px -8px rgba(0, 20, 40, 0.25), 0 6px 0 0 #ffffff80 inset,
                 0 -2px 8px rgba(0, 0, 0, 0.02) inset;
-            margin-bottom: 30px;
             background: white;
             padding: 6px;
             transition: transform 0.2s ease, box-shadow 0.3s;
@@ -91,9 +158,10 @@
             box-shadow: 0 24px 36px -12px #142b44, 0 6px 0 0 #ffffffb0 inset;
         }
 
+        /* ----- PIECES ROW (always horizontal) ----- */
         #pieces {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;                /* NEVER wrap to next line */
             justify-content: center;
             gap: 18px;
             margin-bottom: 40px;
@@ -101,15 +169,37 @@
             background: rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(2px);
             border-radius: 60px;
-            max-width: 1100px;
+            max-width: 100%;
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 6px 12px rgba(42, 65, 100, 0.08);
+            overflow-x: auto;                /* horizontal scroll if needed */
+            -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+        }
+
+        /* ----- DROPZONES BOARD (always horizontal) ----- */
+        #board {
+            display: flex;
+            flex-wrap: nowrap;                /* NEVER wrap */
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto 10px;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(8px);
+            border-radius: 50px;
+            box-shadow: 0 20px 30px -10px rgba(19, 40, 70, 0.15), 0 4px 0 0 #cddae9 inset,
+                0 1px 0 0 #ffffff inset;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            max-width: fit-content;
+            overflow-x: auto;                 /* allow horizontal scroll if viewport too narrow */
+            -webkit-overflow-scrolling: touch;
         }
 
         .piece {
             width: 100px;
             height: 100px;
+            flex-shrink: 0;               /* prevent shrinking */
             cursor: grab;
             border: none;
             border-radius: 20px;
@@ -141,25 +231,10 @@
             opacity: 0.7;
         }
 
-        #board {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 0 auto 10px;
-            padding: 16px 18px;
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(8px);
-            border-radius: 50px;
-            box-shadow: 0 20px 30px -10px rgba(19, 40, 70, 0.15), 0 4px 0 0 #cddae9 inset,
-                0 1px 0 0 #ffffff inset;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            max-width: fit-content;
-        }
-
         .dropzone {
             width: 105px;
             height: 105px;
+            flex-shrink: 0;               /* prevent shrinking */
             background: #f8faff;
             border: 3px dashed #b7c9e2;
             border-radius: 22px;
@@ -226,7 +301,7 @@
             padding: 16px 40px;
             font-size: 22px;
             font-weight: 700;
-            font-family: 'Quicksand', sans-serif;
+            font-family: cursive,'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
             border: none;
             color: white;
             border-radius: 60px;
@@ -297,7 +372,7 @@
             box-shadow: 0 6px 0 #2d3845, 0 8px 14px rgba(0, 0, 0, 0.2);
         }
 
-        /* ----- RESULT PANEL (simplified) ----- */
+        /* ----- RESULT PANEL ----- */
         #result {
             margin-top: 30px;
             font-size: 26px;
@@ -327,6 +402,7 @@
             letter-spacing: 2px;
         }
 
+        /* ----- Media query for smaller screens: keep items in a row but reduce size/gap ----- */
         @media (max-width: 700px) {
             h1 {
                 font-size: 2rem;
@@ -343,8 +419,13 @@
                 width: 78px;
                 height: 78px;
             }
+            #pieces {
+                gap: 12px;
+                padding: 6px 8px;
+            }
             #board {
                 gap: 8px;
+                padding: 12px 14px;
             }
             button {
                 font-size: 18px;
@@ -363,75 +444,141 @@
 </head>
 <body>
 
-    <h1>ONLINE CLASS</h1>
-    <h2>•Ava starts at a new school but keeps in touch with friends from her old school in an online call.<br> <br> 
+    <!-- Background Canvas and Candy Container -->
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
 
-        •The friends at the old school are sitting next to each other in a row, but at different computers.<br> <br> 
-        
-        •This is how Ava sees her friends on her screen:</h2>
+    <div class="game-card">
+        <h1>ONLINE CLASS</h1>
+        <h2>
+            🍬Ava starts at a new school but keeps in touch with friends from her old school in an online call.<br><br> 
+            🍬The friends at the old school are sitting next to each other in a row, but at different computers.<br><br> 
+            🍬This is how Ava sees her friends on her screen:
+        </h2>
 
-    <!-- Live timer always visible -->
-    <div id="timer-box">
-        ⏱️ <span id="timer-display">00:00</span>
+        <!-- Reference image centered, timer below it -->
+        <img id="reference" src="./OnlineClass/mainimage.PNG" alt="reference sequence">
+
+        <div class="timer-wrapper">
+            <div id="timer-box">
+                ⏱️ <span id="timer-display">00:00</span>
+            </div>
+        </div>
+
+        <h2>
+            <strong >Task:</strong><br><br>
+            🍬Order Ava's friends to show how they are seated in the row by dragging each into the correct position.<br><br>
+            Press <strong>finish</strong> when you have finished
+        </h2>
+
+        <div id="pieces">
+            <img src="./OnlineClass/girl1.PNG" class="piece" draggable="true" id="piece1" data-correct="1" alt="piece 1">
+            <img src="./OnlineClass/girl2.PNG" class="piece" draggable="true" id="piece2" data-correct="2" alt="piece 2">
+            <img src="./OnlineClass/girl3.PNG" class="piece" draggable="true" id="piece3" data-correct="3" alt="piece 3">
+            <img src="./OnlineClass/girl4.PNG" class="piece" draggable="true" id="piece4" data-correct="4" alt="piece 4">
+            <img src="./OnlineClass/girl5.PNG" class="piece" draggable="true" id="piece5" data-correct="5" alt="piece 5">
+            <img src="./OnlineClass/girl6.PNG" class="piece" draggable="true" id="piece6" data-correct="6" alt="piece 6">
+            <img src="./OnlineClass/girl7.PNG" class="piece" draggable="true" id="piece7" data-correct="7" alt="piece 7">
+            <img src="./OnlineClass/girl8.PNG" class="piece" draggable="true" id="piece8" data-correct="8" alt="piece 8">
+            <img src="./OnlineClass/girl9.PNG" class="piece" draggable="true" id="piece9" data-correct="9" alt="piece 9">
+        </div>
+
+        <div id="board">
+            <div class="dropzone" data-spot="1"></div>
+            <div class="dropzone" data-spot="2"></div>
+            <div class="dropzone" data-spot="3"></div>
+            <div class="dropzone" data-spot="4"></div>
+            <div class="dropzone" data-spot="5"></div>
+            <div class="dropzone" data-spot="6"></div>
+            <div class="dropzone" data-spot="7"></div>
+            <div class="dropzone" data-spot="8"></div>
+            <div class="dropzone" data-spot="9"></div>
+        </div>
+
+        <div id="button-row">
+            <button id="btn-finish" onclick="checkAnswer()">✓ Finish</button>
+            
+            <button id="btn-reset" onclick="resetBoard()">↺ Reset</button>
+            <button id="btn-giveup" onclick="giveUp()">🏳 Give Up</button>
+        </div>
+
+        <div id="result"></div>
     </div>
 
-    <img id="reference" src="./OnlineClass/mainimage.PNG" alt="reference sequence">
-    <h2><strong>Task:</strong><br><br>Order Ava's friends to show how they are seated in the row by dragging each into the correct position.<br><br>
-        Press <strong>finish</strong> when you have finished
-    </h2>
-    <div id="pieces">
-        <img src="./OnlineClass/girl1.PNG" class="piece" draggable="true" id="piece1" data-correct="1" alt="piece 1">
-        <img src="./OnlineClass/girl2.PNG" class="piece" draggable="true" id="piece2" data-correct="2" alt="piece 2">
-        <img src="./OnlineClass/girl3.PNG" class="piece" draggable="true" id="piece3" data-correct="3" alt="piece 3">
-        <img src="./OnlineClass/girl4.PNG" class="piece" draggable="true" id="piece4" data-correct="4" alt="piece 4">
-        <img src="./OnlineClass/girl5.PNG" class="piece" draggable="true" id="piece5" data-correct="5" alt="piece 5">
-        <img src="./OnlineClass/girl6.PNG" class="piece" draggable="true" id="piece6" data-correct="6" alt="piece 6">
-        <img src="./OnlineClass/girl7.PNG" class="piece" draggable="true" id="piece7" data-correct="7" alt="piece 7">
-        <img src="./OnlineClass/girl8.PNG" class="piece" draggable="true" id="piece8" data-correct="8" alt="piece 8">
-        <img src="./OnlineClass/girl9.PNG" class="piece" draggable="true" id="piece9" data-correct="9" alt="piece 9">
-    </div>
-
-    <div id="board">
-        <div class="dropzone" data-spot="1"></div>
-        <div class="dropzone" data-spot="2"></div>
-        <div class="dropzone" data-spot="3"></div>
-        <div class="dropzone" data-spot="4"></div>
-        <div class="dropzone" data-spot="5"></div>
-        <div class="dropzone" data-spot="6"></div>
-        <div class="dropzone" data-spot="7"></div>
-        <div class="dropzone" data-spot="8"></div>
-        <div class="dropzone" data-spot="9"></div>
-    </div>
-
-    <div id="button-row">
-        <button id="btn-finish" onclick="checkAnswer()">✓ Finish</button>
-        <button id="btn-giveup" onclick="giveUp()">🏳 Give Up</button>
-        <button id="btn-reset" onclick="resetBoard()">↺ Reset</button>
-    </div>
-
-    <div id="result"></div>
-
+    <!-- Candy Background Animation -->
     <script>
-        // ============================================================
-        //  STATE VARIABLES
-        // ============================================================
+        const candyCanvas = document.getElementById("candyCanvas");
+        const ctx = candyCanvas.getContext("2d");
+
+        function resizeCanvas() {
+            candyCanvas.width = window.innerWidth;
+            candyCanvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, candyCanvas.width, candyCanvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= candyCanvas.width; x += 20) {
+                    let y = candyCanvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(candyCanvas.width, candyCanvas.height);
+                ctx.lineTo(0, candyCanvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * candyCanvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * candyCanvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
+    </script>
+
+    <!-- Original game logic (unchanged) -->
+    <script>
         let draggedPiece = null;
         let clicks = 0;
         let firstMoveDone = false;
         let gameOver = false;
         let finishReported = false;
-
-        // New metrics
         let logicFlag = 0;
         let resetCount = 0;
         let giveUpFlag = 0;
-
         let startTime = Date.now();
         let timerInterval = null;
 
-        // ============================================================
-        //  LIVE TIMER DISPLAY
-        // ============================================================
         function startTimer() {
             const display = document.getElementById("timer-display");
             timerInterval = setInterval(() => {
@@ -448,16 +595,12 @@
                 clearInterval(timerInterval);
                 timerInterval = null;
             }
-            // final update
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
             const secs = (elapsed % 60).toString().padStart(2, '0');
             document.getElementById("timer-display").textContent = `${mins}:${secs}`;
         }
 
-        // ============================================================
-        //  SHUFFLE ON LOAD
-        // ============================================================
         window.onload = function () {
             let container = document.getElementById("pieces");
             for (let i = container.children.length; i >= 0; i--) {
@@ -468,9 +611,6 @@
             startTimer();
         };
 
-        // ============================================================
-        //  DRAG EVENTS
-        // ============================================================
         document.querySelectorAll(".piece").forEach(piece => {
             piece.addEventListener("dragstart", function (e) {
                 if (gameOver) {
@@ -482,9 +622,6 @@
             });
         });
 
-        // ============================================================
-        //  DROP EVENTS
-        // ============================================================
         document.querySelectorAll(".dropzone").forEach(zone => {
             zone.addEventListener("dragover", function (e) {
                 if (gameOver) return;
@@ -497,7 +634,6 @@
 
                 clicks++;
 
-                // LOGICAL REASONING FLAG: first move should be piece1 or piece9
                 if (!firstMoveDone) {
                     if (
                         draggedPiece.dataset.correct == "1" ||
@@ -517,9 +653,6 @@
             });
         });
 
-        // ============================================================
-        //  RESET BUTTON
-        // ============================================================
         function resetBoard() {
             if (gameOver) return;
             resetCount++;
@@ -538,9 +671,6 @@
             document.getElementById("result").innerHTML = "";
         }
 
-        // ============================================================
-        //  EVALUATE & END GAME (called by Finish or Give Up)
-        // ============================================================
         function evaluateGame(isGiveUp) {
             if (gameOver) return;
             gameOver = true;
@@ -569,7 +699,6 @@
                 }
             });
 
-            // Error score: number of spots NOT having the correct piece
             let errorScore = 0;
             zones.forEach(zone => {
                 if (zone.children.length === 0) {
@@ -584,7 +713,6 @@
 
             let correctnessFlag = (correct === 9 && filled === 9) ? 1 : 0;
 
-            // Disable buttons & add game-over styling
             document.getElementById("btn-finish").disabled = true;
             document.getElementById("btn-giveup").disabled = true;
             document.getElementById("btn-reset").disabled = true;
@@ -592,7 +720,6 @@
             document.querySelectorAll(".piece").forEach(p => p.classList.add("game-over"));
             document.querySelectorAll(".dropzone").forEach(z => z.classList.add("game-over"));
 
-            // Report to KB (all metrics still sent)
             if (!finishReported) {
                 finishReported = true;
                 window.__kb?.finish?.({
@@ -609,7 +736,6 @@
                 });
             }
 
-            // Display only a simple game‑over message (no scores)
             const resultDiv = document.getElementById("result");
             if (isGiveUp) {
                 resultDiv.innerHTML = "🏁 Game ended. Thank you for playing!";
@@ -622,9 +748,6 @@
             }
         }
 
-        // ============================================================
-        //  FINISH BUTTON
-        // ============================================================
         function checkAnswer() {
             if (gameOver) return;
 
@@ -643,9 +766,6 @@
             evaluateGame(false);
         }
 
-        // ============================================================
-        //  GIVE UP BUTTON
-        // ============================================================
         function giveUp() {
             if (gameOver) return;
             evaluateGame(true);

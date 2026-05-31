@@ -66,11 +66,11 @@ export const TASKS = [
     }
   },
   {
-    id: 'pick-up-sticks-3',
-    title: 'Pick Up Sticks',
+    id: 'planes',
+    title: 'Planes',
     category: 'B',
     type: 'generic',
-    url: '/tasks/BLevelGames/PickUpSticks3.html',
+    url: '/tasks/BLevelGames/Planes/Planes.html',
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
@@ -92,16 +92,16 @@ export const TASKS = [
     }
   },
   {
-    id: 'coloring-page-3',
-    title: 'Coloring Page',
+    id: 'golden-ticket',
+    title: 'Golden Ticket',
     category: 'B',
     type: 'generic',
-    url: '/tasks/BLevelGames/ColoringPage3.html',
+    url: '/tasks/BLevelGames/Golden%20Ticket/GoldenTicket.html',
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
       clickDecayPerClick: 0.2,
-      weights: { error: 1, time: 0, click: 0, drag: 0 }
+      weights: { error: 0.6, time: 0.3, click: 0.1, drag: 0 }
     }
   },
   {

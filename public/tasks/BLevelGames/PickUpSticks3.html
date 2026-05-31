@@ -10,6 +10,9 @@
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #000;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #info {
@@ -22,10 +25,13 @@
             border-radius: 40px;
             backdrop-filter: blur(8px);
             border-left: 5px solid #ffaa00;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
             pointer-events: none;
             z-index: 10;
             font-weight: 500;
+            max-width: 380px;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         #controls {
@@ -47,48 +53,49 @@
             box-shadow: 0 8px 25px #00000080;
         }
 
-            #controls button {
-                background: #ffb347;
-                border: none;
-                color: #0a121c;
-                font-weight: bold;
-                font-size: 1.2rem;
-                padding: 10px 24px;
-                border-radius: 50px;
-                cursor: pointer;
-                box-shadow: 0 4px 0 #b16f1a, 0 6px 12px #00000060;
-                transition: all 0.1s ease;
-                border: 1px solid #ffd58c;
-                letter-spacing: 0.5px;
-            }
+        #controls button {
+            background: #ffb347;
+            border: none;
+            color: #0a121c;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 10px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b16f1a, 0 6px 12px #00000060;
+            transition: all 0.1s ease;
+            border: 1px solid #ffd58c;
+            letter-spacing: 0.5px;
+        }
 
-                #controls button:hover {
-                    background: #ffca6e;
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 0 #b16f1a, 0 10px 18px #00000080;
-                }
+        #controls button:hover {
+            background: #ffca6e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #b16f1a, 0 10px 18px #00000080;
+        }
 
-                #controls button:active {
-                    transform: translateY(2px);
-                    box-shadow: 0 2px 0 #b16f1a, 0 6px 12px #00000060;
-                }
+        #controls button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b16f1a, 0 6px 12px #00000060;
+        }
 
-                #controls button:disabled {
-                    background: #5a6a7a;
-                    box-shadow: 0 4px 0 #2c3a48, 0 4px 8px #00000040;
-                    color: #ccddee;
-                    border-color: #7f8fa0;
-                    transform: none;
-                    pointer-events: none;
-                }
+        #controls button:disabled {
+            background: #5a6a7a;
+            box-shadow: 0 4px 0 #2c3a48, 0 4px 8px #00000040;
+            color: #ccddee;
+            border-color: #7f8fa0;
+            transform: none;
+            pointer-events: none;
+        }
 
         #message {
             color: #ffecb3;
-            font-size: 1.3rem;
-            min-width: 240px;
+            font-size: 1.1rem;
+            min-width: 200px;
             text-align: center;
             font-weight: 600;
             text-shadow: 0 2px 5px black;
+            white-space: nowrap;
         }
 
         #instruction {
@@ -99,7 +106,7 @@
             background: rgba(10, 20, 40, 0.6);
             padding: 8px 20px;
             border-radius: 30px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             backdrop-filter: blur(4px);
             pointer-events: none;
             border: 1px solid #4f6b8a;
@@ -139,48 +146,39 @@
             line-height: 1.8;
         }
 
-            #score-panel span {
-                font-weight: bold;
-                color: #ffd966;
-            }
-
-        .error-score-line, .correct-rounds-line {
-            display: none;
-        }
-
-        #final-score-message {
-            display: none;
+        #score-panel span {
+            font-weight: bold;
+            color: #ffd966;
         }
     </style>
 </head>
 <body>
     <div id="info">
-        Pick Up Sticks <br>
-                Ruan drops some sticks on a table and then sorts them following these rules:<br>
-                🚀 Pick up one stick at a time and place it on the right <br>
+        Ruan is playing the game ‘pick-up sticks’.<br>
+        He drops some sticks on a table and then picks them all up following these rules:<br>
+                🚀 Pick up one stick at a time <br>
                 🚀 Only pick up a stick if no other stick is covering it<br>
                 🚀 Ruan swaps the sticks and places them from right to left.<br>
                 🚀 Click 1 stick then another to swap their places</div>
+    </div>
     <div id="round-badge">ROUND <span id="round-num">1</span>/3</div>
     <div id="score-panel">
-        <div class="correct-rounds-line">🎯 CORRECT ROUNDS: <span id="correct-rounds">0</span></div>
-        <div class="error-score-line">⭐ ERROR SCORE: <span id="error-score">0.0</span></div>
         <div>⏱️ TIMER: <span id="time-score">0.0</span> sec</div>
         <div>🖱️ CLICKS: <span id="click-score">0</span></div>
-        <div>🔄 SWITCHES: <span id="switch-count">0</span></div>
+        <div>📦 PLACEMENTS: <span id="placement-count">0</span></div>
     </div>
-    <div id="instruction">🖱️ Click a stick on the right → click another to swap · Match left stack</div>
+    <div id="instruction">🖱️ Drag sticks from pool → drop into slots · Click placed stick to return</div>
     <div id="controls">
-        <span id="message">✨ Sort the right sticks</span>
+        <span id="message">✨ Drag sticks into the right slots</span>
         <button id="nextRoundBtn">▶ NEXT ROUND</button>
         <button id="giveUpBtn">🏳️ GIVE UP</button>
     </div>
-    <div id="final-score-message"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js">
+    </script>
 
     <script>
-        (function () {
+        (function() {
             // =====================
             // SCENE SETUP
             // =====================
@@ -195,6 +193,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.domElement.style.touchAction = 'none';
             document.body.appendChild(renderer.domElement);
 
             // --- SPACE BACKGROUND EFFECTS ---
@@ -202,7 +201,6 @@
             const starsCount = 3000;
             const starPositions = new Float32Array(starsCount * 3);
             const starColors = new Float32Array(starsCount * 3);
-
             for (let i = 0; i < starsCount * 3; i += 3) {
                 const r = 80 + Math.random() * 120;
                 const theta = Math.random() * Math.PI * 2;
@@ -212,39 +210,51 @@
                 starPositions[i + 2] = Math.cos(phi) * r;
                 const colorChoice = Math.random();
                 if (colorChoice < 0.6) {
-                    starColors[i] = 1; starColors[i + 1] = 1; starColors[i + 2] = 1;
+                    starColors[i] = 1;
+                    starColors[i + 1] = 1;
+                    starColors[i + 2] = 1;
                 } else if (colorChoice < 0.85) {
-                    starColors[i] = 0.8; starColors[i + 1] = 0.9; starColors[i + 2] = 1;
+                    starColors[i] = 0.8;
+                    starColors[i + 1] = 0.9;
+                    starColors[i + 2] = 1;
                 } else {
-                    starColors[i] = 1; starColors[i + 1] = 0.9; starColors[i + 2] = 0.7;
+                    starColors[i] = 1;
+                    starColors[i + 1] = 0.9;
+                    starColors[i + 2] = 0.7;
                 }
             }
             starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
             starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-            const starsMaterial = new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending });
+            const starsMaterial = new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true,
+                blending: THREE.AdditiveBlending });
             const stars = new THREE.Points(starsGeometry, starsMaterial);
             scene.add(stars);
 
-            const nebulaMat = new THREE.MeshPhongMaterial({ color: 0x335588, emissive: new THREE.Color(0x224466), transparent: true, opacity: 0.08, side: THREE.BackSide });
+            const nebulaMat = new THREE.MeshPhongMaterial({ color: 0x335588, emissive: new THREE.Color(0x224466),
+                transparent: true, opacity: 0.08, side: THREE.BackSide });
             const nebula1 = new THREE.Mesh(new THREE.SphereGeometry(45, 32, 16), nebulaMat);
             nebula1.position.set(-10, 5, -30);
             scene.add(nebula1);
             const nebula2 = new THREE.Mesh(new THREE.SphereGeometry(60, 32, 16),
-                new THREE.MeshPhongMaterial({ color: 0x774466, emissive: new THREE.Color(0x553344), transparent: true, opacity: 0.06, side: THREE.BackSide }));
+                new THREE.MeshPhongMaterial({ color: 0x774466, emissive: new THREE.Color(0x553344), transparent: true,
+                    opacity: 0.06, side: THREE.BackSide }));
             nebula2.position.set(20, -10, -50);
             scene.add(nebula2);
 
             const rockets = [];
+
             function createRocket(color = 0xff5533) {
                 const group = new THREE.Group();
                 const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 2.0, 8);
-                const bodyMat = new THREE.MeshStandardMaterial({ color: color, emissive: new THREE.Color(0x331100), emissiveIntensity: 0.3 });
+                const bodyMat = new THREE.MeshStandardMaterial({ color: color, emissive: new THREE.Color(0x331100),
+                    emissiveIntensity: 0.3 });
                 const body = new THREE.Mesh(bodyGeo, bodyMat);
                 body.rotation.x = Math.PI / 2;
                 body.position.y = 0;
                 group.add(body);
                 const noseGeo = new THREE.ConeGeometry(0.45, 0.8, 8);
-                const noseMat = new THREE.MeshStandardMaterial({ color: 0xccccdd, emissive: new THREE.Color(0x224466), emissiveIntensity: 0.2 });
+                const noseMat = new THREE.MeshStandardMaterial({ color: 0xccccdd, emissive: new THREE.Color(0x224466),
+                    emissiveIntensity: 0.2 });
                 const nose = new THREE.Mesh(noseGeo, noseMat);
                 nose.position.y = 1.2;
                 nose.rotation.x = Math.PI / 2;
@@ -269,14 +279,14 @@
                 fin4.rotation.x = -0.2;
                 group.add(fin4);
                 const flameGeo = new THREE.ConeGeometry(0.25, 0.7, 6);
-                const flameMat = new THREE.MeshStandardMaterial({ color: 0xff8800, emissive: new THREE.Color(0xff4400), emissiveIntensity: 1.0 });
+                const flameMat = new THREE.MeshStandardMaterial({ color: 0xff8800, emissive: new THREE.Color(0xff4400),
+                    emissiveIntensity: 1.0 });
                 const flame = new THREE.Mesh(flameGeo, flameMat);
                 flame.position.y = -1.2;
                 flame.rotation.x = Math.PI / 2;
                 group.add(flame);
                 return group;
             }
-
             const rocket1 = createRocket(0xff5533);
             rocket1.position.set(-8, 6, -15);
             rocket1.scale.set(0.8, 0.8, 0.8);
@@ -338,7 +348,8 @@
             const gridHelper = new THREE.GridHelper(20, 24, 0x88aacc, 0x224466);
             gridHelper.position.y = 0.02;
             scene.add(gridHelper);
-            const planeMat = new THREE.MeshStandardMaterial({ color: 0x142433, roughness: 0.9, metalness: 0.2, transparent: true, opacity: 0.3 });
+            const planeMat = new THREE.MeshStandardMaterial({ color: 0x142433, roughness: 0.9, metalness: 0.2,
+                transparent: true, opacity: 0.3 });
             const plane = new THREE.Mesh(new THREE.PlaneGeometry(18, 10), planeMat);
             plane.rotation.x = -Math.PI / 2;
             plane.position.y = 0;
@@ -353,15 +364,15 @@
                 0xe67e22, 0x2ecc71, 0x1abc9c, 0x3498db, 0xe74c3c
             ];
 
-            function createMaterialFromColor(colorHex) {
+            function createMaterialFromColor(colorHex, emissiveHex = 0x111111, emissiveIntensity = 0.08, opacity = 0.98) {
                 return new THREE.MeshStandardMaterial({
                     color: colorHex,
                     roughness: 0.45,
                     metalness: 0.1,
-                    emissive: new THREE.Color(0x111111),
-                    emissiveIntensity: 0.08,
+                    emissive: new THREE.Color(emissiveHex),
+                    emissiveIntensity: emissiveIntensity,
                     transparent: true,
-                    opacity: 0.98
+                    opacity: opacity
                 });
             }
 
@@ -373,63 +384,40 @@
             let currentCount = 0;
             let leftSticks = [];
             let leftData = [];
-            let rightSticks = [];
-            let rightDataOrder = [];
+            let poolSticks = [];
+            let slotData = [];
             let slotPositions = [];
-            let selectedStick = null;
+            let heldStick = null;
             let isGameActive = true;
             let giveUpFlag = 0;
-
-            // Scoring variables (all hidden except timer/clicks/switches)
-            let errorScore = 0.0;
-            let totalClicks = 0;
-            let switchCount = 0;
-            let correctRounds = 0;               // hidden, tracked internally
-            const startTime = Date.now();
             let gameFinished = false;
 
-            // UI elements
+            let totalClicks = 0;
+            let placementCount = 0;
+            let correctRounds = 0;
+            let errorScore = 0.0;
+            const startTime = Date.now();
+
             const messageEl = document.getElementById('message');
             const nextBtn = document.getElementById('nextRoundBtn');
             const giveUpBtn = document.getElementById('giveUpBtn');
             const roundSpan = document.getElementById('round-num');
-            const correctRoundsEl = document.getElementById('correct-rounds');
-            const errorScoreEl = document.getElementById('error-score');
             const timeScoreEl = document.getElementById('time-score');
             const clickScoreEl = document.getElementById('click-score');
-            const switchCountEl = document.getElementById('switch-count');
+            const placementCountEl = document.getElementById('placement-count');
+            const instructionEl = document.getElementById('instruction');
 
-            const raycaster = new THREE.Raycaster();
-            const mouse = new THREE.Vector2();
-
-            // UI updates (only visible ones)
             function updateTimerDisplay() {
                 const elapsed = (Date.now() - startTime) / 1000;
                 timeScoreEl.textContent = elapsed.toFixed(1);
             }
+
             function updateClickDisplay() {
                 clickScoreEl.textContent = totalClicks;
             }
-            function updateSwitchDisplay() {
-                switchCountEl.textContent = switchCount;
-            }
-            // Hidden updates (kept for data logging)
-            function updateHiddenCorrectRounds() {
-                if (correctRoundsEl) correctRoundsEl.textContent = correctRounds;
-            }
-            function updateHiddenErrorScore() {
-                if (errorScoreEl) errorScoreEl.textContent = errorScore.toFixed(1);
-            }
 
-            function applySwapErrorPenalty(idxA, idxB) {
-                const colorA = rightSticks[idxA].userData.color;
-                const colorB = rightSticks[idxB].userData.color;
-                const targetA = leftData[idxA].color;
-                const targetB = leftData[idxB].color;
-                if (colorA !== targetA && colorB !== targetB) {
-                    errorScore += 1;
-                    updateHiddenErrorScore();
-                }
+            function updatePlacementDisplay() {
+                placementCountEl.textContent = placementCount;
             }
 
             function finishGame() {
@@ -440,13 +428,14 @@
                     errorScore,
                     timeElapsed: elapsed,
                     totalClicks,
-                    switchCount,
+                    placementCount,
                     correctRounds,
                     giveUp: giveUpFlag
                 });
                 nextBtn.disabled = true;
                 giveUpBtn.disabled = true;
                 messageEl.textContent = "🏁 Session complete.";
+                instructionEl.textContent = "✅ All rounds finished!";
             }
 
             // =====================
@@ -454,13 +443,20 @@
             // =====================
             function clearSticks() {
                 leftSticks.forEach(s => scene.remove(s));
-                rightSticks.forEach(s => scene.remove(s));
+                poolSticks.forEach(s => scene.remove(s.mesh));
+                slotData.forEach(sd => {
+                    if (sd.ghostMesh) scene.remove(sd.ghostMesh);
+                    if (sd.ringMesh) scene.remove(sd.ringMesh);
+                    if (sd.occupant) scene.remove(sd.occupant);
+                });
+                if (heldStick) {
+                    scene.remove(heldStick.mesh);
+                    heldStick = null;
+                }
                 leftSticks = [];
-                rightSticks = [];
-                leftData = [];
-                rightDataOrder = [];
+                poolSticks = [];
+                slotData = [];
                 slotPositions = [];
-                selectedStick = null;
             }
 
             function createRound(count) {
@@ -468,10 +464,11 @@
                 currentCount = count;
                 isGameActive = true;
                 giveUpFlag = 0;
-                messageEl.textContent = `🎨 Sort the ${count} sticks by color (bottom → top)`;
+                messageEl.textContent = `🎨 Drag ${count} sticks from the pool into the right slots`;
                 updateRoundDisplay();
 
                 const usedColors = new Set();
+                leftData = [];
                 for (let i = 0; i < count; i++) {
                     let color;
                     do {
@@ -494,7 +491,7 @@
                     stick.position.z = leftBaseZ + (Math.random() * 0.3 - 0.15);
                     stick.castShadow = true;
                     stick.receiveShadow = true;
-                    stick.userData = { ...leftData[i], index: i };
+                    stick.userData = { ...leftData[i], index: i, isLeft: true };
                     scene.add(stick);
                     leftSticks.push(stick);
                 }
@@ -504,157 +501,486 @@
                     const j = Math.floor(Math.random() * (i + 1));
                     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
                 }
-                rightDataOrder = shuffled.map(item => ({ ...item }));
 
-                const startX = 1.5;
-                const endX = 7.5;
-                const step = (count > 1) ? (endX - startX) / (count - 1) : 0;
+                const poolStartX = 1;
+                const poolEndX = 6.8;
+                const poolY = 8;
+                const poolZ = -0.8;
+                const poolSpacing = count > 1 ? (poolEndX - poolStartX) / (count - 1) : 0;
+
+                poolSticks = [];
                 for (let i = 0; i < count; i++) {
-                    const xPos = startX + i * step;
-                    slotPositions.push(xPos);
-                    const geom = new THREE.CylinderGeometry(0.3, 0.3, 5.0, 16);
-                    const data = rightDataOrder[i];
-                    const material = createMaterialFromColor(data.color);
+                    const px = poolStartX + i * poolSpacing;
+                    const geom = new THREE.CylinderGeometry(0.28, 0.28, 4.4, 14);
+                    const material = createMaterialFromColor(shuffled[i].color);
                     const stick = new THREE.Mesh(geom, material);
-                    stick.position.set(xPos, 2.7, -0.3);
+                    stick.position.set(px, poolY, poolZ);
                     stick.castShadow = true;
                     stick.receiveShadow = true;
-                    stick.userData = { ...data, slotIndex: i, isRight: true };
+                    stick.userData = {
+                        color: shuffled[i].color,
+                        poolIndex: i,
+                        poolHomeX: px,
+                        poolHomeY: poolY,
+                        poolHomeZ: poolZ,
+                        isPool: true
+                    };
                     scene.add(stick);
-                    rightSticks.push(stick);
+                    poolSticks.push({ mesh: stick, data: stick.userData });
+                }
+
+                const slotStartX = 1.5;
+                const slotEndX = 7.5;
+                const slotStep = count > 1 ? (slotEndX - slotStartX) / (count - 1) : 0;
+                const slotY = 2.7;
+                const slotZ = -0.3;
+                slotPositions = [];
+                slotData = [];
+
+                const ghostMaterial = new THREE.MeshStandardMaterial({
+                    color: 0x8899aa,
+                    roughness: 0.7,
+                    metalness: 0.1,
+                    transparent: true,
+                    opacity: 0.25,
+                    emissive: new THREE.Color(0x111122),
+                    emissiveIntensity: 0.15,
+                    depthWrite: false
+                });
+
+                const ghostHighlightMaterial = new THREE.MeshStandardMaterial({
+                    color: 0xaaccff,
+                    roughness: 0.5,
+                    metalness: 0.1,
+                    transparent: true,
+                    opacity: 0.45,
+                    emissive: new THREE.Color(0x334466),
+                    emissiveIntensity: 0.5,
+                    depthWrite: false
+                });
+
+                for (let i = 0; i < count; i++) {
+                    const sx = slotStartX + i * slotStep;
+                    slotPositions.push({ x: sx, y: slotY, z: slotZ });
+
+                    const ghostGeom = new THREE.CylinderGeometry(0.3, 0.3, 5.0, 16);
+                    const ghost = new THREE.Mesh(ghostGeom, ghostMaterial.clone());
+                    ghost.position.set(sx, slotY, slotZ);
+                    ghost.receiveShadow = true;
+                    ghost.userData = { slotIndex: i, isGhost: true };
+                    scene.add(ghost);
 
                     const ringGeo = new THREE.TorusGeometry(0.42, 0.04, 8, 24);
-                    const ringMat = new THREE.MeshStandardMaterial({ color: 0x9bb7d4, emissive: new THREE.Color(0x2a4a6a), emissiveIntensity: 0.4 });
+                    const ringMat = new THREE.MeshStandardMaterial({ color: 0x9bb7d4, emissive: new THREE.Color(0x2a4a6a),
+                        emissiveIntensity: 0.4 });
                     const ring = new THREE.Mesh(ringGeo, ringMat);
                     ring.rotation.x = Math.PI / 2;
-                    ring.position.set(xPos, 0.18, -0.3);
+                    ring.position.set(sx, 0.18, slotZ);
                     ring.receiveShadow = true;
+                    ring.userData = { slotIndex: i, isRing: true };
                     scene.add(ring);
+
+                    slotData.push({
+                        position: { x: sx, y: slotY, z: slotZ },
+                        ghostMesh: ghost,
+                        ghostMaterial: ghost.material,
+                        ghostHighlightMaterial: ghostHighlightMaterial,
+                        ringMesh: ring,
+                        ringMaterial: ringMat,
+                        occupant: null,
+                        isHighlighted: false
+                    });
                 }
+
+                heldStick = null;
+                updatePlacementDisplay();
+                updateClickDisplay();
+                instructionEl.textContent = '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
             }
 
-            // Silent verification – no UI feedback, returns boolean
             function isOrderCorrect() {
                 for (let i = 0; i < currentCount; i++) {
-                    if (rightSticks[i].userData.color !== leftData[i].color) {
+                    if (!slotData[i].occupant || slotData[i].occupant.userData.color !== leftData[i].color) {
                         return false;
                     }
                 }
                 return true;
             }
 
-            function swapRightSticks(idxA, idxB) {
-                if (idxA === idxB || !isGameActive || giveUpFlag) return;
-                const stickA = rightSticks[idxA];
-                const stickB = rightSticks[idxB];
-                const tempData = { ...stickA.userData };
-                stickA.userData = { ...stickB.userData, slotIndex: idxA };
-                stickB.userData = { ...tempData, slotIndex: idxB };
-                stickA.material = createMaterialFromColor(stickA.userData.color);
-                stickB.material = createMaterialFromColor(stickB.userData.color);
-                [rightDataOrder[idxA], rightDataOrder[idxB]] = [rightDataOrder[idxB], rightDataOrder[idxA]];
-
-                switchCount++;
-                updateSwitchDisplay();
-                applySwapErrorPenalty(idxA, idxB);
-                // No automatic correctness check – student decides when to move on
+            function getAllSlotsFilled() {
+                for (let i = 0; i < currentCount; i++) {
+                    if (!slotData[i].occupant) return false;
+                }
+                return true;
             }
 
-            function clearHighlight() {
-                if (selectedStick) {
-                    selectedStick.material.emissive.setHex(0x222222);
-                    selectedStick.material.emissiveIntensity = 0.1;
-                    selectedStick = null;
+            function returnStickToPool(stickMesh) {
+                const homeX = stickMesh.userData.poolHomeX;
+                const homeY = stickMesh.userData.poolHomeY;
+                const homeZ = stickMesh.userData.poolHomeZ;
+                stickMesh.position.set(homeX, homeY, homeZ);
+                stickMesh.userData.isPool = true;
+                stickMesh.material.emissive.setHex(0x111111);
+                stickMesh.material.emissiveIntensity = 0.08;
+                stickMesh.material.opacity = 0.98;
+                const pIdx = stickMesh.userData.poolIndex;
+                if (pIdx !== undefined && pIdx < poolSticks.length) {
+                    poolSticks[pIdx].mesh = stickMesh;
+                    poolSticks[pIdx].data = stickMesh.userData;
                 }
             }
 
-            function setHighlight(stick) {
-                clearHighlight();
-                selectedStick = stick;
-                stick.material.emissive.setHex(0xffcc44);
-                stick.material.emissiveIntensity = 1.2;
+            function placeStickInSlot(stickMesh, slotIndex) {
+                if (slotData[slotIndex].occupant) {
+                    const evicted = slotData[slotIndex].occupant;
+                    returnStickToPool(evicted);
+                    slotData[slotIndex].occupant = null;
+                    slotData[slotIndex].ghostMesh.visible = true;
+                }
+                slotData[slotIndex].occupant = stickMesh;
+                slotData[slotIndex].ghostMesh.visible = false;
+                stickMesh.position.set(
+                    slotData[slotIndex].position.x,
+                    slotData[slotIndex].position.y,
+                    slotData[slotIndex].position.z
+                );
+                stickMesh.userData.isPool = false;
+                stickMesh.userData.currentSlot = slotIndex;
+                stickMesh.material.emissive.setHex(0x111111);
+                stickMesh.material.emissiveIntensity = 0.08;
+                stickMesh.material.opacity = 0.98;
+                placementCount++;
+                updatePlacementDisplay();
+                const targetColor = leftData[slotIndex].color;
+                if (stickMesh.userData.color !== targetColor) {
+                    errorScore += 0.5;
+                }
             }
 
-            function onMouseClick(event) {
-                if (!isGameActive || giveUpFlag) return;
+            function clearSlotHighlight(slotIndex) {
+                if (slotIndex < 0 || slotIndex >= slotData.length) return;
+                const sd = slotData[slotIndex];
+                if (sd.isHighlighted) {
+                    sd.ghostMesh.material = sd.ghostMaterial;
+                    sd.ringMesh.material.emissive.setHex(0x2a4a6a);
+                    sd.ringMesh.material.emissiveIntensity = 0.4;
+                    sd.isHighlighted = false;
+                }
+            }
+
+            function setSlotHighlight(slotIndex) {
+                if (slotIndex < 0 || slotIndex >= slotData.length) return;
+                const sd = slotData[slotIndex];
+                if (!sd.isHighlighted) {
+                    sd.ghostMesh.material = sd.ghostHighlightMaterial;
+                    sd.ringMesh.material.emissive.setHex(0xffcc44);
+                    sd.ringMesh.material.emissiveIntensity = 0.9;
+                    sd.isHighlighted = true;
+                }
+            }
+
+            let lastHighlightedSlot = -1;
+
+            function updateSlotHover(projectedPoint, snapThreshold) {
+                let nearestIdx = -1;
+                let nearestDist = Infinity;
+                for (let i = 0; i < slotPositions.length; i++) {
+                    const sp = slotPositions[i];
+                    const dist = Math.sqrt((projectedPoint.x - sp.x) ** 2 + (projectedPoint.z - sp.z) ** 2);
+                    if (dist < nearestDist && dist < snapThreshold) {
+                        nearestDist = dist;
+                        nearestIdx = i;
+                    }
+                }
+                if (nearestIdx !== lastHighlightedSlot) {
+                    clearSlotHighlight(lastHighlightedSlot);
+                    setSlotHighlight(nearestIdx);
+                    lastHighlightedSlot = nearestIdx;
+                }
+                return nearestIdx;
+            }
+
+            function clearAllSlotHighlights() {
+                for (let i = 0; i < slotData.length; i++) {
+                    clearSlotHighlight(i);
+                }
+                lastHighlightedSlot = -1;
+            }
+
+            // =====================
+            // DRAG & DROP HANDLING
+            // =====================
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -3.5);
+            const projectedPoint = new THREE.Vector3();
+            const snapThreshold = 1.5;
+            let isDragging = false;
+            let pointerDownPos = new THREE.Vector2();
+            let hasMovedSinceDown = false;
+
+            function getIntersections(event) {
                 mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
                 mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
                 raycaster.setFromCamera(mouse, camera);
-                const intersects = raycaster.intersectObjects(rightSticks);
-                if (intersects.length === 0) {
-                    clearHighlight();
-                    return;
+                const allTargets = [];
+                poolSticks.forEach(ps => {
+                    if (ps.mesh && ps.mesh.parent && ps.mesh.userData.isPool) {
+                        allTargets.push(ps.mesh);
+                    }
+                });
+                slotData.forEach(sd => {
+                    if (sd.occupant && sd.occupant.parent && !sd.occupant.userData.isPool) {
+                        allTargets.push(sd.occupant);
+                    }
+                });
+                return raycaster.intersectObjects(allTargets, false);
+            }
+
+            function getPoolStickIntersections(event) {
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const poolMeshes = poolSticks.filter(ps => ps.mesh && ps.mesh.parent && ps.mesh.userData.isPool).map(
+                    ps => ps.mesh);
+                return raycaster.intersectObjects(poolMeshes, false);
+            }
+
+            function getSlotOccupantIntersections(event) {
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const occupantMeshes = [];
+                slotData.forEach(sd => {
+                    if (sd.occupant && sd.occupant.parent && !sd.occupant.userData.isPool) {
+                        occupantMeshes.push(sd.occupant);
+                    }
+                });
+                return raycaster.intersectObjects(occupantMeshes, false);
+            }
+
+            function projectMouseToDragPlane(event) {
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const pt = new THREE.Vector3();
+                const hit = raycaster.ray.intersectPlane(dragPlane, pt);
+                return hit ? pt : null;
+            }
+
+            function onPointerDown(event) {
+                if (!isGameActive || giveUpFlag || gameFinished) return;
+                if (heldStick) return;
+                if (event.target !== renderer.domElement) return;
+
+                pointerDownPos.set(event.clientX, event.clientY);
+                hasMovedSinceDown = false;
+
+                const poolIntersects = getPoolStickIntersections(event);
+                if (poolIntersects.length > 0) {
+                    const hitMesh = poolIntersects[0].object;
+                    if (hitMesh.userData.isPool) {
+                        heldStick = { mesh: hitMesh, data: hitMesh.userData };
+                        hitMesh.userData.isPool = false;
+                        hitMesh.material.emissive.setHex(0xffcc44);
+                        hitMesh.material.emissiveIntensity = 1.2;
+                        hitMesh.material.opacity = 1.0;
+                        isDragging = true;
+                        hasMovedSinceDown = false;
+                        messageEl.textContent = '🔸 Holding stick — move to a slot & release';
+                        instructionEl.textContent = '📍 Move stick over a slot · Release to place · Release away to return';
+                        totalClicks++;
+                        updateClickDisplay();
+                        renderer.domElement.setPointerCapture(event.pointerId);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return;
+                    }
                 }
-                const hitStick = intersects[0].object;
-                const hitIndex = rightSticks.indexOf(hitStick);
-                if (hitIndex === -1) return;
 
-                totalClicks++;
-                updateClickDisplay();
-
-                if (selectedStick === null) {
-                    setHighlight(hitStick);
-                    messageEl.textContent = `🔸 Selected stick ${hitIndex + 1}. Click another.`;
-                } else {
-                    const firstIdx = rightSticks.indexOf(selectedStick);
-                    if (firstIdx === hitIndex) {
-                        clearHighlight();
-                        messageEl.textContent = `✨ Sort the right sticks`;
-                    } else {
-                        swapRightSticks(firstIdx, hitIndex);
-                        clearHighlight();
+                const slotIntersects = getSlotOccupantIntersections(event);
+                if (slotIntersects.length > 0) {
+                    const hitMesh = slotIntersects[0].object;
+                    if (!hitMesh.userData.isPool && hitMesh.userData.currentSlot !== undefined) {
+                        const slotIdx = hitMesh.userData.currentSlot;
+                        slotData[slotIdx].occupant = null;
+                        slotData[slotIdx].ghostMesh.visible = true;
+                        clearSlotHighlight(slotIdx);
+                        heldStick = { mesh: hitMesh, data: hitMesh.userData };
+                        hitMesh.material.emissive.setHex(0xffcc44);
+                        hitMesh.material.emissiveIntensity = 1.2;
+                        hitMesh.material.opacity = 1.0;
+                        isDragging = true;
+                        hasMovedSinceDown = false;
+                        messageEl.textContent = '🔸 Picked up stick from slot — move & release';
+                        instructionEl.textContent = '📍 Move stick · Release over slot to place · Release away to return to pool';
+                        totalClicks++;
+                        updateClickDisplay();
+                        renderer.domElement.setPointerCapture(event.pointerId);
+                        event.preventDefault();
+                        event.stopPropagation();
+                        return;
                     }
                 }
             }
 
+            function onPointerMove(event) {
+                if (!heldStick || !isDragging) return;
+                const dx = event.clientX - pointerDownPos.x;
+                const dy = event.clientY - pointerDownPos.y;
+                if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
+                    hasMovedSinceDown = true;
+                }
+                if (!hasMovedSinceDown) return;
+
+                const pt = projectMouseToDragPlane(event);
+                if (pt) {
+                    heldStick.mesh.position.copy(pt);
+                    heldStick.mesh.position.y = 3.5;
+                    updateSlotHover(pt, snapThreshold);
+                }
+                event.preventDefault();
+            }
+
+            function onPointerUp(event) {
+                if (!heldStick || !isDragging) {
+                    isDragging = false;
+                    hasMovedSinceDown = false;
+                    clearAllSlotHighlights();
+                    return;
+                }
+                isDragging = false;
+                hasMovedSinceDown = false;
+                renderer.domElement.releasePointerCapture(event.pointerId);
+
+                const pt = projectMouseToDragPlane(event);
+                let placed = false;
+                if (pt) {
+                    let nearestIdx = -1;
+                    let nearestDist = Infinity;
+                    for (let i = 0; i < slotPositions.length; i++) {
+                        const sp = slotPositions[i];
+                        const dist = Math.sqrt((pt.x - sp.x) ** 2 + (pt.z - sp.z) ** 2);
+                        if (dist < nearestDist && dist < snapThreshold) {
+                            nearestDist = dist;
+                            nearestIdx = i;
+                        }
+                    }
+                    if (nearestIdx >= 0) {
+                        placeStickInSlot(heldStick.mesh, nearestIdx);
+                        placed = true;
+                        if (getAllSlotsFilled()) {
+                            messageEl.textContent = '✅ All slots filled! Check & click NEXT ROUND';
+                            instructionEl.textContent = '👀 Review your arrangement · Click NEXT ROUND to continue';
+                        } else {
+                            messageEl.textContent = '✅ Stick placed! Drag more from the pool';
+                            instructionEl.textContent =
+                                '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
+                        }
+                    }
+                }
+                if (!placed) {
+                    returnStickToPool(heldStick.mesh);
+                    messageEl.textContent = '↩️ Stick returned to pool';
+                    instructionEl.textContent = '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
+                }
+                clearAllSlotHighlights();
+                heldStick = null;
+                updatePlacementDisplay();
+                event.preventDefault();
+            }
+
+            function onPointerCancel(event) {
+                if (heldStick && isDragging) {
+                    returnStickToPool(heldStick.mesh);
+                    clearAllSlotHighlights();
+                    heldStick = null;
+                    isDragging = false;
+                    hasMovedSinceDown = false;
+                    messageEl.textContent = '↩️ Stick returned to pool';
+                    instructionEl.textContent = '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
+                }
+            }
+
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            renderer.domElement.addEventListener('pointermove', onPointerMove);
+            renderer.domElement.addEventListener('pointerup', onPointerUp);
+            renderer.domElement.addEventListener('pointercancel', onPointerCancel);
+            renderer.domElement.addEventListener('pointerleave', onPointerCancel);
+            renderer.domElement.addEventListener('pointerout', onPointerCancel);
+            window.addEventListener('pointerup', (event) => {
+                if (heldStick && isDragging && event.target !== renderer.domElement) {
+                    returnStickToPool(heldStick.mesh);
+                    clearAllSlotHighlights();
+                    heldStick = null;
+                    isDragging = false;
+                    hasMovedSinceDown = false;
+                    messageEl.textContent = '↩️ Stick returned to pool';
+                    instructionEl.textContent = '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
+                }
+            });
+
+            // =====================
+            // ROUND ADVANCEMENT
+            // =====================
             function advanceRound() {
                 if (gameFinished) return;
-                // Silently check if current round was correct, increment hidden counter
+                if (heldStick) {
+                    returnStickToPool(heldStick.mesh);
+                    clearAllSlotHighlights();
+                    heldStick = null;
+                    isDragging = false;
+                    hasMovedSinceDown = false;
+                }
                 if (isOrderCorrect()) {
                     correctRounds++;
-                    updateHiddenCorrectRounds();
                 }
-                // Proceed to next round (or finish)
                 if (roundIndex < rounds.length) {
                     createRound(rounds[roundIndex]);
                     roundIndex++;
                     updateRoundDisplay();
-                    clearHighlight();
+                    messageEl.textContent = `🎨 Drag ${rounds[roundIndex-1] || currentCount} sticks from the pool into the right slots`;
+                    instructionEl.textContent = '🖱️ Drag sticks from pool → drop into slots · Click placed stick to return';
                 } else {
                     messageEl.textContent = "🏆 All rounds attempted.";
+                    instructionEl.textContent = '✅ All rounds finished!';
                     finishGame();
                 }
             }
 
             function updateRoundDisplay() {
-                roundSpan.textContent = `${roundIndex + 1}/${rounds.length}`;
+                roundSpan.textContent = `${Math.min(roundIndex + 1, rounds.length)}/${rounds.length}`;
             }
 
             function giveUp() {
                 if (!isGameActive || giveUpFlag || gameFinished) return;
                 giveUpFlag = 1;
                 isGameActive = false;
+                if (heldStick) {
+                    returnStickToPool(heldStick.mesh);
+                    clearAllSlotHighlights();
+                    heldStick = null;
+                    isDragging = false;
+                    hasMovedSinceDown = false;
+                }
                 messageEl.textContent = "🏳️ You gave up. Game over.";
-                clearHighlight();
+                instructionEl.textContent = '🏳️ Round forfeited';
                 nextBtn.disabled = true;
                 finishGame();
             }
 
-            // Timer updates every 100ms
             setInterval(() => {
                 if (!gameFinished) {
                     updateTimerDisplay();
                 }
             }, 100);
 
-            // Event listeners
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
 
-            renderer.domElement.addEventListener('click', onMouseClick);
             nextBtn.addEventListener('click', advanceRound);
             giveUpBtn.addEventListener('click', giveUp);
 
@@ -693,9 +1019,7 @@
                 giveUpBtn.disabled = false;
                 updateTimerDisplay();
                 updateClickDisplay();
-                updateSwitchDisplay();
-                updateHiddenCorrectRounds();
-                updateHiddenErrorScore();
+                updatePlacementDisplay();
             }
 
             startGame();

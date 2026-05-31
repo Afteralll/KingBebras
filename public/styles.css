@@ -246,6 +246,26 @@ iframe {
   display: block;
 }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 18px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 92, 255, 0.35);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  box-shadow: 0 18px 55px rgba(25, 10, 35, 0.25);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  max-width: min(92vw, 560px);
+  text-align: center;
+}
+
 .alert {
   margin-top: 10px;
   padding: 10px 12px;

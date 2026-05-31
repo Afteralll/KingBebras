@@ -12,7 +12,8 @@ const state = {
   examEndsAt: null,
   generatedCredentials: [],
   teacherResultsPayload: null,
-  teacherCredentialsLoaded: false
+  teacherCredentialsLoaded: false,
+  lastFullscreenToastTaskId: null
 };
 
 let timerIntervalId = null;
@@ -39,6 +40,57 @@ function setAlert(el, kind, msg) {
   el.classList.add(kind);
   el.textContent = msg;
   show(el, true);
+}
+
+let toastTimeoutId = null;
+let toastIntervalId = null;
+let pendingTaskOpenTimeoutId = null;
+function showToast(msg, ms = 2200) {
+  const el = $('#fullscreenToast');
+  if (!el) return;
+  el.textContent = msg;
+  show(el, true);
+  if (toastIntervalId) {
+    clearInterval(toastIntervalId);
+    toastIntervalId = null;
+  }
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+  toastTimeoutId = setTimeout(() => show(el, false), ms);
+}
+
+function startFullscreenCountdown(seconds = 3) {
+  const el = $('#fullscreenToast');
+  if (!el) return;
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+  if (toastIntervalId) clearInterval(toastIntervalId);
+
+  let n = Math.max(1, Math.floor(seconds));
+  const render = () => {
+    el.textContent = uiT('fullscreen_countdown', { n });
+    show(el, true);
+  };
+  render();
+
+  toastIntervalId = setInterval(() => {
+    n -= 1;
+    if (n <= 0) {
+      clearInterval(toastIntervalId);
+      toastIntervalId = null;
+      show(el, false);
+      return;
+    }
+    render();
+  }, 1000);
+}
+
+function showFullscreenEnabledToastIfNeeded() {
+  if (!state.activeTask) return;
+  if (!document.fullscreenElement) return;
+  if (state.lastFullscreenToastTaskId === state.activeTask.id) return;
+  state.lastFullscreenToastTaskId = state.activeTask.id;
+  // If countdown is running, don't replace it.
+  if (toastIntervalId) return;
+  showToast(uiT('fullscreen_enabled'));
 }
 
 function isExamRunning() {
@@ -614,16 +666,24 @@ function openTask(task) {
     return;
   }
   state.activeTask = task;
-  $('#taskTitle').textContent = task.title;
-  $('#taskMeta').textContent = `Task id: ${task.id}${task.category ? ` • Difficulty ${task.category}` : ''} • Max score: ${task.maxScore ?? 100}`;
   const frame = $('#taskFrame');
   const lang = currentUiLang();
   const baseUrl = task.url ?? `/tasks/${task.id}/index.html`;
-  frame.src = baseUrl.includes('?') ? `${baseUrl}&lang=${encodeURIComponent(lang)}` : `${baseUrl}?lang=${encodeURIComponent(lang)}`;
-  show($('#taskCard'), true);
+  frame.src = 'about:blank';
+  show($('#taskCard'), false);
   setAlert($('#taskMsg'), 'ok', null);
-  // Opening a game should immediately go fullscreen.
-  enterTaskFullscreen();
+  // Do not open the task UI or start the game until the countdown finishes.
+  startFullscreenCountdown(3);
+  if (pendingTaskOpenTimeoutId) clearTimeout(pendingTaskOpenTimeoutId);
+  pendingTaskOpenTimeoutId = setTimeout(() => {
+    if (!state.activeTask || state.activeTask.id !== task.id) return;
+    $('#taskTitle').textContent = task.title;
+    $('#taskMeta').textContent = `Task id: ${task.id}${task.category ? ` • Difficulty ${task.category}` : ''} • Max score: ${task.maxScore ?? 100}`;
+    show($('#taskCard'), true);
+    frame.src = baseUrl.includes('?') ? `${baseUrl}&lang=${encodeURIComponent(lang)}` : `${baseUrl}?lang=${encodeURIComponent(lang)}`;
+    enterTaskFullscreen();
+    showFullscreenEnabledToastIfNeeded();
+  }, 3000);
 }
 
 function closeTaskFrame() {
@@ -631,6 +691,20 @@ function closeTaskFrame() {
   frame.src = 'about:blank';
   show($('#taskCard'), false);
   state.activeTask = null;
+  state.lastFullscreenToastTaskId = null;
+  if (pendingTaskOpenTimeoutId) {
+    clearTimeout(pendingTaskOpenTimeoutId);
+    pendingTaskOpenTimeoutId = null;
+  }
+  if (toastIntervalId) {
+    clearInterval(toastIntervalId);
+    toastIntervalId = null;
+  }
+  if (toastTimeoutId) {
+    clearTimeout(toastTimeoutId);
+    toastTimeoutId = null;
+  }
+  show($('#fullscreenToast'), false);
 
   if (document.fullscreenElement && document.exitFullscreen) {
     document.exitFullscreen().catch(() => {});
@@ -651,7 +725,10 @@ document.addEventListener(
 
 document.addEventListener('fullscreenchange', () => {
   if (!state.activeTask) return;
-  if (document.fullscreenElement) return;
+  if (document.fullscreenElement) {
+    showFullscreenEnabledToastIfNeeded();
+    return;
+  }
   // If fullscreen is dismissed (e.g. Escape), immediately restore it.
   enterTaskFullscreen();
 });

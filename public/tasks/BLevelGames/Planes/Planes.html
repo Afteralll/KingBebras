@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Timeline Game</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            zoom: 80%;
+        }
+
+        #candyCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .candies-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .candy {
+            position: absolute;
+            font-size: 32px;
+            filter: drop-shadow(0 0 3px gold);
+            animation: flyCandy linear infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #e64980;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+        }
+
+        @keyframes flyCandy {
+            0% {
+                transform: translateX(-10%) translateY(0) rotate(0deg);
+            }
+
+            100% {
+                transform: translateX(120vw) translateY(-40px) rotate(360deg);
+            }
+        }
+
+        .game-card {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 2rem auto;
+            background: rgba(255, 250, 225, 0.85);
+            backdrop-filter: blur(6px);
+            border: 4px solid #ffaa44;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2), 0 0 0 8px #ffdd99 inset;
+            padding: 1.8rem 2rem 2.2rem;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .instruction-text {
+            color: #9b570e;
+            font-weight: bold;
+            margin: 0.4rem 0;
+            line-height: 1.5;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        #topImage {
+            width: 80%;
+            max-height: 250px;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+            border-radius: 24px;
+            border: 4px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .table-container {
+            flex-shrink: 0;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 3px solid #ffb347;
+        }
+
+        th {
+            background: #ff9f43;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px;
+            border: none;
+        }
+
+        td {
+            border: 1px solid #ffe0b2;
+            width: 140px;
+            height: 70px;
+            text-align: center;
+            vertical-align: middle;
+            background: #fffef5;
+        }
+
+        .dropzone {
+            background: #f0f8ff;
+            border: 3px dashed #ffb347;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .dropzone:hover {
+            background: #fff3e0;
+            border-color: #ff8c00;
+        }
+
+        .dropzone .draggable {
+            position: static;
+            width: 100px;
+            height: auto;
+        }
+
+        .fixedImage {
+            width: 145px;
+            pointer-events: none;
+        }
+
+        .dropzone img {
+            width: 100px;
+        }
+
+        .imagePanel {
+            position: relative;
+            width: 500px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 3px dashed #ffb8d4;
+            border-radius: 24px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(4px);
+            flex-shrink: 0;
+        }
+
+        .draggable {
+            position: absolute;
+            width: 150px;
+            cursor: grab;
+            border-radius: 16px;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 3px solid transparent;
+            background: white;
+            padding: 4px;
+        }
+
+        .greenPlane  { left: 10px; top: 20px; }
+        .purplePlane { left: 90px; top: 90px; }
+        .redPlane    { left: 220px; top: 20px; }
+        .orangePlane { left: 310px; top: 90px; }
+
+        .draggable:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: #ffb8d4;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+            transform: scale(0.96);
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(6px);
+            border-radius: 40px;
+            padding: 10px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #228be6;
+            display: inline-block;
+            margin: 15px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 2px solid #ffb347;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        button:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2); }
+        button:active { transform: translateY(1px) scale(0.97); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        #finishBtn { background: linear-gradient(135deg, #ff6b9d, #ff8e53); }
+        #resetBtn  { background: linear-gradient(135deg, #a78bfa, #7c5cfc); }
+        #giveUpBtn { background: linear-gradient(135deg, #ffa94d, #ff6b3d); }
+
+        #results {
+            margin-top: 20px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: 30px;
+            padding: 16px;
+            color: #9b570e;
+            border: 2px dashed #ffb347;
+            display: inline-block;
+            min-width: 250px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="candyCanvas"></canvas>
+    <div class="candies-container" id="candiesContainer"></div>
+
+    <div class="game-card">
+        <h1>PLANES</h1>
+        <p class="instruction-text">
+            Seven planes are queuing up to take off using a single runway. Each plane has a scheduled departure time and they cannot jump the queue!
+        </p>
+
+        <img id="topImage" src="Main.PNG" alt="Main Image">
+
+        <p class="instruction-text">
+            The planes' take-off schedule is shown below.
+        </p>
+        <p class="instruction-text" style="font-size: 1.1rem; margin-top: 0.5rem;">
+            <strong>Task:</strong> Fill in the empty boxes in the timetable by dragging and dropping these 4 planes.
+        </p>
+
+        <div class="timer-box">⏱️ Time: <span id="timerDisplay">0</span>s</div>
+
+        <div class="content-row">
+            <div class="table-container">
+                <table>
+                    <tr><th>🕒</th><th>✈️</th></tr>
+                    <tr><td>06:00</td><td class="dropzone"></td></tr>
+                    <tr><td>08:00</td><td><img src="bluePlane.PNG" class="fixedImage" alt="Blue plane"></td></tr>
+                    <tr><td>10:00</td><td class="dropzone"></td></tr>
+                    <tr><td>12:00</td><td><img src="mintPlane.PNG" class="fixedImage" alt="Mint plane"></td></tr>
+                    <tr><td>14:00</td><td class="dropzone"></td></tr>
+                    <tr><td>16:00</td><td><img src="betenganyPlane.PNG" class="fixedImage" alt="Betengany plane"></td></tr>
+                    <tr><td>18:00</td><td class="dropzone"></td></tr>
+                </table>
+            </div>
+
+            <div class="imagePanel" id="imagePool">
+                <img id="img1" src="greenPlane.PNG" class="draggable greenPlane" draggable="true" alt="Green Plane">
+                <img id="img2" src="purplePlane.PNG" class="draggable purplePlane" draggable="true" alt="Purple Plane">
+                <img id="img3" src="redPlane.PNG" class="draggable redPlane" draggable="true" alt="Red Plane">
+                <img id="img4" src="orangePlane.PNG" class="draggable orangePlane" draggable="true" alt="Orange Plane">
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button id="finishBtn">Finish</button>
+            <button id="resetBtn">Reset</button>
+            <button id="giveUpBtn">Give Up</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("candyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function drawRainbow() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const colors = ['#ff4d4d', '#ffb84d', '#ffff66', '#66ff66', '#66b3ff', '#d966ff'];
+            for (let i = 0; i < colors.length; i++) {
+                ctx.beginPath();
+                const yOffset = Math.sin(Date.now() * (0.002 + i * 0.0005) + i) * 8;
+                for (let x = 0; x <= canvas.width; x += 20) {
+                    let y = canvas.height / 2 + Math.sin(x * 0.01 + Date.now() * 0.002 + i) * 40 + yOffset;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(canvas.width, canvas.height);
+                ctx.lineTo(0, canvas.height);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+            }
+            ctx.fillStyle = "gold";
+            for (let s = 0; s < 60; s++) {
+                let sx = (Math.sin(Date.now() * 0.003 + s) * 0.5 + 0.5) * canvas.width;
+                let sy = (Math.cos(Date.now() * 0.002 + s * 2) * 0.4 + 0.5) * canvas.height;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            requestAnimationFrame(drawRainbow);
+        }
+
+        function spawnCandy() {
+            const candy = document.createElement("div");
+            candy.classList.add("candy");
+            const candies = ["🍬", "🍭", "🍫", "🍬", "🍡", "🍬", "🧁", "🍬"];
+            candy.innerText = candies[Math.floor(Math.random() * candies.length)];
+            candy.style.fontSize = Math.floor(Math.random() * 28 + 24) + "px";
+            candy.style.bottom = Math.random() * 80 + 10 + "%";
+            candy.style.left = "-70px";
+            const duration = Math.random() * 10 + 6;
+            candy.style.animation = `flyCandy ${duration}s linear forwards`;
+            candy.style.opacity = Math.random() * 0.7 + 0.4;
+            document.getElementById("candiesContainer").appendChild(candy);
+            setTimeout(() => candy.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 6; i++) setTimeout(spawnCandy, i * 600);
+        setInterval(() => { if (Math.random() > 0.55) spawnCandy(); }, 1800);
+
+        window.addEventListener("resize", () => resizeCanvas());
+        resizeCanvas();
+        drawRainbow();
+    </script>
+
+    <script>
+        let clickScore = 0;
+        let resetCounter = 0;
+        let correctnessFlag = 0;
+        let giveUpFlag = 0;
+        let gameFinished = false;
+        const startTime = Date.now();
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.textContent = elapsed;
+        }, 200);
+
+        const draggables = document.querySelectorAll(".draggable");
+        const dropzones = document.querySelectorAll(".dropzone");
+        const imagePool = document.getElementById("imagePool");
+
+        // Increment click score on drag start (each drag counts as an interaction)
+        draggables.forEach(img => {
+            img.addEventListener("dragstart", e => {
+                clickScore++;                     // ✅ counts every drag
+                e.dataTransfer.setData("text/plain", img.id);
+            });
+        });
+
+        dropzones.forEach(zone => {
+            zone.addEventListener("dragover", e => e.preventDefault());
+
+            zone.addEventListener("drop", e => {
+                e.preventDefault();
+                const imageId = e.dataTransfer.getData("text/plain");
+                const draggedImage = document.getElementById(imageId);
+
+                const existing = zone.querySelector(".draggable");
+                if (existing) imagePool.appendChild(existing);
+
+                zone.innerHTML = "";
+                zone.appendChild(draggedImage);
+            });
+        });
+
+        // Also keep global clicks as they might press buttons
+        document.addEventListener("click", () => clickScore++);
+
+        document.addEventListener("dblclick", function (e) {
+            if (e.target.classList.contains("draggable")) {
+                imagePool.appendChild(e.target);
+            }
+        });
+
+        const originalClasses = {
+            img1: "greenPlane",
+            img2: "purplePlane",
+            img3: "redPlane",
+            img4: "orangePlane"
+        };
+
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            if (gameFinished) return;
+            resetCounter++;
+            document.querySelectorAll(".draggable").forEach(img => {
+                imagePool.appendChild(img);
+                img.classList.remove("greenPlane", "purplePlane", "redPlane", "orangePlane");
+                img.classList.add(originalClasses[img.id]);
+            });
+        });
+
+        document.addEventListener("dblclick", function (e) {
+            if (e.target.classList.contains("draggable")) {
+                imagePool.appendChild(e.target);
+                e.target.classList.remove("greenPlane", "purplePlane", "redPlane", "orangePlane");
+                e.target.classList.add(originalClasses[e.target.id]);
+            }
+        });
+
+        function computeErrorScore() {
+            let errorScore = 0;
+            const zones = document.querySelectorAll(".dropzone");
+            const expected = ["img1", "img3", "img4", "img2"];
+            zones.forEach((zone, index) => {
+                const img = zone.querySelector("img");
+                if (!img || img.id !== expected[index]) errorScore++;
+            });
+            return errorScore;
+        }
+
+        function sendFinishPayload(gaveUp = false) {
+            if (gameFinished) return;
+            gameFinished = true;
+
+            if (gaveUp) giveUpFlag = 1;
+
+            const errorScore = computeErrorScore();
+            const timeScore = Math.round((Date.now() - startTime) / 1000);
+            correctnessFlag = errorScore === 0 ? 1 : 0;
+
+            const payload = {
+                errorScore,
+                timeScore,
+                clickScore,
+                correctnessFlag,
+                giveUpFlag,
+                resetCounter
+            };
+
+            window.__kb?.finish?.(payload);
+
+            document.getElementById("finishBtn").disabled = true;
+            document.getElementById("resetBtn").disabled = true;
+            document.getElementById("giveUpBtn").disabled = true;
+
+            if (gaveUp) {
+                document.getElementById("results").innerHTML = `
+                    🏳️ Student gave up.<br>
+                    ✅ Error Score: ${errorScore}<br>
+                    ⏱️ Time Score: ${timeScore} seconds<br>
+                    🖱️ Click Score: ${clickScore}<br>
+                    🏆 Correctness Flag: ${correctnessFlag}<br>
+                    🏳️ Give Up Flag: ${giveUpFlag}<br>
+                    🔄 Reset Counter: ${resetCounter}
+                `;
+                return;
+            }
+
+            document.getElementById("results").innerHTML = `
+                ✅ Error Score: ${errorScore}<br>
+                ⏱️ Time Score: ${timeScore} seconds<br>
+                🖱️ Click Score: ${clickScore}<br>
+                🏆 Correctness Flag: ${correctnessFlag}<br>
+                🏳️ Give Up Flag: ${giveUpFlag}<br>
+                🔄 Reset Counter: ${resetCounter}
+            `;
+        }
+
+        document.getElementById("finishBtn").addEventListener("click", () => {
+            sendFinishPayload(false);
+        });
+
+        document.getElementById("giveUpBtn").addEventListener("click", () => {
+            sendFinishPayload(true);
+        });
+    </script>
+
+    <script type="module">
+        import { createKbTask } from '/task-sdk.js';
+        const kb = createKbTask('planes');
+        window.__kb = kb;
+        document.addEventListener('click', () => kb.click(), true);
+    </script>
+</body>
+</html>

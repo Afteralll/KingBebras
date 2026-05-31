@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🌈 Candy Door Adventure | Kid's Magic Game</title>
+    <title>🌈 Magic House</title>
 
     <style>
         * {
@@ -14,7 +14,7 @@
         }
 
         body {
-            font-family: 'Comic Neue', 'Segoe UI', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            font-family: cursive,'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
             min-height: 100vh;
             position: relative;
@@ -62,7 +62,7 @@
             z-index: 10;
             max-width: 1100px;
             margin: 2rem auto;
-            background: rgba(255, 250, 225, 0.95);
+            background: rgba(255, 250, 225, 0.85);
             backdrop-filter: blur(6px);
             border: 4px solid #ffaa44;
             border-radius: 48px;
@@ -97,16 +97,15 @@
 
         h1 {
             font-size: 2rem;
-            font-weight: 800;
-            font-family: 'Comic Neue', cursive;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #ff66aa, #ffaa44);
+            text-align: center;
+            background: linear-gradient(135deg, #ff66aa, #ff66aa);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            border-left: 8px solid #ffaa66;
-            padding-left: 20px;
-            text-shadow: 2px 2px 0 #fff6c0;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            
         }
 
         .badge {
@@ -128,7 +127,7 @@
             margin: 1rem 0;
             font-size: 1rem;
             
-            color: #8a4d0c;
+            color: #9b570e;
             box-shadow: inset 0 0 8px #ffe0aa;
             font-weight: bold;
         }
@@ -136,29 +135,30 @@
         .stats-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: #ffefcf;
-            border: 2px solid #ffbb77;
+            background: rgba(255, 242, 223, 0.85);
+            padding: 0.6rem 1.2rem;
             border-radius: 60px;
-            padding: 0.6rem 1.8rem;
-            margin-bottom: 1.5rem;
-            font-family: monospace;
+            margin: 1rem 0;
             font-weight: bold;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #ffcc88;
+            backdrop-filter: blur(4px);
         }
 
         .stat-item {
+            background: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
             color: #b85c00;
-            font-size: 1rem;
+            box-shadow: inset 0 0 2px #ffaa66;
         }
 
         .stat-value {
-            color: #f1c40f;
-            background: #5a2e0e;
-            padding: 0.2rem 0.6rem;
-            border-radius: 50px;
-            font-size: 1.3rem;
-            font-weight: bold;
-            margin-left: 8px;
+            color: #e67e22;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-left: 6px;
         }
 
         .door-preview-card {
@@ -224,7 +224,7 @@
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255,255,200,0.9);
-            border: 3px solid black;
+            border: 4px solid black;
             box-shadow: 0 0 0 2px #ffdd99;
         }
 
@@ -343,15 +343,15 @@
     <div class="candies-container" id="candiesContainer"></div>
 
     <div class="game-container">
-        <div class="game-header">
-            <h1>🍬 CANDY DOOR GAME</h1>
-            <div class="badge">🌈 MAGIC RAINBOW</div>
-        </div>
+        
+            <h1> Magic House</h1>
+            
+        
 
         <div class="desc-panel">
-            🍭 Beaver Josie is trapped in a magic house. She wants to get out but can only open a door if it is completely different from the door she just came through.<br>
-            🍭Two doors are completely different if their shape, pattern, window shape, and handle shape differ.<br>
-            🍭There are 3 rounds
+            🍬 Beaver Josie is trapped in a magic house. She wants to get out but can only open a door if it is completely different from the door she just came through.<br>
+            🍬Two doors are completely different if their shape, pattern, window shape, and handle shape differ.<br>
+            🍬There are 3 rounds
         </div>
 
         <div class="stats-row">
@@ -360,7 +360,7 @@
         </div>
 
         <div class="door-preview-card">
-            <h3>🔮 PORTAL REFERENCE</h3>
+            <h3>JOSIE JUST CAME THROUGH THIS DOOR</h3>
             <div id="prevDoor"></div>
         </div>
 
@@ -374,7 +374,7 @@
             <div id="scoreInfo" class="score-text"></div>
             <button id="giveUpBtn" class="give-up-btn">🏳️ Give Up</button>
         </div>
-        <footer>🌈 floating candies | rainbow magic | trust your intuition 🍬</footer>
+        
     </div>
 
     <script>
