@@ -240,7 +240,11 @@
         }
 
         button {
-            font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            font-family: 'Comic Sans MS', 'Segoe Print', 
+                 'Chalkboard SE',           /* macOS/iOS rounded font */
+                 'Arial Rounded MT Bold',   /* another rounded sans-serif */
+                 'Nunito', 'Quicksand',     /* web fonts (load them via Google Fonts if you want) */
+                 sans-serif;
             padding: 14px 32px;
             font-size: 1.2rem;
             font-weight: bold;

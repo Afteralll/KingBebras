@@ -25,7 +25,11 @@
         }
 
         body {
-            font-family: cursive,'Comic Sans MS', 'Chalkboard SE', 'Segoe Print', 'Arial Rounded MT Bold', sans-serif;
+            font-family: 'Comic Sans MS', 'Segoe Print', 
+                 'Chalkboard SE',           /* macOS/iOS rounded font */
+                 'Arial Rounded MT Bold',   /* another rounded sans-serif */
+                 'Nunito', 'Quicksand',     /* web fonts (load them via Google Fonts if you want) */
+                 sans-serif;
             text-align: center;
             /* Candy background gradient from Sudoku */
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
