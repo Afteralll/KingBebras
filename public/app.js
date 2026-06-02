@@ -172,7 +172,9 @@ function renderExamControls() {
   if (!startBtn || !endBtn) return;
   const hasAttempt = Boolean(state.attemptId);
   const running = isExamRunning();
-  startBtn.disabled = hasAttempt; // once exam started, never start again
+  // Once an attempt exists (started or resumed), hide "Start Exam" entirely.
+  show(startBtn, !hasAttempt);
+  startBtn.disabled = hasAttempt;
   endBtn.disabled = !running;
 }
 
