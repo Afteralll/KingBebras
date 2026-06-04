@@ -410,13 +410,13 @@
             </div>
             <div class="arrow-explanations">
                 <div class="explain-item">
-                    <span class="arrow-icon">⬆️</span> Forward: moves one square in its direction
+                    <span class="arrow-icon">⬆️&#xFE0E</span> Forward: moves one square in its direction
                 </div>
                 <div class="explain-item">
-                    <span class="arrow-icon">↷</span> Right: turns right
+                    <span class="arrow-icon">↷&#xFE0E</span> Right: turns right
                 </div>
                 <div class="explain-item">
-                    <span class="arrow-icon">↶</span> Left: turns left
+                    <span class="arrow-icon">↶&#xFE0E</span> Left: turns left
                 </div>
             </div>
             <div class="guide-image">
@@ -647,9 +647,12 @@
                         token.dataset.type = item.type;
                         token.dataset.inventoryIndex = idx;
 
-                        if (item.type === 'straight') token.textContent = '⬆️';
-                        else if (item.type === 'left') token.textContent = '↶';
-                        else token.textContent = '↷';
+                        function textArrow(symbol) {
+    return symbol + '\uFE0E';
+}
+if (item.type === 'straight') token.textContent = textArrow('⬆️');
+else if (item.type === 'left') token.textContent = textArrow('↶');
+else token.textContent = textArrow('↷');
 
                         token.addEventListener('dragstart', handleDragStart);
                         token.addEventListener('click', () => {
