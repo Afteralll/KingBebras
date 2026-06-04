@@ -14,8 +14,8 @@ const UI_I18N = {
     students_cannot_register:
       'Register to create a teacher account. Student logins are created by teachers.',
     teacher_coordinator: 'Teacher Coordinator',
-    paste_csv: 'Paste CSV (one student name per line, or first column = name)',
-    upload_csv_generate: 'Upload CSV & Generate Credentials',
+    paste_csv: '<strong>ADD STUDENTS</strong> (one student name per line, or first column = name)',
+    upload_csv_generate: 'Create accounts',
     all_student_credentials: 'All Student Credentials (always available)',
     refresh_credentials: 'Refresh Credentials',
     refresh_marks: 'Refresh Marks',
@@ -74,8 +74,8 @@ const UI_I18N = {
     students_cannot_register:
       'Registrieren erstellt ein Lehrkraft-Konto. Schüler-Logins werden von Lehrkräften angelegt.',
     teacher_coordinator: 'Lehrerbereich',
-    paste_csv: 'CSV einfügen (ein Name pro Zeile oder erste Spalte = Name)',
-    upload_csv_generate: 'CSV hochladen & Zugangsdaten erstellen',
+    paste_csv: '<strong>SCHÜLER HINZUFÜGEN</strong> (ein Name pro Zeile oder erste Spalte = Name)',
+    upload_csv_generate: 'Konten erstellen',
     all_student_credentials: 'Alle Zugangsdaten der Schüler (immer verfügbar)',
     refresh_credentials: 'Zugangsdaten aktualisieren',
     refresh_marks: 'Ergebnisse aktualisieren',
@@ -133,8 +133,8 @@ const UI_I18N = {
     students_cannot_register:
       'التسجيل ينشئ حساب معلم. حسابات الطلاب ينشئها المعلمون.',
     teacher_coordinator: 'لوحة المعلم',
-    paste_csv: 'الصق CSV (اسم طالب في كل سطر، أو العمود الأول = الاسم)',
-    upload_csv_generate: 'رفع CSV وإنشاء بيانات الدخول',
+    paste_csv: '<strong>إضافة طلاب</strong> (اسم طالب في كل سطر، أو العمود الأول = الاسم)',
+    upload_csv_generate: 'إنشاء حسابات',
     all_student_credentials: 'بيانات دخول جميع الطلاب (متاحة دائمًا)',
     refresh_credentials: 'تحديث بيانات الدخول',
     refresh_marks: 'تحديث النتائج',
