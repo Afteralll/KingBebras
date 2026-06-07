@@ -201,6 +201,48 @@ function startExamTimer() {
   }, 1000);
 }
 
+const TEACHER_CONSENT_KEY_PREFIX = 'kb_teacher_consent_v1:';
+
+function teacherConsentStorageKey(userId) {
+  return `${TEACHER_CONSENT_KEY_PREFIX}${userId}`;
+}
+
+function hasTeacherConsent(userId) {
+  if (!userId) return false;
+  try {
+    return sessionStorage.getItem(teacherConsentStorageKey(userId)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function setTeacherConsent(userId) {
+  if (!userId) return;
+  try {
+    sessionStorage.setItem(teacherConsentStorageKey(userId), '1');
+  } catch {
+    // non-fatal; consent page may reappear next login
+  }
+}
+
+function clearTeacherConsent(userId) {
+  if (!userId) return;
+  try {
+    sessionStorage.removeItem(teacherConsentStorageKey(userId));
+  } catch {
+    // non-fatal
+  }
+}
+
+function renderTeacherShell() {
+  const isTeacher = state.me?.role === 'teacher';
+  const consentAccepted = isTeacher && hasTeacherConsent(state.me.userId);
+  const showConsent = isTeacher && !consentAccepted;
+  show($('#teacherConsentModal'), showConsent);
+  show($('#teacherCard'), isTeacher && consentAccepted);
+  document.body.classList.toggle('modal-open', showConsent);
+}
+
 function renderMe() {
   const me = $('#me');
   if (!state.me?.authenticated) {
@@ -209,6 +251,8 @@ function renderMe() {
     show($('#authCard'), true);
     show($('#sessionCard'), false);
     show($('#teacherCard'), false);
+    show($('#teacherConsentModal'), false);
+    document.body.classList.remove('modal-open');
     show($('#taskCard'), false);
     show($('#examTimer'), false);
     renderExamControls();
@@ -225,7 +269,7 @@ function renderMe() {
   show($('#logoutBtn'), true);
   show($('#authCard'), false);
   const isTeacher = state.me.role === 'teacher';
-  show($('#teacherCard'), isTeacher);
+  renderTeacherShell();
   show($('#sessionCard'), !isTeacher);
   show($('#taskCard'), !isTeacher && Boolean(state.activeTask));
   show($('#examTimer'), !isTeacher && Boolean(state.examEndsAt));
@@ -283,6 +327,181 @@ function getRawMetricPairs(raw) {
       return { key: k, value: valueStr };
     })
     .filter((p) => p.value !== '');
+}
+
+const TEACHER_METRIC_SKIP = new Set(['sequence', 'correctness']);
+const TEACHER_METRIC_PRIORITY = [
+  'task_score',
+  'error_score',
+  'time_score',
+  'click_score',
+  'reset_score',
+  'errors',
+  'time_seconds',
+  'clicks',
+  'resets',
+  'give_up_flag',
+  'logic_flag',
+  'errorScore',
+  'correctnessFlag',
+  'correctnessCounter',
+  'correctCount',
+  'totalRounds',
+  'time',
+  'giveUpFlag'
+];
+
+const CT_SKILL_EXPORT_KEYS = [
+  'skill_decomposition_score',
+  'skill_pattern_recognition_score',
+  'skill_abstraction_score',
+  'skill_modelling_simulation_score',
+  'skill_algorithms_score',
+  'skill_evaluation_score',
+  'skill_logical_reasoning_score'
+];
+
+const TEACHER_SCORE_KEYS_0_TO_10 = new Set([
+  'task_score',
+  'error_score',
+  'time_score',
+  'click_score',
+  'reset_score'
+]);
+
+function teacherScorePercentForColor(key, value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return null;
+  if (key === 'final_exam_score' || key.startsWith('skill_')) return n;
+  if (TEACHER_SCORE_KEYS_0_TO_10.has(key)) return n * 10;
+  return null;
+}
+
+function decorateTeacherScoreChip(chip, key, value) {
+  const pct = teacherScorePercentForColor(key, value);
+  if (pct == null) return;
+  chip.classList.add(pct >= 50 ? 'teacher-score-good' : 'teacher-score-low');
+}
+
+function createTeacherScoreChip(key, value, labelText) {
+  const chip = document.createElement('span');
+  chip.className = 'teacher-metric teacher-score-chip';
+  decorateTeacherScoreChip(chip, key, value);
+  const label = labelText ?? key;
+  if (label) {
+    const k = document.createElement('span');
+    k.className = 'teacher-metric-key';
+    k.textContent = label;
+    chip.append(k);
+  }
+  const v = document.createElement('span');
+  v.className = 'teacher-metric-val teacher-score-val teacher-score-big';
+  v.textContent = value;
+  chip.append(v);
+  return chip;
+}
+
+function createTeacherMetricChip(key, value) {
+  const chip = document.createElement('span');
+  chip.className = 'teacher-metric';
+  const k = document.createElement('span');
+  k.className = 'teacher-metric-key';
+  k.textContent = key;
+  const v = document.createElement('span');
+  v.className = 'teacher-metric-val';
+  v.textContent = value;
+  chip.append(k, v);
+  return chip;
+}
+
+function isTeacherComputedScoreKey(key) {
+  return TEACHER_SCORE_KEYS_0_TO_10.has(key) || key === 'final_exam_score' || key.startsWith('skill_');
+}
+
+const TASK_CORRECTNESS_MAX = {
+  'magic-house-3': 3,
+  'sudoku-2': 3,
+  'organizing-bracelets-3': 3,
+  'bbq-party-2': 4
+};
+
+function formatMonitoringValue(v) {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  return JSON.stringify(v);
+}
+
+function deriveCorrectnessFlag(raw, norm, taskId) {
+  if (raw.correctnessFlag != null) return raw.correctnessFlag;
+  if (raw.correctness != null) {
+    const c = Number(raw.correctness);
+    if (Number.isFinite(c)) return c !== 0 ? 1 : 0;
+  }
+  if (norm.correctness?.solved != null) return norm.correctness.solved ? 1 : 0;
+
+  const counter = raw.correctnessCounter ?? raw.correctCount ?? norm.correctness?.correctCount;
+  const max = raw.totalRounds ?? raw.totalCount ?? TASK_CORRECTNESS_MAX[taskId];
+  if (counter != null && max != null && Number(max) > 0) {
+    return Number(counter) >= Number(max) ? 1 : 0;
+  }
+  return null;
+}
+
+/** Teacher-facing metrics: raw columns + computed sub-scores and task_score. */
+function getTeacherMonitoringPairs(monitoring, taskId = null, scores = null) {
+  if (!monitoring || typeof monitoring !== 'object') return [];
+  const raw = monitoring.raw && typeof monitoring.raw === 'object' ? monitoring.raw : {};
+  const norm = monitoring.normalized && typeof monitoring.normalized === 'object' ? monitoring.normalized : {};
+  const computed = scores ?? monitoring.computed ?? null;
+
+  const values = new Map();
+
+  if (computed) {
+    for (const key of ['task_score', 'error_score', 'time_score', 'click_score', 'reset_score']) {
+      if (computed[key] != null) values.set(key, formatMonitoringValue(Number(computed[key]).toFixed(2)));
+    }
+    const rm = computed.rawMetrics ?? {};
+    for (const [key, val] of Object.entries(rm)) {
+      if (val != null) values.set(key, formatMonitoringValue(val));
+    }
+  }
+
+  const errorScore = raw.errorScore ?? norm.errors?.errorScore;
+  if (errorScore != null && !values.has('errors')) values.set('errorScore', formatMonitoringValue(errorScore));
+
+  const correctnessFlag = deriveCorrectnessFlag(raw, norm, taskId);
+  if (correctnessFlag != null) {
+    const v = typeof correctnessFlag === 'boolean' ? (correctnessFlag ? 1 : 0) : correctnessFlag;
+    values.set('correctnessFlag', formatMonitoringValue(v));
+  }
+
+  const correctnessCounter = raw.correctnessCounter ?? raw.correctCount ?? norm.correctness?.correctCount;
+  if (correctnessCounter != null) {
+    values.set('correctnessCounter', formatMonitoringValue(correctnessCounter));
+  }
+  const totalRounds = raw.totalRounds ?? raw.totalCount ?? TASK_CORRECTNESS_MAX[taskId];
+  if (totalRounds != null && TASK_CORRECTNESS_MAX[taskId] != null) {
+    values.set('totalRounds', formatMonitoringValue(totalRounds));
+  }
+
+  for (const { key, value } of getRawMetricPairs(raw)) {
+    if (TEACHER_METRIC_SKIP.has(key)) continue;
+    if (key === 'correctCount' && values.has('correctnessCounter')) continue;
+    if (values.has(key)) continue;
+    values.set(key, value);
+  }
+
+  const ordered = [];
+  for (const key of TEACHER_METRIC_PRIORITY) {
+    if (!values.has(key)) continue;
+    ordered.push({ key, value: values.get(key) });
+    values.delete(key);
+  }
+  for (const [key, value] of [...values.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    ordered.push({ key, value });
+  }
+  return ordered;
 }
 
 function credentialsPlainText(rows, lang) {
@@ -471,6 +690,27 @@ function renderTeacherResultsPreview() {
     meta.append(started, finished);
     card.append(meta);
 
+    if (s.examSummary?.final_exam_score != null) {
+      const examSummary = document.createElement('div');
+      examSummary.className = 'teacher-exam-summary';
+      const examLbl = document.createElement('strong');
+      examLbl.textContent = `${t('finalExamScore')}: `;
+      const finalPct = Number(s.examSummary.final_exam_score);
+      const examChip = createTeacherScoreChip('final_exam_score', `${finalPct.toFixed(1)}%`, '');
+      examChip.querySelector('.teacher-score-val')?.classList.add('teacher-score-final');
+      examSummary.append(examLbl, examChip);
+      card.append(examSummary);
+
+      const skills = document.createElement('div');
+      skills.className = 'teacher-skill-scores';
+      for (const key of CT_SKILL_EXPORT_KEYS) {
+        if (s.examSummary[key] == null) continue;
+        const skillPct = Number(s.examSummary[key]);
+        skills.append(createTeacherScoreChip(key, `${skillPct.toFixed(1)}%`, t(key)));
+      }
+      if (skills.childElementCount) card.append(skills);
+    }
+
     const taskList = document.createElement('div');
     taskList.className = 'teacher-task-list';
     let hasActivity = false;
@@ -494,24 +734,32 @@ function renderTeacherResultsPreview() {
       taskHead.append(title, cat);
       taskCard.append(taskHead);
 
-      const raw = tm?.monitoring?.raw ?? null;
-      const pairs = getRawMetricPairs(raw);
-      if (pairs.length) {
+      const pairs = getTeacherMonitoringPairs(tm?.monitoring ?? null, task.id, tm?.scores ?? null);
+      const scorePairs = pairs.filter(({ key }) => isTeacherComputedScoreKey(key));
+      const metricPairs = pairs.filter(({ key }) => !isTeacherComputedScoreKey(key));
+
+      if (scorePairs.length) {
+        const scores = document.createElement('div');
+        scores.className = 'teacher-scores';
+        for (const { key, value } of scorePairs) {
+          scores.append(createTeacherScoreChip(key, value, key));
+        }
+        taskCard.append(scores);
+      }
+
+      if (metricPairs.length) {
+        const metricsSection = document.createElement('div');
+        metricsSection.className = 'teacher-metrics-section';
+        const metricsLbl = document.createElement('div');
+        metricsLbl.className = 'teacher-section-label';
+        metricsLbl.textContent = t('metricsSection');
         const metrics = document.createElement('div');
         metrics.className = 'teacher-metrics';
-        for (const { key, value } of pairs) {
-          const chip = document.createElement('span');
-          chip.className = 'teacher-metric';
-          const k = document.createElement('span');
-          k.className = 'teacher-metric-key';
-          k.textContent = key;
-          const v = document.createElement('span');
-          v.className = 'teacher-metric-val';
-          v.textContent = value;
-          chip.append(k, v);
-          metrics.append(chip);
+        for (const { key, value } of metricPairs) {
+          metrics.append(createTeacherMetricChip(key, value));
         }
-        taskCard.append(metrics);
+        metricsSection.append(metricsLbl, metrics);
+        taskCard.append(metricsSection);
       }
 
       taskList.append(taskCard);
@@ -540,18 +788,21 @@ function buildTeacherCsv(res, lang) {
   const t = (key) => teacherT(lang, key);
   const students = res.students ?? [];
   const taskIds = (res.tasks ?? []).map((x) => x.id);
-  const rawKeysByTask = {};
-  for (const tid of taskIds) rawKeysByTask[tid] = new Set();
-  for (const s of students) {
-    for (const tid of taskIds) {
-      const raw = s?.taskMonitoring?.[tid]?.monitoring?.raw;
-      if (!raw || typeof raw !== 'object') continue;
-      for (const k of Object.keys(raw)) {
-        if (k === 'totalScore' && Object.prototype.hasOwnProperty.call(raw, 'errorScore')) continue;
-        rawKeysByTask[tid].add(k);
-      }
-    }
-  }
+  const computedCols = ['error_score', 'time_score', 'click_score', 'reset_score', 'task_score'];
+  const rawCols = [
+    'errors',
+    'time_seconds',
+    'clicks',
+    'resets',
+    'give_up_flag',
+    'logic_flag',
+    'correctnessFlag',
+    'correctnessCounter',
+    'correctCount',
+    'errorScore',
+    'time',
+    'giveUpFlag'
+  ];
 
   const header = [
     t('csv_name'),
@@ -559,12 +810,12 @@ function buildTeacherCsv(res, lang) {
     t('csv_attempt_id'),
     t('csv_started_at'),
     t('csv_finished_at'),
-    ...taskIds.flatMap((tid) => {
-      const keys = Array.from(rawKeysByTask[tid] ?? []).sort((a, b) => a.localeCompare(b));
-      return [
-        ...keys.map((k) => `${tid}__${k}`)
-      ];
-    })
+    t('finalExamScore'),
+    ...CT_SKILL_EXPORT_KEYS.map((k) => t(k)),
+    ...taskIds.flatMap((tid) => [
+      ...rawCols.map((k) => `${tid}__${k}`),
+      ...computedCols.map((k) => `${tid}__${k}`)
+    ])
   ];
   const lines = [header.map(csvEscape).join(',')];
 
@@ -575,18 +826,17 @@ function buildTeacherCsv(res, lang) {
       s.attemptId ?? '',
       s.startedAt ?? '',
       s.finishedAt ?? '',
+      s.examSummary?.final_exam_score != null ? Number(s.examSummary.final_exam_score).toFixed(2) : '',
+      ...CT_SKILL_EXPORT_KEYS.map((k) =>
+        s.examSummary?.[k] != null ? Number(s.examSummary[k]).toFixed(2) : ''
+      ),
       ...taskIds.flatMap((tid) => {
-        const tm = s?.taskMonitoring?.[tid] ?? null;
-        const raw = tm?.monitoring?.raw && typeof tm.monitoring.raw === 'object' ? tm.monitoring.raw : null;
-        const keys = Array.from(rawKeysByTask[tid] ?? []).sort((a, b) => a.localeCompare(b));
+        const tm = s.taskMonitoring?.[tid] ?? null;
+        const pairs = getTeacherMonitoringPairs(tm?.monitoring ?? null, tid, tm?.scores ?? null);
+        const byKey = new Map(pairs.map((p) => [p.key, p.value]));
         return [
-          ...keys.map((k) => {
-            const v = raw ? raw[k] : null;
-            if (v == null) return '';
-            if (typeof v === 'string') return v;
-            if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-            return JSON.stringify(v);
-          })
+          ...rawCols.map((k) => byKey.get(k) ?? ''),
+          ...computedCols.map((k) => byKey.get(k) ?? '')
         ];
       })
     ];
@@ -735,33 +985,39 @@ document.addEventListener('fullscreenchange', () => {
   enterTaskFullscreen();
 });
 
+async function loadTeacherDashboard() {
+  applyTeacherStaticI18n();
+  state.tasks = [];
+  state.attemptId = null;
+  state.examEndsAt = null;
+  state.resultsByTaskId = {};
+  renderTimer();
+  renderTasks();
+  if (!state.teacherCredentialsLoaded) {
+    try {
+      await refreshTeacherCredentials();
+    } catch {
+      // non-fatal; teacher can retry manually
+    }
+  } else {
+    renderGeneratedCredentials();
+  }
+  try {
+    await refreshTeacherMarks();
+  } catch {
+    renderTeacherResultsPreview();
+  }
+  renderExamControls();
+}
+
 async function refreshMe() {
   state.me = await api('/api/me');
   renderMe();
   if (state.me?.authenticated) {
     if (state.me.role === 'teacher') {
-      applyTeacherStaticI18n();
-      state.tasks = [];
-      state.attemptId = null;
-      state.examEndsAt = null;
-      state.resultsByTaskId = {};
-      renderTimer();
-      renderTasks();
-      if (!state.teacherCredentialsLoaded) {
-        try {
-          await refreshTeacherCredentials();
-        } catch {
-          // non-fatal; teacher can retry manually
-        }
-      } else {
-        renderGeneratedCredentials();
+      if (hasTeacherConsent(state.me.userId)) {
+        await loadTeacherDashboard();
       }
-      try {
-        await refreshTeacherMarks();
-      } catch {
-        renderTeacherResultsPreview();
-      }
-      renderExamControls();
       return;
     }
     const { tasks } = await api('/api/tasks');
@@ -963,8 +1219,21 @@ $('#registerBtn').addEventListener('click', async () => {
   }
 });
 
+$('#teacherConsentBtn')?.addEventListener('click', async () => {
+  if (state.me?.role !== 'teacher') return;
+  setTeacherConsent(state.me.userId);
+  renderTeacherShell();
+  try {
+    await loadTeacherDashboard();
+  } catch {
+    setAlert($('#teacherMsg'), 'bad', uiT('could_not_load_marks', { err: 'unknown' }));
+  }
+});
+
 $('#logoutBtn').addEventListener('click', async () => {
+  const teacherUserId = state.me?.role === 'teacher' ? state.me.userId : null;
   await api('/api/auth/logout', { method: 'POST', body: '{}' });
+  if (teacherUserId) clearTeacherConsent(teacherUserId);
   stopExamTimer();
   state.attemptId = null;
   state.activeTask = null;
@@ -1070,7 +1339,7 @@ $('#downloadResultsBtn')?.addEventListener('click', async () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kingbebras-results.csv';
+    a.download = 'interactive-bebras-results.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();

@@ -15,6 +15,12 @@ import {
   getSqliteDb
 } from './database.js';
 import { TASKS } from './tasks.js';
+import {
+  computeTaskScoringFromPayload,
+  computeExamSummary,
+  resolveTaskComputedScores,
+  CT_SKILL_KEYS
+} from './scoring.js';
 
 const app = express();
 
@@ -277,7 +283,44 @@ function toNumberOrNull(v) {
   return Number.isFinite(n) ? n : null;
 }
 
-function normalizeMonitoringFromFinishPayload(gamePayload) {
+function applyCorrectnessFlagFromCounter(rawOut, taskDef) {
+  if (!rawOut || typeof rawOut !== 'object') return rawOut;
+  if (rawOut.correctnessFlag != null) return rawOut;
+
+  const counter =
+    toNumberOrNull(rawOut.correctnessCounter) ??
+    toNumberOrNull(rawOut.correctCount) ??
+    toNumberOrNull(rawOut.correctRounds) ??
+    toNumberOrNull(rawOut.correctnessCount);
+  const max =
+    toNumberOrNull(rawOut.totalRounds) ??
+    toNumberOrNull(rawOut.totalCount) ??
+    toNumberOrNull(taskDef?.correctnessMax);
+
+  if (counter == null || max == null || max <= 0) return rawOut;
+
+  rawOut.correctnessFlag = counter >= max ? 1 : 0;
+  if (rawOut.correctnessCounter == null) rawOut.correctnessCounter = counter;
+  if (rawOut.totalRounds == null) rawOut.totalRounds = max;
+  return rawOut;
+}
+
+function enrichMonitoringFromTask(monitoring, taskDef) {
+  if (!monitoring || typeof monitoring !== 'object') return monitoring;
+  const raw = { ...(monitoring.raw ?? {}) };
+  if (raw.correctnessFlag == null && raw.correctness != null) {
+    const c = toNumberOrNull(raw.correctness);
+    if (c != null) raw.correctnessFlag = c !== 0 ? 1 : 0;
+  }
+  if (raw.giveUpFlag == null && raw.giveUp != null) {
+    const g = toNumberOrNull(raw.giveUp);
+    if (g != null) raw.giveUpFlag = g !== 0 ? 1 : 0;
+  }
+  applyCorrectnessFlagFromCounter(raw, taskDef);
+  return { ...monitoring, raw };
+}
+
+function normalizeMonitoringFromFinishPayload(gamePayload, taskDef = null) {
   const raw = gamePayload && typeof gamePayload === 'object' ? gamePayload : {};
   const norm = {};
 
@@ -369,7 +412,18 @@ function normalizeMonitoringFromFinishPayload(gamePayload) {
     extra[k] = v;
   }
 
-  return { normalized: norm, extra, raw };
+  const rawOut = { ...raw };
+  if (rawOut.correctnessFlag == null && rawOut.correctness != null) {
+    const c = toNumberOrNull(rawOut.correctness);
+    if (c != null) rawOut.correctnessFlag = c !== 0 ? 1 : 0;
+  }
+  if (rawOut.giveUpFlag == null && rawOut.giveUp != null) {
+    const g = toNumberOrNull(rawOut.giveUp);
+    if (g != null) rawOut.giveUpFlag = g !== 0 ? 1 : 0;
+  }
+  applyCorrectnessFlagFromCounter(rawOut, taskDef);
+
+  return { normalized: norm, extra, raw: rawOut };
 }
 
 /**
@@ -972,6 +1026,47 @@ function csvEscape(value) {
   return s;
 }
 
+async function buildAttemptExamSummary(attemptId) {
+  const rows = await qAll(
+    `SELECT task_id, finished_at, final_score, game_payload_json, breakdown_json
+       FROM attempt_tasks
+       WHERE attempt_id = ?`,
+    [attemptId]
+  );
+  /** @type {Record<string, number>} */
+  const taskScoresByTaskId = {};
+  for (const task of TASKS) taskScoresByTaskId[task.id] = 0;
+  for (const r of rows) {
+    const computed = resolveTaskComputedScores(r, safeJsonParse);
+    taskScoresByTaskId[r.task_id] = r.finished_at ? Number(computed.task_score ?? 0) || 0 : 0;
+  }
+  return computeExamSummary(taskScoresByTaskId);
+}
+
+async function persistAttemptExamSummary(attemptId) {
+  const summary = await buildAttemptExamSummary(attemptId);
+  await qRun(`UPDATE attempts SET exam_summary_json = ? WHERE id = ?`, [JSON.stringify(summary), attemptId]);
+  return summary;
+}
+
+function attachComputedToMonitoring(monitoring, gamePayload, taskId) {
+  const computed = computeTaskScoringFromPayload(gamePayload, taskId);
+  const raw = monitoring?.raw && typeof monitoring.raw === 'object' ? monitoring.raw : {};
+  return {
+    ...monitoring,
+    raw: {
+      ...raw,
+      errors: computed.rawMetrics.errors,
+      time_seconds: computed.rawMetrics.time_seconds,
+      clicks: computed.rawMetrics.clicks,
+      resets: computed.rawMetrics.resets,
+      give_up_flag: computed.rawMetrics.give_up_flag,
+      ...(taskId === 'online-class-picture-flow' ? { logic_flag: computed.rawMetrics.logic_flag } : {})
+    },
+    computed
+  };
+}
+
 app.get('/api/teacher/students/results', requireAuth, requireTeacher, asyncRoute(async (req, res) => {
   const students = await qAll(
     `SELECT id, username, display_name
@@ -984,7 +1079,7 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, asyncRoute
   const out = [];
   for (const s of students) {
     const a = await qGet(
-      `SELECT id, user_id, started_at, finished_at
+      `SELECT id, user_id, started_at, finished_at, exam_summary_json
        FROM attempts
        WHERE user_id = ?
        ORDER BY started_at ASC
@@ -992,26 +1087,42 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, asyncRoute
       [s.id]
     );
     const taskMonitoring = {};
+    let examSummary = null;
 
     if (a) {
       const rows = await qAll(
-        `SELECT task_id, started_at, finished_at, breakdown_json, game_payload_json
+        `SELECT task_id, started_at, finished_at, final_score, breakdown_json, game_payload_json
        FROM attempt_tasks
        WHERE attempt_id = ?`,
         [a.id]
       );
       for (const r of rows) {
+        const taskDef = TASKS.find((t) => t.id === r.task_id) ?? null;
         const parsedBreakdown = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
         const parsedPayload = r.game_payload_json ? safeJsonParse(r.game_payload_json) : null;
-        const monitoring =
+        let monitoring = enrichMonitoringFromTask(
           parsedBreakdown && typeof parsedBreakdown === 'object' && (parsedBreakdown.normalized || parsedBreakdown.extra || parsedBreakdown.raw)
             ? parsedBreakdown
-            : normalizeMonitoringFromFinishPayload(parsedPayload);
+            : normalizeMonitoringFromFinishPayload(parsedPayload, taskDef),
+          taskDef
+        );
+        if (!monitoring.computed) {
+          monitoring = attachComputedToMonitoring(monitoring, parsedPayload ?? monitoring.raw, r.task_id);
+        }
+        const computed = monitoring.computed ?? resolveTaskComputedScores(r, safeJsonParse);
         taskMonitoring[r.task_id] = {
           startedAt: r.started_at ?? null,
           finishedAt: r.finished_at ?? null,
-          monitoring
+          monitoring,
+          scores: computed
         };
+      }
+
+      if (a.finished_at) {
+        examSummary = a.exam_summary_json ? safeJsonParse(a.exam_summary_json) : null;
+        if (!examSummary) {
+          examSummary = await buildAttemptExamSummary(a.id);
+        }
       }
     }
 
@@ -1022,6 +1133,7 @@ app.get('/api/teacher/students/results', requireAuth, requireTeacher, asyncRoute
       attemptId: a?.id ?? null,
       startedAt: a?.started_at ?? null,
       finishedAt: a?.finished_at ?? null,
+      examSummary,
       taskMonitoring
     });
   }
@@ -1046,68 +1158,76 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, asyncR
   );
 
   const taskIds = TASKS.map((t) => t.id);
+  const skillCols = CT_SKILL_KEYS.map((k) => `skill_${k}_score`);
   const header = [
     'name',
     'username',
     'attempt_id',
     'started_at',
     'finished_at',
-    'A_percent',
-    'B_percent',
-    'C_percent',
-    'overall_weighted_percent',
-    ...taskIds.flatMap((tid) => [
-      `${tid}__final`,
-      `${tid}__error10`,
-      `${tid}__time10`,
-      `${tid}__click10`,
-      `${tid}__drag10`,
-      `${tid}__weights`
-    ])
+    'final_exam_score',
+    ...skillCols,
+    ...taskIds.flatMap((tid) => {
+      const rawKeys = new Set([
+        'errors',
+        'time_seconds',
+        'clicks',
+        'resets',
+        'give_up_flag',
+        'logic_flag',
+        'correctnessFlag',
+        'correctnessCounter',
+        'correctCount'
+      ]);
+      return [
+        ...[...rawKeys].map((k) => `${tid}__${k}`),
+        `${tid}__error_score`,
+        `${tid}__time_score`,
+        `${tid}__click_score`,
+        `${tid}__reset_score`,
+        `${tid}__task_score`
+      ];
+    })
   ];
   const lines = [header.map(csvEscape).join(',')];
 
-  const taskDefs = new Map(TASKS.map((t) => [t.id, t]));
-  const catWeights = { A: 0.22, B: 0.33, C: 0.55 };
-
   for (const s of students) {
     const a = await qGet(
-      `SELECT id, started_at, finished_at
+      `SELECT id, started_at, finished_at, exam_summary_json
        FROM attempts
        WHERE user_id = ?
        ORDER BY started_at ASC
        LIMIT 1`,
       [s.id]
     );
-    const scoreMap = {};
-    const breakdownMap = {};
-    const cat = { A: { sum: 0, max: 0 }, B: { sum: 0, max: 0 }, C: { sum: 0, max: 0 } };
+    let examSummary = null;
+    const taskData = {};
     if (a) {
       const rows = await qAll(
-        `SELECT task_id, final_score, breakdown_json
+        `SELECT task_id, finished_at, final_score, game_payload_json, breakdown_json
        FROM attempt_tasks
        WHERE attempt_id = ?`,
         [a.id]
       );
       for (const r of rows) {
-        scoreMap[r.task_id] = r.final_score;
-        breakdownMap[r.task_id] = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
-        const def = taskDefs.get(r.task_id);
-        const catKey = def?.category ?? null;
-        if (catKey && cat[catKey]) {
-          cat[catKey].max += Number(def?.maxScore ?? 100);
-          if (Number.isFinite(r.final_score)) cat[catKey].sum += Number(r.final_score);
+        const parsedPayload = r.game_payload_json ? safeJsonParse(r.game_payload_json) : null;
+        const parsedBreakdown = r.breakdown_json ? safeJsonParse(r.breakdown_json) : null;
+        const taskDef = TASKS.find((t) => t.id === r.task_id) ?? null;
+        let monitoring = enrichMonitoringFromTask(
+          parsedBreakdown && typeof parsedBreakdown === 'object'
+            ? parsedBreakdown
+            : normalizeMonitoringFromFinishPayload(parsedPayload, taskDef),
+          taskDef
+        );
+        if (!monitoring.computed) {
+          monitoring = attachComputedToMonitoring(monitoring, parsedPayload ?? monitoring.raw, r.task_id);
         }
+        taskData[r.task_id] = { monitoring, computed: monitoring.computed };
+      }
+      if (a.finished_at) {
+        examSummary = a.exam_summary_json ? safeJsonParse(a.exam_summary_json) : await buildAttemptExamSummary(a.id);
       }
     }
-    const catPct = (k) => (cat[k].max > 0 ? (cat[k].sum / cat[k].max) * 100 : null);
-    const catA = catPct('A');
-    const catB = catPct('B');
-    const catC = catPct('C');
-    const overallWeighted =
-      (Number.isFinite(catA) ? catA * catWeights.A : 0) +
-      (Number.isFinite(catB) ? catB * catWeights.B : 0) +
-      (Number.isFinite(catC) ? catC * catWeights.C : 0);
 
     const row = [
       s.display_name ?? '',
@@ -1115,21 +1235,33 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, asyncR
       a?.id ?? '',
       a?.started_at ?? '',
       a?.finished_at ?? '',
-      Number.isFinite(catA) ? catA.toFixed(2) : '',
-      Number.isFinite(catB) ? catB.toFixed(2) : '',
-      Number.isFinite(catC) ? catC.toFixed(2) : '',
-      a ? overallWeighted.toFixed(2) : '',
+      examSummary?.final_exam_score != null ? Number(examSummary.final_exam_score).toFixed(2) : '',
+      ...skillCols.map((col) =>
+        examSummary?.[col] != null ? Number(examSummary[col]).toFixed(2) : ''
+      ),
       ...taskIds.flatMap((tid) => {
-        const v = scoreMap[tid];
-        const b = breakdownMap[tid] ?? null;
-        const weightsText = b?.weightsText ?? '';
+        const td = taskData[tid];
+        const raw = td?.monitoring?.raw ?? {};
+        const c = td?.computed ?? {};
+        const rawVals = [
+          raw.errors,
+          raw.time_seconds,
+          raw.clicks,
+          raw.resets,
+          raw.give_up_flag,
+          raw.logic_flag,
+          raw.correctnessFlag,
+          raw.correctnessCounter,
+          raw.correctCount
+        ];
+        const fmt = (v) => (v == null || v === '' ? '' : String(v));
         return [
-          Number.isFinite(v) ? Number(v).toFixed(2) : '',
-          Number.isFinite(b?.errorScore) ? Number(b.errorScore).toFixed(2) : '',
-          Number.isFinite(b?.timeScore) ? Number(b.timeScore).toFixed(2) : '',
-          Number.isFinite(b?.clickScore) ? Number(b.clickScore).toFixed(2) : '',
-          Number.isFinite(b?.dragScore) ? Number(b.dragScore).toFixed(2) : '',
-          weightsText
+          ...rawVals.map(fmt),
+          c.error_score != null ? Number(c.error_score).toFixed(2) : '',
+          c.time_score != null ? Number(c.time_score).toFixed(2) : '',
+          c.click_score != null ? Number(c.click_score).toFixed(2) : '',
+          c.reset_score != null ? Number(c.reset_score).toFixed(2) : '',
+          c.task_score != null ? Number(c.task_score).toFixed(2) : ''
         ];
       })
     ];
@@ -1138,7 +1270,7 @@ app.get('/api/teacher/students/results.csv', requireAuth, requireTeacher, asyncR
 
   const csv = lines.join('\n');
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="kingbebras-results.csv"');
+  res.setHeader('Content-Disposition', 'attachment; filename="interactive-bebras-results.csv"');
   return res.send(csv);
 }));
 
@@ -1278,7 +1410,8 @@ app.post('/api/attempts/end', requireAuth, requireStudent, asyncRoute(async (req
     [nowIso(), attemptId, req.user.userId]
   );
   if (info.changes === 0) return res.status(404).json({ error: 'attempt_not_found' });
-  return res.json({ ok: true });
+  const examSummary = await persistAttemptExamSummary(attemptId);
+  return res.json({ ok: true, examSummary });
 }));
 
 app.post('/api/moves', requireAuth, requireStudent, asyncRoute(async (req, res) => {
@@ -1337,18 +1470,25 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, asyncRoute(async (req
   );
   if (!allowed) return res.status(403).json({ error: 'not_allowed' });
 
-  const monitoring = normalizeMonitoringFromFinishPayload(gamePayload);
+  const monitoring = attachComputedToMonitoring(
+    normalizeMonitoringFromFinishPayload(gamePayload, taskDef),
+    gamePayload,
+    taskId
+  );
+  const taskScore = Number(monitoring.computed?.task_score ?? 0);
 
   const info = await qRun(
     `
       UPDATE attempt_tasks
       SET finished_at = COALESCE(finished_at, ?),
+          final_score = COALESCE(final_score, ?),
           breakdown_json = COALESCE(breakdown_json, ?),
           game_payload_json = COALESCE(game_payload_json, ?)
       WHERE attempt_id = ? AND task_id = ?
     `,
     [
       nowIso(),
+      taskScore,
       JSON.stringify(monitoring),
       gamePayload ? JSON.stringify(gamePayload) : null,
       attemptId,
@@ -1360,6 +1500,8 @@ app.post('/api/tasks/finish', requireAuth, requireStudent, asyncRoute(async (req
   return res.json({
     ok: true,
     monitoring,
+    scores: monitoring.computed,
+    taskScore,
     finalAnswer: finalAnswer ?? null
   });
 }));
@@ -1377,7 +1519,7 @@ if (process.env.NODE_ENV === 'production') {
   app.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(
-      `KingBebras running on http://localhost:${port}${USE_PG ? ' (PostgreSQL)' : ' (SQLite)'}`
+      `Interactive Bebras running on http://localhost:${port}${USE_PG ? ' (PostgreSQL)' : ' (SQLite)'}`
     );
   });
 })().catch((err) => {

@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Bubblegum+Sans&family=Fredoka+One&family=Nunito:wght@400;700&family=Quicksand:wght@400;700&family=Sniglet&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Ticket</title>
@@ -13,11 +14,8 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Segoe Print', 
-                 'Chalkboard SE',           /* macOS/iOS rounded font */
-                 'Arial Rounded MT Bold',   /* another rounded sans-serif */
-                 'Nunito', 'Quicksand',     /* web fonts (load them via Google Fonts if you want) */
-                 sans-serif;
+            font-family: 'Sniglet', 'Comic Sans MS', 'Segoe Print', 
+                 'Chalkboard SE', 'Arial Rounded MT Bold', 'Nunito', 'Quicksand', sans-serif;
             text-align: center;
             background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 25%, #fad0c4 50%, #ffdde1 75%, #ffecd2 100%);
             min-height: 100vh;
@@ -65,7 +63,6 @@
             0% {
                 transform: translateX(-10%) translateY(0) rotate(0deg);
             }
-
             100% {
                 transform: translateX(120vw) translateY(-40px) rotate(360deg);
             }
@@ -134,12 +131,10 @@
             font-weight: bold;
             flex-wrap: wrap;
             font-size:22px;
-            
             border: 1px solid #ffcc88;
             backdrop-filter: blur(4px);
             background: white;
             padding: 0.2rem 0.8rem;
-            
             color: #b85c00;
             box-shadow: inset 0 0 2px #ffaa66;
         }
@@ -164,7 +159,6 @@
             flex-shrink: 0;
         }
 
-        /* ---------- Vending Machine Styling ---------- */
         #vending-machine {
             width: 680px;
             min-height: 500px;
@@ -179,34 +173,34 @@
             overflow: visible;
         }
 
-            #vending-machine::before {
-               
-                position: absolute;
-                top: 10px;
-                left: 15px;
-                width: 200px;
-                height: 20px;
-                background: #ffb347;
-                border-radius: 20px;
-                box-shadow: 0 0 10px #ffb347;
-                opacity: 0.8;
-                z-index: 3;
-            }
+        #vending-machine::before {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 200px;
+            height: 20px;
+            background: #ffb347;
+            border-radius: 20px;
+            box-shadow: 0 0 10px #ffb347;
+            opacity: 0.8;
+            z-index: 3;
+            
+        }
 
-            #vending-machine::after {
-                
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                background: #ff6b9d;
-                color: white;
-                font-weight: bold;
-                padding: 5px 12px;
-                border-radius: 20px;
-                font-size: 0.8rem;
-                box-shadow: 0 0 10px rgba(255,107,157,0.7);
-                z-index: 3;
-            }
+        #vending-machine::after {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff6b9d;
+            color: white;
+            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            box-shadow: 0 0 10px rgba(255,107,157,0.7);
+            z-index: 3;
+            
+        }
 
         #machine-left {
             width: 65%;
@@ -301,16 +295,16 @@
             font-family: 'Comic Neue', cursive;
         }
 
-            .key:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 0 #c09f4a, 0 7px 12px rgba(0,0,0,0.2);
-                background: linear-gradient(180deg, #fff3c4, #ffe28a);
-            }
+        .key:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #c09f4a, 0 7px 12px rgba(0,0,0,0.2);
+            background: linear-gradient(180deg, #fff3c4, #ffe28a);
+        }
 
-            .key:active {
-                transform: translateY(3px);
-                box-shadow: 0 1px 0 #c09f4a, 0 3px 6px rgba(0,0,0,0.1);
-            }
+        .key:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #c09f4a, 0 3px 6px rgba(0,0,0,0.1);
+        }
 
         .dispenser-tray {
             width: 90%;
@@ -386,14 +380,14 @@
             font-family: 'Comic Neue', cursive;
         }
 
-            .action-btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 14px 28px rgba(0,0,0,0.2);
-            }
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.2);
+        }
 
-            .action-btn:active {
-                transform: translateY(1px) scale(0.97);
-            }
+        .action-btn:active {
+            transform: translateY(1px) scale(0.97);
+        }
 
         .btn-finish {
             background: linear-gradient(135deg, #ff6b9d, #ff8e53);
@@ -439,10 +433,10 @@
             font-size: 1rem;
         }
 
-            #results h3 {
-                margin-bottom: 10px;
-                color: #e64980;
-            }
+        #results h3 {
+            margin-bottom: 10px;
+            color: #e64980;
+        }
 
         @media (max-width: 900px) {
             #game-area {
@@ -487,7 +481,6 @@
 
         <div class="centered-image-area">
             <img id="top-image" src="GiftCard.PNG" alt="Top Image">
-
         </div>
         <p class="instruction-text">
             When they see the code table on the vending machine, everything becomes clear: They will have
@@ -500,9 +493,7 @@
             <div id="vending-machine">
                 <div id="machine-left">
                     <br>
-                   
                     <div id="word-display">
-
                         <div class="letter-box"></div>
                         <div class="letter-box"></div>
                         <div class="letter-box"></div>
@@ -547,7 +538,6 @@
         <br>
 
         <div class="centered-image-area">
-
             <div class="timer-box">⏱️ Time: <span id="timerDisplay">0</span>s</div>
         </div>
 
@@ -630,7 +620,37 @@
     </script>
 
     <script>
-        const answer = "RSTD";
+        // ---------- Code table mapping ----------
+        const codeMap = {
+            'A': '..o..',
+            'E': '...o.',
+            'I': '...oo',
+            'O': '..ooo',
+            'U': '..o.o',
+            'Y': '....o',
+            'B': '.o..o',
+            'C': '.oo.o',
+            'D': '.oooo',
+            'F': '.o.oo',
+            'G': '.o.o.',
+            'H': '.ooo.',
+            'J': '.oo..',
+            'K': 'ooo..',
+            'L': 'oooo.',
+            'M': 'oo.o.',
+            'N': 'oo.oo',
+            'P': 'ooooo',
+            'Q': 'ooo.o',
+            'R': 'oo..o',
+            'S': 'o...o',
+            'T': 'o.o.o',
+            'V': 'o.ooo',
+            'W': 'o..oo',
+            'X': 'o..o.',
+            'Z': 'o.oo.'
+        };
+
+        const correctAnswer = ['R', 'S', 'T', 'D'];   // the four letters on the ticket
 
         let currentGuess = "";
         let errorScore = 0;
@@ -658,11 +678,29 @@
             });
         }
 
+        // New error calculation: count mismatched symbols (dots / 'o') for each character
         function calculateErrors() {
-            errorScore = 0;
+            let errors = 0;
             for (let i = 0; i < 4; i++) {
-                if ((currentGuess[i] || "") !== answer[i]) errorScore++;
+                const correctLetter = correctAnswer[i];
+                const typedLetter = currentGuess[i] || "";   // empty if not filled (but finish requires 4)
+                const correctCode = codeMap[correctLetter];
+                const typedCode = codeMap[typedLetter] || "";
+
+                if (!typedCode) {
+                    // If typed letter not in our map (shouldn't happen), treat as all 5 wrong
+                    errors += 5;
+                    continue;
+                }
+
+                // Compare each symbol (both strings are length 5)
+                for (let j = 0; j < 5; j++) {
+                    if (typedCode[j] !== correctCode[j]) {
+                        errors++;
+                    }
+                }
             }
+            errorScore = errors;
         }
 
         function sendFinishPayload() {
@@ -711,7 +749,6 @@
             });
         });
 
-        // Reset button: clear letters and increment reset counter
         document.getElementById("reset-images").addEventListener("click", () => {
             if (gameFinished) return;
             resetCounter++;
@@ -722,6 +759,7 @@
         document.getElementById("giveup").addEventListener("click", () => {
             if (gameFinished) return;
             giveUpFlag = 1;
+            // calculate error score even when giving up (based on current guess)
             calculateErrors();
             message.textContent = "You gave up.";
             message.className = "wrong";
@@ -736,7 +774,7 @@
                 return;
             }
             calculateErrors();
-            if (currentGuess === answer) {
+            if (currentGuess === correctAnswer.join('')) {
                 correctnessFlag = 1;
                 message.textContent = "✅ Correct Answer";
                 message.className = "correct";

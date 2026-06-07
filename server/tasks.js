@@ -5,6 +5,7 @@ export const TASKS = [
     category: 'A',
     type: 'magic_house',
     url: '/tasks/ALevelGames/MagicHouse3.html',
+    correctnessMax: 3,
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
@@ -18,6 +19,7 @@ export const TASKS = [
     category: 'A',
     type: 'shape_sudoku',
     url: '/tasks/ALevelGames/Sudoku2.html',
+    correctnessMax: 3,
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
@@ -31,6 +33,7 @@ export const TASKS = [
     category: 'A',
     type: 'organizing_bracelets',
     url: '/tasks/ALevelGames/OrganizingBracelets3.html',
+    correctnessMax: 3,
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,
@@ -44,6 +47,7 @@ export const TASKS = [
     category: 'A',
     type: 'generic',
     url: '/tasks/ALevelGames/BBQParty2.html',
+    correctnessMax: 4,
     maxScore: 100,
     scoring: {
       timeDecayPerSecond: 0.05,

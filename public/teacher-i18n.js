@@ -51,7 +51,16 @@ export const TEACHER_I18N = {
     col_password: 'Password',
     show_password: 'Show',
     hide_password: 'Hide',
-    no_task_activity: 'No task activity yet'
+    no_task_activity: 'No task activity yet',
+    finalExamScore: 'Final exam score',
+    skill_decomposition_score: 'Decomposition',
+    skill_pattern_recognition_score: 'Pattern recognition',
+    skill_abstraction_score: 'Abstraction',
+    skill_modelling_simulation_score: 'Modelling & simulation',
+    skill_algorithms_score: 'Algorithms',
+    skill_evaluation_score: 'Evaluation',
+    skill_logical_reasoning_score: 'Logical reasoning',
+    metricsSection: 'Metrics'
   },
   ar: {
     created: 'أُنشئ',
@@ -104,7 +113,8 @@ export const TEACHER_I18N = {
     col_password: 'كلمة المرور',
     show_password: 'إظهار',
     hide_password: 'إخفاء',
-    no_task_activity: 'لا نشاط للمهام بعد'
+    no_task_activity: 'لا نشاط للمهام بعد',
+    metricsSection: 'المقاييس'
   },
   fr: {
     created: 'créé',
@@ -199,7 +209,8 @@ export const TEACHER_I18N = {
     col_password: 'Passwort',
     show_password: 'Anzeigen',
     hide_password: 'Verbergen',
-    no_task_activity: 'Noch keine Aufgabenaktivität'
+    no_task_activity: 'Noch keine Aufgabenaktivität',
+    metricsSection: 'Metriken'
   },
   es: {
     created: 'creado',

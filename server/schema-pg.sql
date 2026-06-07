@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS attempts (
   user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
   started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   finished_at TIMESTAMPTZ,
-  seed INTEGER NOT NULL
+  seed INTEGER NOT NULL,
+  exam_summary_json TEXT
 );
 
 CREATE TABLE IF NOT EXISTS attempt_tasks (

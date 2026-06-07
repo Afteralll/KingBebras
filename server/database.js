@@ -37,6 +37,7 @@ export async function initDatabase() {
     const schemaPath = path.join(process.cwd(), 'server', 'schema-pg.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
     await pool.query(schema);
+    await pool.query(`ALTER TABLE attempts ADD COLUMN IF NOT EXISTS exam_summary_json TEXT`).catch(() => {});
   } else {
     sqliteDb = openDb();
   }

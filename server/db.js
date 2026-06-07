@@ -30,6 +30,11 @@ export function openDb() {
   ensureAttemptTaskColumn('breakdown_json', 'breakdown_json TEXT');
   ensureAttemptTaskColumn('game_payload_json', 'game_payload_json TEXT');
 
+  const attemptCols = db.prepare(`PRAGMA table_info(attempts)`).all().map((c) => c.name);
+  if (!attemptCols.includes('exam_summary_json')) {
+    db.exec(`ALTER TABLE attempts ADD COLUMN exam_summary_json TEXT`);
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS student_credentials (
       student_user_id INTEGER PRIMARY KEY,

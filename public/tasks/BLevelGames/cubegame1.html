@@ -221,12 +221,38 @@
             gap: 0.6rem;
             margin-top: 0.4rem;
         }
-
         .action-btn {
             background: rgba(10, 20, 35, 0.9);
-            border: 1px solid #4a627a;
+            border: 1px solid #323071;
             padding: 0.35rem 1rem;
             border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #eef4ff;
+            backdrop-filter: blur(4px);
+            font-family: inherit;
+        }
+
+        .action-btn-finish {
+            background: rgba(10, 20, 35, 0.9);
+            border: 1px solid #31b144;
+            padding: 0.35rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #eef4ff;
+            backdrop-filter: blur(4px);
+            font-family: inherit;
+        }
+        .action-btn-giveup {
+            background: rgba(10, 20, 35, 0.9);
+            border: 1px solid #c61f1f;
+            padding: 0.35rem 1rem;
+            border-radius: 10px;
             font-weight: 500;
             font-size: 0.75rem;
             cursor: pointer;
@@ -354,17 +380,13 @@
             </div>
 
             <div class="action-bar">
-                <button class="action-btn" id="finishBtn">✅ Finish</button>
-                <button class="action-btn" id="giveUpBtn">🏳️ Give UP</button>
+                <button class="action-btn-finish" id="finishBtn">✅ Finish</button>
+                <button class="action-btn-giveup" id="giveUpBtn">🏳️ Give UP</button>
             </div>
         </div>
     </div>
-    <div class="info-tip">
-        📊 Metrics: time · clicks · correctness · give-up
-    </div>
-    <div class="controls-hint">
-        🖱️ Drag to rotate | Right-click to orbit
-    </div>
+    
+    
 
     <script type="importmap">
         {

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS attempts (
   started_at TEXT NOT NULL DEFAULT (datetime('now')),
   finished_at TEXT,
   seed INTEGER NOT NULL,
+  exam_summary_json TEXT,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

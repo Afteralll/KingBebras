@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KingBebras</title>
+    <title>Interactive Bebras</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -13,7 +13,7 @@
         <div class="brand">
           <div class="logo" aria-hidden="true"></div>
           <div>
-            <h1>KingBebras</h1>
+            <h1>Interactive Bebras</h1>
             <p>Interactive Bebras tasks with move-based scoring</p>
           </div>
         </div>
@@ -127,9 +127,117 @@
       </div>
     </div>
 
+    <div
+      id="teacherConsentModal"
+      class="modal-overlay"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="teacherConsentTitle"
+    >
+      <div class="modal-card teacher-consent-card">
+        <h2 id="teacherConsentTitle">Interactive Bebras Experimentation Guide</h2>
+
+        <div class="modal-body">
+          <section class="consent-section">
+            <h3>PARENT / GUARDIAN CONSENT – PLEASE READ</h3>
+            <p>
+              Your child is invited to take part in Interactive Bebras, a set of puzzle activities being used for a
+              university thesis study. The research looks at how young learners approach problem‑solving and how their
+              step‑by‑step thinking can be captured and valued alongside their final answer.
+            </p>
+            <p>
+              In this activity, the child works through 12 short interactive puzzles. The platform records their moves,
+              clicks, and decisions, and final result, so the process can be studied later.
+            </p>
+            <p>
+              Taking part is entirely voluntary. The child may stop at any time, for any reason, with no consequences.
+              The tasks are age‑appropriate logic and thinking puzzles—no sensitive, medical, or personal topics are
+              included.
+            </p>
+            <p>
+              We never collect the child’s full name, contact details, school ID, photos, or any other identifying
+              information. Only a first name or nickname is stored, and it is used together with a classroom username
+              that keeps all responses anonymous.
+            </p>
+            <p>
+              The recorded interactions are seen only by the research team, stored securely, and reported only as group
+              statistics or anonymized examples in academic work.
+            </p>
+            <p>
+              By allowing your child to proceed, you confirm that you have read and understood the information above
+              and consent to their participation in the study.
+            </p>
+          </section>
+
+          <section class="consent-section">
+            <h3>About Interactive Bebras</h3>
+            <p>
+              Interactive Bebras is a web-based platform designed as part of a bachelor’s thesis, that transforms 12
+              classic Bebras tasks into gamified, process-aware challenges. Where every meaningful move the student makes
+              – exploring the problem, trying a partial solution, changing their mind, is automatically tracked.
+            </p>
+          </section>
+
+          <section class="consent-section">
+            <h3>Teacher’s Guide – How to Use the Website</h3>
+
+            <h4>Step 1: Create your teacher account</h4>
+            <ol>
+              <li>Go to <a href="https://interactivebebras.xyz" target="_blank" rel="noopener noreferrer">https://interactivebebras.xyz</a>.</li>
+              <li>Choose a username and a password that you will remember.</li>
+              <li>Click on “Teacher Register”, then “Login”.</li>
+            </ol>
+
+            <h4>Step 2: Add your students</h4>
+            <ol>
+              <li>Once logged in, you will see a teacher dashboard.</li>
+              <li>Look for a section labelled “Add Students”.</li>
+              <li>Type each student’s first name (or a nickname) on a new line, for example:</li>
+            </ol>
+            <pre class="consent-example">Anna
+Ben
+Carla</pre>
+            <ol start="4">
+              <li>Click the “Create Accounts” button.</li>
+            </ol>
+
+            <h4>Step 3: Get the student usernames and passwords</h4>
+            <p>
+              The system will instantly generate a unique username and a simple password for each student. You will give
+              each student their own username and password. (These are automatically generated; the teacher cannot choose
+              them manually.)
+            </p>
+
+            <h4>Step 4: Students log in</h4>
+            <ol>
+              <li>On the same website <a href="https://interactivebebras.xyz" target="_blank" rel="noopener noreferrer">https://interactivebebras.xyz</a>, students enter the username and password provided.</li>
+              <li>Students click “Login”.</li>
+              <li>Once logged in, they see the 12 tasks. They can work through them in any order, but we recommend following the given sequence.</li>
+              <li>There is a time limit of 45 minutes.</li>
+            </ol>
+
+            <h4>Step 5: Monitor live marks</h4>
+            <p>
+              As the teacher, stay logged into your teacher dashboard. You will see a table with all your students’ names
+              and their current scores. To see the latest tracked data while students are working, refresh the page
+              (press F5 or the browser refresh button).
+            </p>
+          </section>
+
+          <p class="consent-thanks">Thank you for taking part in this research.</p>
+        </div>
+
+        <div class="modal-footer consent-actions">
+          <button id="teacherConsentBtn" class="btn primary" type="button">
+            I have read and understood
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="fullscreenToast" class="toast" role="status" aria-live="polite" style="display: none"></div>
 
     <script type="module" src="/app.js?v=5"></script>
   </body>
 </html>
-
